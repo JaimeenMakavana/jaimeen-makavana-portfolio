@@ -1,0 +1,23 @@
+---
+alwaysApply: true
+---
+
+# DESIGN SYSTEM COMPLIANCE
+
+## 1. Color Authority
+You must treat the color definitions provided below as the **SINGLE SOURCE OF TRUTH**.
+- **STRICTLY FORBIDDEN**: Do not use arbitrary Hex codes (e.g., `#FF0000`), generic color names (e.g., `red`, `blue`), or default framework colors (e.g., `slate-500`, `blue-700`) unless they exactly match the defined palette.
+- **REQUIRED BEHAVIOR**: Always map UI requirements to the semantic names defined in the "Acceptable Colors" list below.
+
+## 2. Acceptable Colors
+(User: Paste your CSS variables, Tailwind config, or Design Tokens here. Example below:)
+
+```css
+/* :root variables */
+--primary-main: #3B82F6;
+--primary-hover: #2563EB;
+--surface-bg: #FFFFFF;
+--surface-card: #F3F4F6;
+--text-body: #1F2937;
+--text-muted: #9CA3AF;
+--accent-error: #EF4444;

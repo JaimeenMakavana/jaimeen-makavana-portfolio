@@ -1,0 +1,57 @@
+---
+alwaysApply: false
+---
+
+Context: I want to create a "Scrollytelling" experience that visualizes my career journey: From Chemical Engineering → IT → Full Stack → AI Architect.
+
+Tech Stack:
+
+Framework: Next.js 14+ (App Router)
+
+Styling: Tailwind CSS
+
+Animation: Framer Motion (framer-motion)
+
+The Task: Act as a Creative Frontend Developer. Create a new component named CareerJourneyParallax. This component should implement a vertical scroll-based narrative where text and visual elements move at different speeds (parallax) to create depth.
+
+Data Source (The Narrative): Use the following stages for the content sections:
+
+The Origin: LD College of Engineering. Chemical Engineering background. The realization of being "disconnected."
+
+The Pivot: Self-learning sprint. Joining Webapster (Jr React Dev). Building the foundation.
+
+The Expansion: Joining Koffeekodes. Full Stack & Architecture. Understanding end-to-end systems.
+
+The Future (Current): Joining Key.ai. Machine Learning, Prompt Engineering, Autonomous Agents.
+
+Detailed Implementation Requirements:
+
+Architecture & Performance (Critical):
+
+Use useScroll and useTransform from framer-motion to map scroll progress to animation values (y-axis, opacity, scale).
+
+DO NOT use native window.addEventListener('scroll'). Strictly use Framer Motion's optimized hooks to run animations off the main thread where possible.
+
+Implement a "Sticky Section" layout: The text should scroll normally on one side (or overlay), while the background/visuals remain "sticky" or move slowly to create the parallax effect.
+
+Visual Design:
+
+Theme: Dark Mode (Deep Slate/Black background).
+
+Typography: Modern, clean sans-serif. Large headers for the "Era" titles.
+
+Visuals: Since I don't have images yet, use Abstract Geometric Shapes (using CSS/SVG) or Gradient Orbs that morph/change color for each stage of the career to represent the evolution (e.g., Rigid Square for Engineering → Fluid Blob for AI).
+
+Responsiveness:
+
+Desktop: Full 2-column parallax layout (Text Left, Visuals Right).
+
+Mobile: Collapse to a standard vertical stack. Disable complex scroll-jacking on mobile to ensure native scroll performance.
+
+Code Structure:
+
+Create a separate data array constant CAREER_MILESTONES at the top of the file containing the text content to keep the JSX clean.
+
+Ensure all components are typed strictly with TypeScript.
+
+Output: Generate the full code for CareerJourneyParallax.tsx.

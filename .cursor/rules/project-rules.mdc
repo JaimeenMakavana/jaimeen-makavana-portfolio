@@ -1,0 +1,30 @@
+---
+alwaysApply: false
+---
+Here is a detailed breakdown of the role the Project Route serves:1. Psychological Role: "Competence Validation"Humans are naturally skeptical. They don't fully believe something until they see concrete evidence.Show, Don't Tell: On the Home Page, you claimed, "I build scalable apps." On the Project Page, you show—"Here is an app handling 10k users."Depth Signaling: Junior developers just show screenshots. Experts show the "Process." If you explain why you chose Redux Toolkit over Context API or how you implemented Zustand for better performance, it psychologically signals to the recruiter: "This person doesn't just copy-paste code; they make calculated engineering decisions."2. Strategic Role: "Problem Solver Identity"The function of this page is not to be a "Gallery" of pretty images, but a collection of "Case Studies."DevAlchemy Connection: This is the most critical page for your "DevAlchemy" (Transformation) brand. You need to demonstrate the alchemy:Before: What was the problem? (The Lead / Raw Material)Alchemy: What logic/code did you apply? (The Magic)After: What was the result? (The Gold / Solution)The "Why" Factor: Don't just show what you built. Show why you built it. Did it save time? Did it reduce load time? Did it help the business grow?3. Technical Role: "Range & Specialization"This page dictates the type of work you will attract.The React + AI Intersection: Since you have interests in both Frontend and ML, this is where you merge them. For example: A React dashboard that visualizes data from a Python-based Recommendation System.Code Quality: Providing GitHub links and Live Demos signals Transparency, which is the biggest pillar of trust in the developer world.The Ideal Project Structure (Case Study Architecture)An effective Project Page shouldn't just be a grid of cards. Each project should tell a specific story:Project Title & One-Liner (The Hook)$\downarrow$The Challenge (What was the hard part? - Conflict)$\downarrow$Tech Stack & Architecture (How did you use React, Redux, or AI? - Tooling)$\downarrow$Key Decisions/Trade-offs (Why did you choose X over Y? - Intelligence)$\downarrow$The Outcome/Result (Live Demo Link - Resolution)UX Suggestion (Personalized)Since you have a specific interest in Data Visualization (Boxenplots/Boxplots), adding a small graphical element like a "Complexity Meter" or a "Tech Stack Distribution" chart on each project card would be a brilliant UX touch. It shows your data-viz skills without you having to say a word.
+
+
+1. chat module in key product : add by your own
+2. ai based community creation : add by your own
+3. notifications : add by your own
+4. chapter 1: Chapter 01
+A robust accounting platform built using Next.js, Zustand, and Formik, delivering a seamless user interface for managing financial operations and reports.
+ROLE
+Lead frontend developer
+
+RESPONSIBILITIES
+Led the frontend development, integrating state management with Zustand, form handling with Formik, and building reusable components in Next.js. Collaborated with the design and backend teams to ensure smooth user experience and optimized performance.
+
+URL
+https://chapter-umber.vercel.app/login
+
+
+5. tcpl: A retailer management platform developed to streamline distributor-retailer payment processing, leveraging Next.js and react-hook-form for efficient form handling and user interaction.
+ROLE
+Lead Frontend Developer
+
+RESPONSIBILITIES
+Led the development of the frontend architecture, implementing dynamic forms using react-hook-form and ensuring seamless payment processing workflows. Worked closely with backend developers to integrate APIs and optimize the overall user experience.
+6. slido -> revampting project from php to react.js
+7. koffeekodes -> landing page fully animated website for company own website
+9. om dental care -> infromatic
