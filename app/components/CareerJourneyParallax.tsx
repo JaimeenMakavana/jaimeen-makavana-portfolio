@@ -108,7 +108,7 @@ const ParallaxSection = ({
         setRef(el);
       }}
       data-index={index}
-      className="min-h-[85vh] md:min-h-screen flex items-center justify-center px-6 py-20 md:p-24 overflow-hidden relative"
+      className="min-h-[85vh] md:min-h-screen flex items-center justify-center px-6 py-20 md:p-28 overflow-hidden relative"
     >
       <motion.div
         // Force GPU layer promotion to fix sub-pixel flickering

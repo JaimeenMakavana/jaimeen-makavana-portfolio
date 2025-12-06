@@ -407,7 +407,7 @@ export default function ProjectsPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   return (
-    <div className="min-h-screen bg-[#fafafa] p-4 md:p-8 pb-32">
+    <div className="min-h-screen bg-[#fafafa] p-4 md:py-8 md:px-28 pb-32">
       {/* Header Section */}
       <div className="max-w-7xl mx-auto mb-16 pt-20">
         <h1

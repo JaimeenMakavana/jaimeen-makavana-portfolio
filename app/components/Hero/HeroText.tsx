@@ -17,7 +17,7 @@ export const HeroText = () => {
         {MOBILE_TEXT}
       </p>
       <p
-        className="text-5xl font-bold leading-tight text-center md:text-7xl lg:block hidden"
+        className="text-5xl font-bold leading-tight text-center md:text-5xl 2xl:text-7xl lg:block hidden"
         style={{ fontFamily: "var(--font-alumni), sans-serif" }}
       >
         {DESKTOP_TEXT}
