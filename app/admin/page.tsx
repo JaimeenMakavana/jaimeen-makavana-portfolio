@@ -13,6 +13,7 @@ import {
   ShieldCheck,
   Cpu,
   GitBranch,
+  User, // Imported User icon for the About module
 } from "lucide-react";
 
 // --- COMPONENTS ---
@@ -98,10 +99,10 @@ const NavCard = ({
               Module
             </span>
           </div>
-          <h2 className="text-4xl font-bold mb-2 group-hover:translate-x-1 transition-transform">
+          <h2 className="text-3xl md:text-4xl font-bold mb-2 group-hover:translate-x-1 transition-transform">
             {title}
           </h2>
-          <p className="text-neutral-500 max-w-sm group-hover:text-black transition-colors">
+          <p className="text-neutral-500 text-sm md:text-base max-w-sm group-hover:text-black transition-colors">
             {desc}
           </p>
         </div>
@@ -251,8 +252,8 @@ export default function AdminDashboard() {
       </div>
 
       {/* 3. MAIN BENTO GRID */}
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 grid-rows-2 gap-6 h-[600px]">
-        {/* Navigation: Contact List */}
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 grid-rows-2 gap-6 md:h-[600px]">
+        {/* Navigation: Contact List (Top Row, 2 cols) */}
         <div className="md:col-span-2 md:row-span-1">
           <NavCard
             title="Incoming Signals"
@@ -264,7 +265,7 @@ export default function AdminDashboard() {
           />
         </div>
 
-        {/* System Log */}
+        {/* System Log (Spans 2 rows on the right) */}
         <div className="md:col-span-1 md:row-span-2">
           <motion.div
             initial={{ opacity: 0, x: 20 }}
@@ -276,15 +277,27 @@ export default function AdminDashboard() {
           </motion.div>
         </div>
 
-        {/* Navigation: Projects */}
-        <div className="md:col-span-2 md:row-span-1">
+        {/* Navigation: Projects (Bottom Row, 1 col) */}
+        <div className="md:col-span-1 md:row-span-1">
           <NavCard
-            title="Project Inventory"
-            desc="CRUD operations for your portfolio. Edit stacks, complexity scores, and layout sizes."
-            href="/admin/projects-handling"
+            title="Project CMS"
+            desc="CRUD operations. Edit stacks & complexity scores."
+            href="/admin/project-handling"
             icon={LayoutTemplate}
             colorClass="text-[#e4e987]"
             delay={0.6}
+          />
+        </div>
+
+        {/* Navigation: About (Bottom Row, 1 col) */}
+        <div className="md:col-span-1 md:row-span-1">
+          <NavCard
+            title="Career Journey"
+            desc="Manage timeline, eras, and bio data."
+            href="/admin/about-handling"
+            icon={User}
+            colorClass="text-purple-500"
+            delay={0.65}
           />
         </div>
       </div>

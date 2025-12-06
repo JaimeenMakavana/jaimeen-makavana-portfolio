@@ -199,9 +199,9 @@ export default function ProjectCMS() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fafafa] text-neutral-900 font-sans md:px-28">
+    <div className="min-h-screen bg-[#fafafa] text-neutral-900 font-sans md:px-28 relative">
       {/* HEADER */}
-      <header className="fixed top-0 left-0 right-0 bg-[#fafafa]/80 backdrop-blur-md border-b border-neutral-200 z-50 px-6 py-4 flex items-center justify-between">
+      <header className="sticky top-0 left-0 right-0 bg-[#fafafa]/80 backdrop-blur-md border-b border-neutral-200 z-50 px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <LayoutTemplate className="w-6 h-6" />
           <h1 className="font-bold text-xl tracking-tight">Project CMS</h1>
