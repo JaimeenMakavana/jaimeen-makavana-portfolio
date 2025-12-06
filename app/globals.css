@@ -1,0 +1,115 @@
+@import "tailwindcss";
+
+:root {
+  /* -------------------------
+     Base Surfaces
+     ------------------------- */
+  /* The main background color (clean, slightly warm off-white) */
+  --bg-canvas: #fafafa;
+
+  /* The vibrant lime/yellow glow seen at the top */
+  --bg-accent-glow: #e4e987;
+
+  /* -------------------------
+     Typography
+     ------------------------- */
+  /* Deep black for the massive "KRIS DRAKE" and main headings */
+  --text-display: #000000;
+
+  /* Slightly softer black for body text (bio description) */
+  --text-body: #1a1a1a;
+
+  /* Muted gray for copyright/footer details */
+  --text-muted: #666666;
+
+  /* -------------------------
+     UI Elements (Nav)
+     ------------------------- */
+  /* The black pill shape behind the navigation */
+  --nav-surface: #000000;
+
+  /* The white active state button (Home) */
+  --nav-active-bg: #ffffff;
+
+  /* Text color inside the black nav bar */
+  --nav-text-idle: #ffffff;
+
+  /* Text color inside the white active button */
+  --nav-text-active: #000000;
+
+  /* -------------------------
+     shadcn/ui CSS Variables
+     ------------------------- */
+  --background: var(--bg-canvas);
+  --foreground: var(--text-body);
+  --card: #ffffff;
+  --card-foreground: var(--text-body);
+  --popover: #ffffff;
+  --popover-foreground: var(--text-body);
+  --primary: #000000;
+  --primary-foreground: #ffffff;
+  --secondary: #f3f4f6;
+  --secondary-foreground: var(--text-body);
+  --muted: #f3f4f6;
+  --muted-foreground: var(--text-muted);
+  --accent: #e4e987;
+  --accent-foreground: var(--text-body);
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #e5e7eb;
+  --input: #e5e7eb;
+  --ring: #000000;
+  --radius: 0.5rem;
+}
+
+@theme inline {
+  --color-background: var(--bg-canvas);
+  --color-foreground: var(--text-body);
+  --font-display: var(--font-display), sans-serif;
+  --font-body: var(--font-body), sans-serif;
+}
+
+body {
+  background: var(--bg-canvas);
+  color: var(--text-body);
+  font-family: var(--font-body), sans-serif;
+}
+
+/* Text selection styling */
+::selection {
+  background-color: var(--accent);
+  color: var(--text-body);
+}
+
+::-moz-selection {
+  background-color: var(--accent);
+  color: var(--text-body);
+}
+
+/* Hero glow background gradient */
+.bg-hero-glow {
+  background: radial-gradient(
+    circle at 50% 30%,
+    var(--bg-accent-glow) 0%,
+    var(--bg-canvas) 70%
+  );
+}
+
+/* Custom gradient text effect */
+.gradient-text {
+  background: linear-gradient(
+    to bottom,
+    var(--text-body) 0%,
+    var(--text-display) 50%,
+    var(--text-body) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Subject image styling */
+.subject-image {
+  filter: grayscale(100%) contrast(110%)
+    drop-shadow(0 0 20px rgba(255, 255, 255, 0.8));
+}
