@@ -30,6 +30,11 @@ export const NavigationWrapper = () => {
 
   const activeLink = getActiveLink(pathname);
 
+  const handleLinkClick = (link: NavigationLink) => {
+    // Handle link click if needed (e.g., analytics, state updates)
+    // The MobileBottomNavigation component handles menu closing internally
+  };
+
   return (
     <>
       <DesktopNavigation
@@ -37,7 +42,10 @@ export const NavigationWrapper = () => {
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       />
-      <MobileBottomNavigation activeLink={activeLink} />
+      <MobileBottomNavigation
+        activeLink={activeLink}
+        onLinkClick={handleLinkClick}
+      />
     </>
   );
 };
