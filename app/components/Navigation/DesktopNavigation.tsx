@@ -1,8 +1,18 @@
-import { FolderKanban, Home, Mail, User, Sparkles } from "lucide-react";
+import {
+  FolderKanban,
+  Home,
+  Mail,
+  User,
+  Sparkles,
+  Menu,
+  X,
+} from "lucide-react";
 import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 import { NavigationLinkItem } from "./NavigationLink";
 import { NavigationLink } from "./useNavigationHover";
 import { ThemeToggle } from "../ThemeToggle";
+import { useState } from "react";
 
 interface DesktopNavigationProps {
   activeLink: NavigationLink;
@@ -22,11 +32,42 @@ const NAVIGATION_ITEMS = [
   { id: "contact" as const, href: "/contact", label: "Contact", icon: Mail },
 ] as const;
 
+const containerVariants = {
+  hidden: { opacity: 0, height: 0, overflow: "hidden" },
+  visible: {
+    opacity: 1,
+    height: "auto",
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.1,
+      when: "beforeChildren",
+    },
+  },
+  exit: {
+    opacity: 0,
+    height: 0,
+    transition: {
+      duration: 0.3,
+      when: "afterChildren",
+      staggerChildren: 0.05,
+      staggerDirection: -1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: -10, scale: 0.8 },
+  visible: { opacity: 1, y: 0, scale: 1 },
+  exit: { opacity: 0, y: -10, scale: 0.8 },
+};
+
 export const DesktopNavigation = ({
   activeLink,
   onMouseEnter,
   onMouseLeave,
 }: DesktopNavigationProps) => {
+  const [isOpen, setIsOpen] = useState(false);
+
   // Split items for top and bottom of FAB
   const topItems = NAVIGATION_ITEMS.slice(0, 2);
   const bottomItems = NAVIGATION_ITEMS.slice(2);
@@ -37,7 +78,12 @@ export const DesktopNavigation = ({
       aria-label="Main navigation"
     >
       {/* Center Sparkles FAB */}
-      <div className="relative group p-2">
+      <motion.div
+        className="relative group p-2"
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+      >
         <Link
           href="/jiva"
           className="w-12 h-12 rounded-full flex items-center justify-center shadow-xl transition-all hover:scale-110 active:scale-95"
@@ -58,45 +104,95 @@ export const DesktopNavigation = ({
         >
           जीवा: AI agent
         </span>
-      </div>
-      <div
+      </motion.div>
+      <motion.div
         className="px-2 py-2 rounded-full flex flex-col items-center gap-3 shadow-lg"
         style={{
           backgroundColor: "var(--nav-surface)",
           color: "var(--nav-text-idle)",
         }}
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3 }}
       >
-        {/* Top items */}
-        {topItems.map((item) => (
-          <NavigationLinkItem
-            key={item.id}
-            href={item.href}
-            label={item.label}
-            icon={item.icon}
-            activeLink={activeLink}
-            linkId={item.id}
-            onMouseEnter={onMouseEnter}
-            onMouseLeave={onMouseLeave}
-          />
-        ))}
+        {/* Toggle Button */}
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="p-2 rounded-full hover:bg-white/10 transition-colors"
+          aria-label={isOpen ? "Close menu" : "Open menu"}
+        >
+          <AnimatePresence mode="wait">
+            {isOpen ? (
+              <motion.div
+                key="close"
+                initial={{ rotate: -90, opacity: 0 }}
+                animate={{ rotate: 0, opacity: 1 }}
+                exit={{ rotate: 90, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <X className="w-5 h-5" />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="menu"
+                initial={{ rotate: 90, opacity: 0 }}
+                animate={{ rotate: 0, opacity: 1 }}
+                exit={{ rotate: -90, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Menu className="w-5 h-5" />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </button>
 
-        {/* Bottom items */}
-        {bottomItems.map((item) => (
-          <NavigationLinkItem
-            key={item.id}
-            href={item.href}
-            label={item.label}
-            icon={item.icon}
-            activeLink={activeLink}
-            linkId={item.id}
-            onMouseEnter={onMouseEnter}
-            onMouseLeave={onMouseLeave}
-          />
-        ))}
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              className="flex flex-col items-center gap-3"
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+            >
+              {/* Top items */}
+              {topItems.map((item) => (
+                <motion.div key={item.id} variants={itemVariants}>
+                  <NavigationLinkItem
+                    href={item.href}
+                    label={item.label}
+                    icon={item.icon}
+                    activeLink={activeLink}
+                    linkId={item.id}
+                    onMouseEnter={onMouseEnter}
+                    onMouseLeave={onMouseLeave}
+                  />
+                </motion.div>
+              ))}
 
-        {/* Theme Toggle */}
-        <ThemeToggle variant="desktop" />
-      </div>
+              {/* Bottom items */}
+              {bottomItems.map((item) => (
+                <motion.div key={item.id} variants={itemVariants}>
+                  <NavigationLinkItem
+                    href={item.href}
+                    label={item.label}
+                    icon={item.icon}
+                    activeLink={activeLink}
+                    linkId={item.id}
+                    onMouseEnter={onMouseEnter}
+                    onMouseLeave={onMouseLeave}
+                  />
+                </motion.div>
+              ))}
+
+              {/* Theme Toggle */}
+              <motion.div variants={itemVariants}>
+                <ThemeToggle variant="desktop" />
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
     </nav>
   );
 };
