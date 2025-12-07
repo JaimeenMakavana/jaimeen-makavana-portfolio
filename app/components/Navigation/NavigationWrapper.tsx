@@ -11,6 +11,11 @@ export const NavigationWrapper = () => {
   const { hoveredLink, handleMouseEnter, handleMouseLeave } =
     useNavigationHover();
 
+  // Hide navigation on login and admin pages
+  if (pathname === "/login" || pathname?.startsWith("/admin")) {
+    return null;
+  }
+
   // 1. DERIVED STATE LOGIC
   // Instead of storing state, we calculate it instantly based on the URL.
   // This acts as the "Single Source of Truth".

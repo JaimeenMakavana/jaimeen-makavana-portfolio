@@ -13,6 +13,7 @@ import {
   Settings,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { logoutAction } from "@/app/actions/auth";
 
 // --- CONFIGURATION ---
 const NAV_ITEMS = [
@@ -103,13 +104,13 @@ export default function AdminLayout({
 
         {/* Footer / Logout */}
         <div className="p-4 border-t border-neutral-900">
-          <Link
-            href="/"
-            className="flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-red-500/10 hover:text-red-300 rounded-xl transition-colors"
+          <button
+            onClick={() => logoutAction()}
+            className="w-full flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-red-500/10 hover:text-red-300 rounded-xl transition-colors"
           >
             <LogOut className="w-5 h-5" />
             <span className="text-sm font-medium">Exit System</span>
-          </Link>
+          </button>
         </div>
       </aside>
 
@@ -121,9 +122,12 @@ export default function AdminLayout({
             ADMIN
           </span>
         </div>
-        <Link href="/">
+        <button
+          onClick={() => logoutAction()}
+          className="p-2 hover:bg-neutral-800 rounded-lg transition-colors"
+        >
           <LogOut className="w-5 h-5 text-neutral-400" />
-        </Link>
+        </button>
       </div>
 
       {/* 3. MOBILE BOTTOM NAV */}
