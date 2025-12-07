@@ -8,8 +8,7 @@ import { NavigationLink } from "./useNavigationHover";
 
 export const NavigationWrapper = () => {
   const pathname = usePathname();
-  const { hoveredLink, handleMouseEnter, handleMouseLeave } =
-    useNavigationHover();
+  const { handleMouseEnter, handleMouseLeave } = useNavigationHover();
 
   // Hide navigation on login and admin pages
   if (pathname === "/login" || pathname?.startsWith("/admin")) {

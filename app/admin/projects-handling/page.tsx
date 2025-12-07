@@ -275,12 +275,8 @@ export default function ProjectCMS() {
             disabled={!isDirty || saving}
             className="flex items-center gap-2 px-6 py-2 rounded-full font-mono text-sm uppercase tracking-wide transition-all"
             style={{
-              backgroundColor: isDirty
-                ? "var(--nav-surface)"
-                : "var(--muted)",
-              color: isDirty
-                ? "var(--bg-accent-glow)"
-                : "var(--text-muted)",
+              backgroundColor: isDirty ? "var(--nav-surface)" : "var(--muted)",
+              color: isDirty ? "var(--bg-accent-glow)" : "var(--text-muted)",
               cursor: isDirty ? "pointer" : "not-allowed",
             }}
             onMouseEnter={(e) => {
@@ -374,7 +370,8 @@ export default function ProjectCMS() {
                     color: "var(--text-body)",
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "var(--nav-surface)";
+                    e.currentTarget.style.backgroundColor =
+                      "var(--nav-surface)";
                     e.currentTarget.style.color = "var(--nav-text-idle)";
                   }}
                   onMouseLeave={(e) => {
@@ -510,7 +507,8 @@ export default function ProjectCMS() {
                     className="p-2 rounded-lg transition-colors"
                     style={{ color: "var(--destructive)" }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = "var(--destructive)";
+                      e.currentTarget.style.backgroundColor =
+                        "var(--destructive)";
                       e.currentTarget.style.opacity = "0.1";
                     }}
                     onMouseLeave={(e) => {
@@ -556,7 +554,8 @@ export default function ProjectCMS() {
                           color: "var(--text-body)",
                         }}
                         onFocus={(e) => {
-                          e.currentTarget.style.borderColor = "var(--text-display)";
+                          e.currentTarget.style.borderColor =
+                            "var(--text-display)";
                         }}
                         onBlur={(e) => {
                           e.currentTarget.style.borderColor = "var(--border)";
@@ -584,7 +583,8 @@ export default function ProjectCMS() {
                           color: "var(--text-body)",
                         }}
                         onFocus={(e) => {
-                          e.currentTarget.style.borderColor = "var(--text-display)";
+                          e.currentTarget.style.borderColor =
+                            "var(--text-display)";
                         }}
                         onBlur={(e) => {
                           e.currentTarget.style.borderColor = "var(--border)";
@@ -622,7 +622,8 @@ export default function ProjectCMS() {
                           color: "var(--text-body)",
                         }}
                         onFocus={(e) => {
-                          e.currentTarget.style.borderColor = "var(--text-display)";
+                          e.currentTarget.style.borderColor =
+                            "var(--text-display)";
                         }}
                         onBlur={(e) => {
                           e.currentTarget.style.borderColor = "var(--border)";
@@ -651,7 +652,8 @@ export default function ProjectCMS() {
                           color: "var(--text-body)",
                         }}
                         onFocus={(e) => {
-                          e.currentTarget.style.borderColor = "var(--text-display)";
+                          e.currentTarget.style.borderColor =
+                            "var(--text-display)";
                         }}
                         onBlur={(e) => {
                           e.currentTarget.style.borderColor = "var(--border)";
@@ -694,7 +696,8 @@ export default function ProjectCMS() {
                           color: "var(--text-body)",
                         }}
                         onFocus={(e) => {
-                          e.currentTarget.style.borderColor = "var(--text-display)";
+                          e.currentTarget.style.borderColor =
+                            "var(--text-display)";
                         }}
                         onBlur={(e) => {
                           e.currentTarget.style.borderColor = "var(--border)";
@@ -779,7 +782,8 @@ export default function ProjectCMS() {
                           color: "var(--text-body)",
                         }}
                         onFocus={(e) => {
-                          e.currentTarget.style.borderColor = "var(--text-display)";
+                          e.currentTarget.style.borderColor =
+                            "var(--text-display)";
                         }}
                         onBlur={(e) => {
                           e.currentTarget.style.borderColor = "var(--border)";
@@ -814,7 +818,8 @@ export default function ProjectCMS() {
                           color: "var(--text-body)",
                         }}
                         onFocus={(e) => {
-                          e.currentTarget.style.borderColor = "var(--text-display)";
+                          e.currentTarget.style.borderColor =
+                            "var(--text-display)";
                         }}
                         onBlur={(e) => {
                           e.currentTarget.style.borderColor = "var(--border)";
@@ -848,7 +853,8 @@ export default function ProjectCMS() {
                           color: "var(--text-body)",
                         }}
                         onFocus={(e) => {
-                          e.currentTarget.style.borderColor = "var(--text-display)";
+                          e.currentTarget.style.borderColor =
+                            "var(--text-display)";
                         }}
                         onBlur={(e) => {
                           e.currentTarget.style.borderColor = "var(--border)";
@@ -878,7 +884,8 @@ export default function ProjectCMS() {
                           color: "var(--text-body)",
                         }}
                         onFocus={(e) => {
-                          e.currentTarget.style.borderColor = "var(--text-display)";
+                          e.currentTarget.style.borderColor =
+                            "var(--text-display)";
                         }}
                         onBlur={(e) => {
                           e.currentTarget.style.borderColor = "var(--border)";

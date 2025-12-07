@@ -36,6 +36,29 @@ export const DesktopNavigation = ({
       className="hidden md:block fixed left-6 top-1/2 -translate-y-1/2 z-50"
       aria-label="Main navigation"
     >
+      {/* Center Sparkles FAB */}
+      <div className="relative group p-2">
+        <Link
+          href="/jiva"
+          className="w-12 h-12 rounded-full flex items-center justify-center shadow-xl transition-all hover:scale-110 active:scale-95"
+          style={{
+            backgroundColor: "var(--bg-accent-glow)",
+            color: "black",
+          }}
+          aria-label="jiva"
+        >
+          <Sparkles className="w-5 h-5" strokeWidth={1} />
+        </Link>
+        <span
+          className="absolute left-full top-1/2 -translate-y-1/2 ml-3 px-2 py-1 rounded whitespace-nowrap text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+          style={{
+            backgroundColor: "var(--nav-surface)",
+            color: "var(--bg-accent-glow)",
+          }}
+        >
+          Jiva agent
+        </span>
+      </div>
       <div
         className="px-2 py-2 rounded-full flex flex-col items-center gap-3 shadow-lg"
         style={{
@@ -56,30 +79,6 @@ export const DesktopNavigation = ({
             onMouseLeave={onMouseLeave}
           />
         ))}
-
-        {/* Center Sparkles FAB */}
-        <div className="relative group">
-          <Link
-            href="/jiva"
-            className="w-12 h-12 rounded-full flex items-center justify-center shadow-xl transition-all hover:scale-110 active:scale-95"
-            style={{
-              backgroundColor: "var(--bg-accent-glow)",
-              color: "black",
-            }}
-            aria-label="jiva"
-          >
-            <Sparkles className="w-5 h-5" strokeWidth={1} />
-          </Link>
-          <span
-            className="absolute left-full top-1/2 -translate-y-1/2 ml-3 px-2 py-1 rounded whitespace-nowrap text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-            style={{
-              backgroundColor: "var(--nav-surface)",
-              color: "var(--bg-accent-glow)",
-            }}
-          >
-            Jiva agent
-          </span>
-        </div>
 
         {/* Bottom items */}
         {bottomItems.map((item) => (

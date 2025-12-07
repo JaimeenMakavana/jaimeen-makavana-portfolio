@@ -386,7 +386,8 @@ export default function AdminContactList() {
                           borderColor: "var(--border)",
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = "var(--muted)";
+                          e.currentTarget.style.backgroundColor =
+                            "var(--muted)";
                         }}
                         onMouseLeave={(e) => {
                           e.currentTarget.style.backgroundColor = "transparent";
@@ -404,7 +405,8 @@ export default function AdminContactList() {
                             className="text-xs font-mono flex items-center gap-1 mt-1 transition-colors"
                             style={{ color: "var(--text-muted)" }}
                             onMouseEnter={(e) => {
-                              e.currentTarget.style.color = "var(--text-display)";
+                              e.currentTarget.style.color =
+                                "var(--text-display)";
                             }}
                             onMouseLeave={(e) => {
                               e.currentTarget.style.color = "var(--text-muted)";
@@ -453,10 +455,12 @@ export default function AdminContactList() {
                             onMouseEnter={(e) => {
                               e.currentTarget.style.borderColor =
                                 "var(--text-display)";
-                              e.currentTarget.style.color = "var(--text-display)";
+                              e.currentTarget.style.color =
+                                "var(--text-display)";
                             }}
                             onMouseLeave={(e) => {
-                              e.currentTarget.style.borderColor = "var(--border)";
+                              e.currentTarget.style.borderColor =
+                                "var(--border)";
                               e.currentTarget.style.color = "var(--text-muted)";
                             }}
                             title="View Raw Gist"

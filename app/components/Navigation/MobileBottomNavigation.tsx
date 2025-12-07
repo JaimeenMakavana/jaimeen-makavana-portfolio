@@ -1,12 +1,23 @@
 "use client";
 
-import { FolderKanban, Home, Mail, User, Sparkles } from "lucide-react";
+import { useState } from "react";
+import {
+  FolderKanban,
+  Home,
+  Mail,
+  User,
+  Sparkles,
+  Menu,
+  X,
+} from "lucide-react";
 import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 import { NavigationLink } from "./useNavigationHover";
 import { ThemeToggle } from "../ThemeToggle";
 
 interface MobileBottomNavigationProps {
   activeLink: NavigationLink;
+  onLinkClick: (link: NavigationLink) => void; // Added to close menu on click
 }
 
 const NAVIGATION_ITEMS = [
@@ -23,122 +34,156 @@ const NAVIGATION_ITEMS = [
 
 export const MobileBottomNavigation = ({
   activeLink,
+  onLinkClick,
 }: MobileBottomNavigationProps) => {
-  // Split items for left and right sides of FAB
-  const leftItems = NAVIGATION_ITEMS.slice(0, 2);
-  const rightItems = NAVIGATION_ITEMS.slice(2);
+  const [isOpen, setIsOpen] = useState(false);
+
+  // Animation Variants
+  const containerVariants = {
+    hidden: {
+      opacity: 0,
+      scale: 0.95,
+      transition: {
+        staggerChildren: 0.05,
+        staggerDirection: -1, // Stagger from bottom to top when closing
+      },
+    },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      transition: {
+        delayChildren: 0.1,
+        staggerChildren: 0.1, // Stagger from bottom to top when opening
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { y: 0, opacity: 1 },
+  };
 
   return (
-    <nav
-      className="md:hidden fixed bottom-0 left-0 right-0 z-50"
-      aria-label="Mobile navigation"
-    >
-      <div
-        className="relative flex items-center justify-between p-4 m-1 rounded-2xl"
-        style={{
-          backgroundColor: "var(--nav-surface)",
-          opacity: 0.85,
-        }}
-      >
-        {/* Left side items */}
-        {leftItems.map((item) => {
-          const isActive = activeLink === item.id;
-          const Icon = item.icon;
-          return (
-            <Link
-              key={item.id}
-              href={item.href}
-              className="flex flex-col items-center gap-1 transition-all active:scale-95"
-              aria-label={item.label}
-            >
-              <div
-                className="p-1 rounded-full flex items-center justify-center transition-all"
-                style={{
-                  backgroundColor: "transparent",
-                  color: isActive
-                    ? "var(--bg-accent-glow)"
-                    : "var(--nav-text-idle)",
-                }}
-              >
-                <Icon className="w-5 h-5" strokeWidth={1} />
-              </div>
-              <span
-                className="text-xs font-medium transition-colors"
-                style={{
-                  color: isActive
-                    ? "var(--bg-accent-glow)"
-                    : "var(--nav-text-idle)",
-                }}
-              >
-                {item.label}
-              </span>
-            </Link>
-          );
-        })}
+    <>
+      {/* This is a "Click-outside" backdrop. 
+        If the menu is open, clicking anywhere else closes it.
+      */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/20 backdrop-blur-[1px]"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
 
-        {/* Center FAB with Sparkles */}
-        <div className="relative group">
+      <div className="md:hidden fixed bottom-6 left-6 right-6 z-50 flex items-end justify-between pointer-events-none">
+        {/* --- LEFT: JIVA AGENT FAB --- */}
+        <div className="pointer-events-auto">
           <Link
             href="/jiva"
-            className="w-14 h-14 rounded-full flex items-center justify-center shadow-xl transition-all active:scale-95 hover:scale-105"
+            onClick={() => onLinkClick(null)}
+            className="w-14 h-14 rounded-full flex items-center justify-center shadow-2xl transition-transform active:scale-90 hover:scale-105"
             style={{
               backgroundColor: "var(--bg-accent-glow)",
               color: "black",
             }}
-            aria-label="jiva"
+            aria-label="Jiva AI Agent"
           >
-            <Sparkles className="w-6 h-6" strokeWidth={1} />
+            <Sparkles className="w-6 h-6" strokeWidth={1.5} />
           </Link>
-          <span
-            className="absolute left-full ml-3 px-2 py-1 rounded whitespace-nowrap text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-            style={{
-              backgroundColor: "var(--nav-surface)",
-              color: "var(--bg-accent-glow)",
-            }}
-          >
-            jiva agent
-          </span>
         </div>
 
-        {/* Right side items */}
-        {rightItems.map((item) => {
-          const isActive = activeLink === item.id;
-          const Icon = item.icon;
-          return (
-            <Link
-              key={item.id}
-              href={item.href}
-              className="flex flex-col items-center gap-1 transition-all active:scale-95"
-              aria-label={item.label}
-            >
-              <div
-                className="p-1 rounded-full flex items-center justify-center transition-all"
-                style={{
-                  backgroundColor: "transparent",
-                  color: isActive
-                    ? "var(--bg-accent-glow)"
-                    : "var(--nav-text-idle)",
-                }}
+        {/* --- RIGHT: MENU SYSTEM --- */}
+        <div className="flex flex-col items-end gap-4 pointer-events-auto">
+          {/* THE STAGGERED MENU LIST */}
+          <AnimatePresence>
+            {isOpen && (
+              <motion.nav
+                initial="hidden"
+                animate="visible"
+                exit="hidden"
+                variants={containerVariants}
+                className="flex flex-col items-end gap-3 mb-2"
               >
-                <Icon className="w-5 h-5" strokeWidth={1} />
-              </div>
-              <span
-                className="text-xs font-medium transition-colors"
-                style={{
-                  color: isActive
-                    ? "var(--bg-accent-glow)"
-                    : "var(--nav-text-idle)",
-                }}
-              >
-                {item.label}
-              </span>
-            </Link>
-          );
-        })}
+                {/* 2. Navigation Items */}
+                {NAVIGATION_ITEMS.map((item) => {
+                  const isActive = activeLink === item.id;
+                  const Icon = item.icon;
 
-        {/* Theme Toggle */}
-        <ThemeToggle variant="mobile" />
+                  return (
+                    <motion.div key={item.id} variants={itemVariants}>
+                      <Link
+                        href={item.href}
+                        onClick={() => {
+                          onLinkClick(item.id);
+                          setIsOpen(false);
+                        }}
+                        className="flex items-center gap-3 pr-1 pl-4 py-1 rounded-full shadow-xl border border-white/10 backdrop-blur-md"
+                        style={{
+                          backgroundColor: "var(--nav-surface)",
+                        }}
+                      >
+                        {/* Label */}
+                        <span
+                          className="text-sm font-medium"
+                          style={{ color: "var(--nav-text-idle)" }}
+                        >
+                          {item.label}
+                        </span>
+
+                        {/* Icon Bubble */}
+                        <div
+                          className="w-10 h-10 rounded-full flex items-center justify-center"
+                          style={{
+                            backgroundColor: isActive
+                              ? "var(--bg-accent-glow)"
+                              : "rgba(255,255,255,0.1)",
+                            color: isActive ? "black" : "var(--nav-text-idle)",
+                          }}
+                        >
+                          <Icon className="w-5 h-5" strokeWidth={1.5} />
+                        </div>
+                      </Link>
+                    </motion.div>
+                  );
+                })}
+                {/* 1. Theme Toggle (Top of stack) */}
+                <motion.div variants={itemVariants}>
+                  <div
+                    className="p-3 rounded-full shadow-lg border border-white/10"
+                    style={{ backgroundColor: "var(--nav-surface)" }}
+                  >
+                    <ThemeToggle />
+                  </div>
+                </motion.div>
+              </motion.nav>
+            )}
+          </AnimatePresence>
+
+          {/* THE HAMBURGER TRIGGER BUTTON */}
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="w-14 h-14 rounded-full flex items-center justify-center shadow-2xl transition-transform active:scale-90"
+            style={{
+              backgroundColor: "var(--nav-surface)",
+              color: "var(--nav-text-idle)",
+              border: "1px solid rgba(255,255,255,0.1)",
+            }}
+            aria-label="Toggle Menu"
+          >
+            <motion.div
+              initial={false}
+              animate={{ rotate: isOpen ? 180 : 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              {isOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
+            </motion.div>
+          </button>
+        </div>
       </div>
-    </nav>
+    </>
   );
 };
