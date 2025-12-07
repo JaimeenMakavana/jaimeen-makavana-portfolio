@@ -45,7 +45,7 @@ export const DesktopNavigation = ({
             backgroundColor: "var(--bg-accent-glow)",
             color: "black",
           }}
-          aria-label="jiva"
+          aria-label="जीवा: AI Agent"
         >
           <Sparkles className="w-5 h-5" strokeWidth={1} />
         </Link>
@@ -56,7 +56,7 @@ export const DesktopNavigation = ({
             color: "var(--bg-accent-glow)",
           }}
         >
-          Jiva agent
+          जीवा: AI agent
         </span>
       </div>
       <div

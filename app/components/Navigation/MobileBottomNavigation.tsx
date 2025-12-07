@@ -81,14 +81,17 @@ export const MobileBottomNavigation = ({
           <Link
             href="/jiva"
             onClick={() => onLinkClick(null)}
-            className="w-14 h-14 rounded-full flex items-center justify-center shadow-2xl transition-transform active:scale-90 hover:scale-105"
+            className="h-14 px-4 rounded-full flex items-center justify-center shadow-2xl transition-transform active:scale-90 hover:scale-105 gap-2"
             style={{
               backgroundColor: "var(--bg-accent-glow)",
               color: "black",
             }}
-            aria-label="Jiva AI Agent"
+            aria-label="जीवा: AI Agent"
           >
             <Sparkles className="w-6 h-6" strokeWidth={1.5} />
+            <span className="text-xs font-medium whitespace-nowrap">
+              जीवा: AI agent
+            </span>
           </Link>
         </div>
 
