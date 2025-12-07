@@ -1,56 +1,20 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Send, Terminal, Cpu, Lock, ArrowRight } from "lucide-react";
+import { Sparkles, Send, ArrowRight } from "lucide-react";
+import { useJivaCore } from "../hooks/useJivaCore";
 
-// --- BOOT LOGIC DATA ---
-const BOOT_SEQUENCE = [
-  "Initializing Jiva_Core_v1.0...",
-  "Loading neural pathways...",
-  "Connecting to Knowledge Graph...",
-  "Establishing secure handshake...",
-  "Optimizing tensor operations...",
-  "Context window: 128k tokens... [OK]",
-  "Latency check: 12ms... [OK]",
-  "Agentic capabilities: LOCKED",
-  "Waiting for user access...",
-];
-
-export default function JivaUpcomingPage() {
-  const [logs, setLogs] = useState<string[]>([]);
-  const [email, setEmail] = useState("");
-  const [subscribed, setSubscribed] = useState(false);
+export default function JivaPage() {
+  const { messages, input, setInput, sendMessage, isLoading } = useJivaCore();
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Simulate Boot Sequence
-  useEffect(() => {
-    let delay = 0;
-    BOOT_SEQUENCE.forEach((log, index) => {
-      delay += Math.random() * 800 + 200; // Random typing delay
-      setTimeout(() => {
-        setLogs((prev) => [...prev, log]);
-      }, delay);
-    });
-  }, []);
-
-  // Auto-scroll to bottom of logs
+  // Auto-scroll to bottom of messages
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [logs]);
-
-  const handleSubscribe = (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubscribed(true);
-    setTimeout(() => {
-      setLogs((prev) => [
-        ...prev,
-        ">> ACCESS_REQUEST: GRANTED. Notification scheduled.",
-      ]);
-    }, 500);
-  };
+  }, [messages]);
 
   return (
     <div className="min-h-screen bg-[#fafafa] flex flex-col items-center justify-center p-4 relative overflow-hidden">
@@ -69,7 +33,7 @@ export default function JivaUpcomingPage() {
             <span className="relative inline-flex rounded-full h-2 w-2 bg-lime-500"></span>
           </span>
           <span className="text-[10px] font-mono uppercase tracking-widest text-neutral-500">
-            System Status: Booting
+            System Status: {isLoading ? "Processing" : "Online"}
           </span>
         </div>
         <h1
@@ -87,7 +51,7 @@ export default function JivaUpcomingPage() {
         <p className="mt-4 text-neutral-500 max-w-md mx-auto font-mono text-sm">
           Your intelligent interface for navigating my digital brain.
           <br />
-          Coming Q1 2026.
+          Ask me to navigate anywhere in the portfolio.
         </p>
       </motion.div>
 
@@ -107,7 +71,7 @@ export default function JivaUpcomingPage() {
             <div>
               <div className="font-bold text-sm">Jiva_Core</div>
               <div className="text-[10px] text-neutral-400 font-mono uppercase">
-                v0.9.1 (Alpha)
+                v1.0.0 (Active)
               </div>
             </div>
           </div>
@@ -120,70 +84,100 @@ export default function JivaUpcomingPage() {
         {/* Chat/Log Area */}
         <div
           ref={scrollRef}
-          className="flex-1 p-6 overflow-y-auto font-mono text-sm space-y-2 bg-[#0a0a0a] text-green-500/80"
+          className="flex-1 p-6 overflow-y-auto font-mono text-sm space-y-3 bg-[#0a0a0a] text-green-500/80"
         >
-          <div className="text-neutral-500 pb-4 border-b border-white/10 mb-4">
-            {"// SYSTEM_DIAGNOSTICS_MODE"}
-            <br />
-            {"// UNAUTHORIZED_INPUT_DISABLED"}
-          </div>
+          {messages.length === 0 && (
+            <div className="text-neutral-500 pb-4 border-b border-white/10 mb-4">
+              {"// JIVA_CORE v1.0.0"}
+              <br />
+              {"// Navigation Agent Active"}
+              <br />
+              {"// Try: 'go to projects' or 'show me the about page'"}
+            </div>
+          )}
 
           <AnimatePresence>
-            {logs.map((log, i) => (
+            {messages.map((msg, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, x: -10 }}
+                initial={{ opacity: 0, x: msg.role === "user" ? 10 : -10 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="flex items-start gap-2"
+                className={`flex items-start gap-2 ${
+                  msg.role === "user" ? "justify-end" : "justify-start"
+                }`}
               >
-                <span className="text-neutral-600 shrink-0">{`>`}</span>
-                <span>{log}</span>
+                {msg.role === "model" && (
+                  <span className="text-neutral-600 shrink-0">{`>`}</span>
+                )}
+                <span
+                  className={`${
+                    msg.role === "user"
+                      ? "text-blue-400/90"
+                      : "text-green-500/80"
+                  }`}
+                >
+                  {msg.content}
+                </span>
               </motion.div>
             ))}
           </AnimatePresence>
 
-          {/* Blinking Cursor */}
-          <motion.div
-            animate={{ opacity: [0, 1, 0] }}
-            transition={{ repeat: Infinity, duration: 0.8 }}
-            className="w-2 h-4 bg-green-500 inline-block align-middle"
-          />
-        </div>
-
-        {/* Locked Input Area / Notification Form */}
-        <div className="p-4 bg-white border-t border-neutral-200">
-          {subscribed ? (
+          {/* Loading Indicator */}
+          {isLoading && (
             <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex items-center gap-3 text-green-600 bg-green-50 p-3 rounded-lg border border-green-100"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex items-center gap-2 text-neutral-500"
             >
-              <Terminal className="w-5 h-5" />
-              <span className="font-mono text-sm">
-                You are on the access list.
+              <span className="text-neutral-600 shrink-0">{`>`}</span>
+              <span className="flex items-center gap-1">
+                <motion.span
+                  animate={{ opacity: [0.5, 1, 0.5] }}
+                  transition={{ repeat: Infinity, duration: 1 }}
+                >
+                  Jiva is thinking
+                </motion.span>
+                <motion.span
+                  animate={{ opacity: [0, 1, 0] }}
+                  transition={{ repeat: Infinity, duration: 0.8 }}
+                  className="w-2 h-4 bg-green-500 inline-block align-middle"
+                />
               </span>
             </motion.div>
-          ) : (
-            <form onSubmit={handleSubscribe} className="relative">
-              <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-                <Lock className="w-4 h-4 text-neutral-400" />
-              </div>
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter email to request access..."
-                className="w-full pl-10 pr-12 py-3 bg-neutral-100 rounded-lg border-2 border-transparent focus:bg-white focus:border-black outline-none transition-all font-mono text-sm"
-              />
-              <button
-                type="submit"
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-black text-[#e4e987] rounded-md hover:scale-105 transition-transform"
-              >
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </form>
           )}
+        </div>
+
+        {/* Input Area */}
+        <div className="p-4 bg-white border-t border-neutral-200">
+          <form onSubmit={sendMessage} className="relative">
+            <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+              <Sparkles className="w-4 h-4 text-neutral-400" />
+            </div>
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Ask Jiva to navigate..."
+              disabled={isLoading}
+              className="w-full pl-10 pr-12 py-3 bg-neutral-100 rounded-lg border-2 border-transparent focus:bg-white focus:border-black outline-none transition-all font-mono text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            />
+            <button
+              type="submit"
+              disabled={isLoading || !input.trim()}
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-black text-[#e4e987] rounded-md hover:scale-105 transition-transform disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+            >
+              {isLoading ? (
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+                >
+                  <Send className="w-4 h-4" />
+                </motion.div>
+              ) : (
+                <ArrowRight className="w-4 h-4" />
+              )}
+            </button>
+          </form>
         </div>
       </motion.div>
 
