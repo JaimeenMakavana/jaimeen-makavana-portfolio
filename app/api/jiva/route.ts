@@ -1,5 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
+import fs from "fs";
+import path from "path";
 import { TOOLS } from "@/app/lib/jiva/tools";
 import { JivaRequestSchema } from "@/app/lib/jiva/validators";
 import {
@@ -17,6 +19,116 @@ function getGenAI() {
     throw new Error("GEMINI_API_KEY is not set in environment variables");
   }
   return new GoogleGenerativeAI(apiKey);
+}
+
+// --- RAG UTILITIES ---
+
+interface IndexEntry {
+  id: string;
+  path: string;
+  content: string;
+  embedding: number[];
+}
+
+// Load the "Brain" (lazy load, cached)
+let knowledgeBase: IndexEntry[] = [];
+let knowledgeBaseLoaded = false;
+
+function loadKnowledgeBase() {
+  if (knowledgeBaseLoaded) return;
+
+  const knowledgeBasePath = path.join(
+    process.cwd(),
+    "app/data/codebase-index.json"
+  );
+
+  try {
+    if (fs.existsSync(knowledgeBasePath)) {
+      knowledgeBase = JSON.parse(fs.readFileSync(knowledgeBasePath, "utf-8"));
+      knowledgeBaseLoaded = true;
+      console.log(`📚 Loaded ${knowledgeBase.length} codebase entries`);
+    } else {
+      console.warn(
+        "⚠️  Codebase index not found. Run 'npm run embed' to generate it."
+      );
+    }
+  } catch (e) {
+    console.error("Failed to load knowledge base", e);
+  }
+}
+
+// Cosine Similarity Function
+function cosineSimilarity(vecA: number[], vecB: number[]): number {
+  if (vecA.length !== vecB.length) {
+    throw new Error("Vectors must have the same length");
+  }
+
+  let dotProduct = 0;
+  let magA = 0;
+  let magB = 0;
+
+  for (let i = 0; i < vecA.length; i++) {
+    dotProduct += vecA[i] * vecB[i];
+    magA += vecA[i] * vecA[i];
+    magB += vecB[i] * vecB[i];
+  }
+
+  const magnitude = Math.sqrt(magA) * Math.sqrt(magB);
+  return magnitude === 0 ? 0 : dotProduct / magnitude;
+}
+
+// Retrieval Function
+async function retrieveContext(
+  query: string,
+  genAI: GoogleGenerativeAI
+): Promise<string> {
+  loadKnowledgeBase();
+
+  if (knowledgeBase.length === 0) {
+    return "";
+  }
+
+  try {
+    // Embed the USER'S query
+    const embeddingModel = genAI.getGenerativeModel({
+      model: "text-embedding-004",
+    });
+
+    // Use string directly - SDK supports this format
+    const result = await embeddingModel.embedContent(query);
+
+    const queryVector = result.embedding.values;
+
+    if (!queryVector || queryVector.length === 0) {
+      return "";
+    }
+
+    // Compare with every file in our codebase
+    const scoredDocs = knowledgeBase
+      .map((doc) => ({
+        ...doc,
+        score: cosineSimilarity(queryVector, doc.embedding),
+      }))
+      .filter((doc) => doc.score > 0.3) // Filter low relevance
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 3); // Top 3 files
+
+    if (scoredDocs.length === 0) {
+      return "";
+    }
+
+    console.log(
+      "🔍 Relevant files found:",
+      scoredDocs.map((d) => `${d.path} (${d.score.toFixed(3)})`)
+    );
+
+    return scoredDocs
+      .map((doc) => `File: ${doc.path}\nCode:\n${doc.content}`)
+      .join("\n\n---\n\n");
+  } catch (error) {
+    console.error("Error during retrieval:", error);
+    return "";
+  }
 }
 
 export async function POST(req: Request) {
@@ -68,15 +180,39 @@ export async function POST(req: Request) {
     const genAI = getGenAI();
     const modelName = jivaConfig.model;
 
+    // 1. Decide if we need RAG (Heuristic detection)
+    const isTechnicalQuestion =
+      /code|stack|implement|how|architecture|component|function|hook|api|route|file|structure|build|deploy/i.test(
+        message
+      );
+
+    let context = "";
+    if (isTechnicalQuestion) {
+      console.log("🔍 Technical question detected. Searching codebase...");
+      context = await retrieveContext(message, genAI);
+    }
+
+    // 2. Build system instruction with context
+    const systemInstruction = context
+      ? `You are Jiva, an expert AI software engineer who built this portfolio.
+
+Here is the actual source code relevant to the user's question:
+
+${context}
+
+Answer based on the provided code. Be concise, technical, and reference specific files/components when relevant. If the code doesn't answer the question, say so honestly.`
+      : `You are Jiva, an expert AI software engineer who built this portfolio. Answer questions about the portfolio, codebase, and help users navigate.`;
+
     // Map history safely (already validated by schema)
     const chatHistory = history.map((msg) => ({
       role: msg.role === "user" ? "user" : "model",
       parts: [{ text: msg.content }],
     }));
 
-    // Initialize Model with Tools
+    // 3. Initialize Model with Tools AND System Instruction
     const model = genAI.getGenerativeModel({
       model: modelName,
+      systemInstruction: systemInstruction,
       tools: TOOLS as any,
       toolConfig: { functionCallingConfig: { mode: "AUTO" as any } },
     });

@@ -9,7 +9,12 @@ interface JivaTriggerProps {
   onClick?: () => void;
 }
 
-export const JivaTrigger = ({ children, message, className, onClick }: JivaTriggerProps) => {
+export const JivaTrigger = ({
+  children,
+  message,
+  className,
+  onClick,
+}: JivaTriggerProps) => {
   const { setJivaIntent } = useJivaPresence();
 
   return (
@@ -23,4 +28,3 @@ export const JivaTrigger = ({ children, message, className, onClick }: JivaTrigg
     </div>
   );
 };
-
