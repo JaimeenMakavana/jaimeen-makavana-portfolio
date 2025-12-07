@@ -62,6 +62,31 @@
   --radius: 0.5rem;
 }
 
+/* --- Dark Mode Overrides --- */
+:root.dark,
+.dark {
+  /* Deep charcoal/black for background, easier on eyes than #000 */
+  --bg-canvas: #0a0a0a;
+
+  /* Keep accent consistent, or dim slightly if too bright */
+  --bg-accent-glow: #d6db70;
+  --card: #1f1f1f;
+  /* Invert text */
+  --text-display: #ffffff;
+  --text-body: #d4d4d4;
+  --text-muted: #a3a3a3;
+
+  /* Nav Transformation: 
+     In dark mode, a solid black nav bar disappears into the black background.
+     We switch to a dark grey surface or white surface for contrast.
+     Let's use a Dark Grey surface for a "stealth" look. 
+  */
+  --nav-surface: #1f1f1f;
+  --nav-text-idle: #e5e5e5;
+  --nav-active-bg: #e4e987; /* Use accent color for active state in dark mode */
+  --nav-text-active: #000000;
+}
+
 @theme inline {
   --color-background: var(--bg-canvas);
   --color-foreground: var(--text-body);
@@ -112,4 +137,11 @@ body {
 .subject-image {
   filter: grayscale(100%) contrast(110%)
     drop-shadow(0 0 20px rgba(255, 255, 255, 0.8));
+  transition: filter 0.3s ease;
+}
+
+/* Dark mode: accent-colored drop shadow for better contrast */
+.dark .subject-image {
+  filter: grayscale(100%) contrast(110%)
+    drop-shadow(0 0 20px rgba(228, 233, 135, 0.4));
 }

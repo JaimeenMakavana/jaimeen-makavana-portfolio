@@ -41,21 +41,37 @@ export default function ProjectsPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#fafafa] p-4 md:py-8 md:px-28 pb-32">
+    <div
+      className="min-h-screen p-4 md:py-8 md:px-28 pb-32"
+      style={{ backgroundColor: "var(--bg-canvas)" }}
+    >
       {/* Header Section */}
       <div className="max-w-7xl mx-auto mb-16 pt-20">
         <h1
-          className="text-[15vw] md:text-[8vw] leading-[0.8] font-black uppercase tracking-tighter text-black mb-6"
-          style={{ fontFamily: "var(--font-display)" }}
+          className="text-[15vw] md:text-[8vw] leading-[0.8] font-black uppercase tracking-tighter mb-6"
+          style={{
+            fontFamily: "var(--font-display)",
+            color: "var(--text-display)",
+          }}
         >
-          Selected <br /> <span className="text-[#e4e987]  px-4">Works</span>
+          Selected <br />{" "}
+          <span className="px-4" style={{ color: "var(--bg-accent-glow)" }}>
+            Works
+          </span>
         </h1>
-        <div className="flex flex-col md:flex-row gap-8 items-start border-t border-black/10 pt-8">
-          <p className="max-w-xl text-lg md:text-xl text-neutral-600 font-light">
+        <div
+          className="flex flex-col md:flex-row gap-8 items-start border-t pt-8"
+          style={{ borderColor: "var(--text-display)" }}
+        >
+          <p className="max-w-xl text-lg md:text-xl font-light text-(--text-muted)">
             A collection of{" "}
-            <span className="text-black font-medium">System Architecture</span>{" "}
+            <span className="font-medium text-(--text-display)">
+              System Architecture
+            </span>{" "}
             and{" "}
-            <span className="text-black font-medium">Frontend Engineering</span>{" "}
+            <span className="font-medium text-(--text-display)">
+              Frontend Engineering
+            </span>{" "}
             challenges. Focusing on scalability, performance, and the
             intersection of React & AI.
           </p>
@@ -68,7 +84,10 @@ export default function ProjectsPage() {
       {/* Empty State */}
       {!loading && projects.length === 0 && (
         <div className="max-w-7xl mx-auto text-center py-20">
-          <p className="text-neutral-400 font-mono text-sm">
+          <p
+            className="font-mono text-sm"
+            style={{ color: "var(--text-muted)", opacity: 0.6 }}
+          >
             No projects found. Please add projects via the admin panel.
           </p>
         </div>

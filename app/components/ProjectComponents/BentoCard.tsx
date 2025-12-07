@@ -36,9 +36,15 @@ export const BentoCard = ({ project, onClick }: BentoCardProps) => {
     <motion.div
       layoutId={project.id}
       onClick={() => onClick(project.id)}
-      className={`group relative bg-white border border-neutral-200 rounded-3xl overflow-hidden p-6 flex flex-col justify-between cursor-pointer ${
+      className={`group relative rounded-3xl overflow-hidden p-6 flex flex-col justify-between cursor-pointer ${
         sizeClasses[project.size]
       }`}
+      style={{
+        backgroundColor: "var(--card)",
+        borderColor: "var(--border)",
+        borderWidth: "1px",
+        borderStyle: "solid",
+      }}
       variants={{
         hidden: { opacity: 0, y: 20 },
         visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
@@ -60,18 +66,40 @@ export const BentoCard = ({ project, onClick }: BentoCardProps) => {
       />
 
       {/* 2. HOVER: The Curtain Raise (Subtle gradient from bottom) */}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#e4e987]/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none transform translate-y-4 group-hover:translate-y-0" />
+      <div
+        className="absolute inset-0 bg-gradient-to-t via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none transform translate-y-4 group-hover:translate-y-0"
+        style={{
+          background: `linear-gradient(to top, var(--bg-accent-glow) 0%, transparent 50%, transparent 100%)`,
+          opacity: 0.2,
+        }}
+      />
 
       {/* TOP SECTION */}
       <div className="relative z-10 flex justify-between items-start">
         <div>
-          <span className="text-xs font-mono text-neutral-500 group-hover:text-black bg-neutral-100 group-hover:bg-[#e4e987] transition-colors duration-300 px-2 py-1 rounded">
+          <span
+            className="text-xs font-mono transition-colors duration-300 px-2 py-1 rounded"
+            style={{
+              color: "var(--text-muted)",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = "var(--text-display)";
+              e.currentTarget.style.backgroundColor = "var(--bg-accent-glow)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = "var(--text-muted)";
+              e.currentTarget.style.backgroundColor = "var(--muted)";
+            }}
+          >
             {project.category}
           </span>
           <motion.h3
             layoutId={`title-${project.id}`}
             className="text-3xl md:text-4xl mt-3 leading-none uppercase"
-            style={{ fontFamily: "var(--font-display)" }}
+            style={{
+              fontFamily: "var(--font-display)",
+              color: "var(--text-display)",
+            }}
           >
             {project.title}
           </motion.h3>
@@ -79,8 +107,17 @@ export const BentoCard = ({ project, onClick }: BentoCardProps) => {
         {project.stat && (
           <div className="text-right">
             <span
-              className="block text-4xl font-light text-neutral-300 group-hover:text-black transition-colors duration-300"
-              style={{ fontFamily: "var(--font-alumni)" }}
+              className="block text-4xl font-light transition-colors duration-300"
+              style={{
+                fontFamily: "var(--font-alumni)",
+                color: "var(--text-muted)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = "var(--text-display)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = "var(--text-muted)";
+              }}
             >
               {project.stat}
             </span>
@@ -90,7 +127,16 @@ export const BentoCard = ({ project, onClick }: BentoCardProps) => {
 
       {/* MIDDLE SECTION */}
       <div className="relative z-10 mt-4 md:mt-0">
-        <p className="text-neutral-500 leading-relaxed text-sm line-clamp-3 group-hover:text-black transition-colors duration-300">
+        <p
+          className="leading-relaxed text-sm line-clamp-3 transition-colors duration-300"
+          style={{ color: "var(--text-muted)" }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = "var(--text-display)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = "var(--text-muted)";
+          }}
+        >
           {project.description}
         </p>
       </div>
@@ -104,7 +150,10 @@ export const BentoCard = ({ project, onClick }: BentoCardProps) => {
             <TechBadge key={tech} tech={tech} />
           ))}
           {project.stack.length > 3 && (
-            <span className="text-xs text-neutral-400 self-center">
+            <span
+              className="text-xs self-center"
+              style={{ color: "var(--text-muted)", opacity: 0.7 }}
+            >
               +{project.stack.length - 3}
             </span>
           )}
@@ -113,4 +162,3 @@ export const BentoCard = ({ project, onClick }: BentoCardProps) => {
     </motion.div>
   );
 };
-

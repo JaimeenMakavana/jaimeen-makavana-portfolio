@@ -3,6 +3,7 @@
 import { FolderKanban, Home, Mail, User, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { NavigationLink } from "./useNavigationHover";
+import { ThemeToggle } from "../ThemeToggle";
 
 interface MobileBottomNavigationProps {
   activeLink: NavigationLink;
@@ -82,7 +83,7 @@ export const MobileBottomNavigation = ({
             className="w-14 h-14 rounded-full flex items-center justify-center shadow-xl transition-all active:scale-95 hover:scale-105"
             style={{
               backgroundColor: "var(--bg-accent-glow)",
-              color: "var(--text-body)",
+              color: "black",
             }}
             aria-label="jiva"
           >
@@ -134,6 +135,9 @@ export const MobileBottomNavigation = ({
             </Link>
           );
         })}
+
+        {/* Theme Toggle */}
+        <ThemeToggle variant="mobile" />
       </div>
     </nav>
   );

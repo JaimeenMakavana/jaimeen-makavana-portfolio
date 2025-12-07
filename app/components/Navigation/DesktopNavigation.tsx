@@ -2,6 +2,7 @@ import { FolderKanban, Home, Mail, User, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { NavigationLinkItem } from "./NavigationLink";
 import { NavigationLink } from "./useNavigationHover";
+import { ThemeToggle } from "../ThemeToggle";
 
 interface DesktopNavigationProps {
   activeLink: NavigationLink;
@@ -63,7 +64,7 @@ export const DesktopNavigation = ({
             className="w-12 h-12 rounded-full flex items-center justify-center shadow-xl transition-all hover:scale-110 active:scale-95"
             style={{
               backgroundColor: "var(--bg-accent-glow)",
-              color: "var(--text-body)",
+              color: "black",
             }}
             aria-label="jiva"
           >
@@ -93,6 +94,9 @@ export const DesktopNavigation = ({
             onMouseLeave={onMouseLeave}
           />
         ))}
+
+        {/* Theme Toggle */}
+        <ThemeToggle variant="desktop" />
       </div>
     </nav>
   );

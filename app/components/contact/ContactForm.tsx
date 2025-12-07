@@ -36,7 +36,10 @@ export const ContactForm = ({
     <form onSubmit={onSubmit} className="space-y-8 relative">
       {/* Context Selector (Filtering) */}
       <div className="space-y-3">
-        <label className="text-sm font-mono uppercase text-black font-bold tracking-widest flex items-center gap-2">
+        <label
+          className="text-sm font-mono uppercase font-bold tracking-widest flex items-center gap-2"
+          style={{ color: "var(--text-display)" }}
+        >
           <Terminal className="w-4 h-4" />
           Input: Intent_Type
         </label>
@@ -46,19 +49,45 @@ export const ContactForm = ({
               key={opt.id}
               type="button"
               onClick={() => onFormStateChange({ intent: opt.id })}
-              className={`p-3 text-left border rounded-xl transition-all duration-300 ${
-                formState.intent === opt.id
-                  ? "bg-black text-[#e4e987] border-black"
-                  : "bg-white text-neutral-500 border-neutral-200 hover:border-black/30"
-              }`}
+              className="p-3 text-left border rounded-xl transition-all duration-300"
+              style={{
+                backgroundColor:
+                  formState.intent === opt.id
+                    ? "var(--nav-surface)"
+                    : "var(--card)",
+                color:
+                  formState.intent === opt.id
+                    ? "var(--bg-accent-glow)"
+                    : "var(--text-muted)",
+                borderColor:
+                  formState.intent === opt.id
+                    ? "var(--nav-surface)"
+                    : "var(--border)",
+              }}
+              onMouseEnter={(e) => {
+                if (formState.intent !== opt.id) {
+                  e.currentTarget.style.borderColor = "var(--text-display)";
+                  e.currentTarget.style.borderColor = "var(--text-display)";
+                  e.currentTarget.style.opacity = "0.3";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (formState.intent !== opt.id) {
+                  e.currentTarget.style.borderColor = "var(--border)";
+                  e.currentTarget.style.opacity = "1";
+                }
+              }}
             >
               <div className="font-bold text-sm uppercase">{opt.label}</div>
               <div
-                className={`text-xs ${
-                  formState.intent === opt.id
-                    ? "text-neutral-400"
-                    : "text-neutral-300"
-                }`}
+                className="text-xs"
+                style={{
+                  color:
+                    formState.intent === opt.id
+                      ? "var(--text-muted)"
+                      : "var(--text-muted)",
+                  opacity: formState.intent === opt.id ? 0.7 : 0.5,
+                }}
               >
                 {opt.desc}
               </div>
@@ -80,8 +109,15 @@ export const ContactForm = ({
             required
             autoComplete="name"
             placeholder="Your Name"
-            className="w-full bg-transparent border-b border-neutral-300 py-4 text-xl outline-none focus:border-black transition-colors placeholder:text-neutral-300"
-            onFocus={() => onActiveFieldChange("NAME_INPUT")}
+            className="w-full bg-transparent border-b py-4 text-xl outline-none transition-colors"
+            style={{
+              borderColor: "var(--border)",
+              color: "var(--text-body)",
+            }}
+            onFocus={(e) => {
+              onActiveFieldChange("NAME_INPUT");
+              e.currentTarget.style.borderColor = "var(--text-display)";
+            }}
             onBlur={() => onActiveFieldChange(null)}
             onChange={(e) => onFormStateChange({ name: e.target.value })}
             value={formState.name}
@@ -97,8 +133,15 @@ export const ContactForm = ({
             required
             autoComplete="email"
             placeholder="Your Mail ID"
-            className="w-full bg-transparent border-b border-neutral-300 py-4 text-xl outline-none focus:border-black transition-colors placeholder:text-neutral-300"
-            onFocus={() => onActiveFieldChange("EMAIL_INPUT")}
+            className="w-full bg-transparent border-b py-4 text-xl outline-none transition-colors"
+            style={{
+              borderColor: "var(--border)",
+              color: "var(--text-body)",
+            }}
+            onFocus={(e) => {
+              onActiveFieldChange("EMAIL_INPUT");
+              e.currentTarget.style.borderColor = "var(--text-display)";
+            }}
             onBlur={() => onActiveFieldChange(null)}
             onChange={(e) => onFormStateChange({ email: e.target.value })}
             value={formState.email}
@@ -117,8 +160,15 @@ export const ContactForm = ({
                 ? "Tell me about the problem you're solving..."
                 : "How can I help you?"
             }
-            className="w-full bg-transparent border-b border-neutral-300 py-4 text-xl outline-none focus:border-black transition-colors placeholder:text-neutral-300 resize-none"
-            onFocus={() => onActiveFieldChange("MESSAGE_BODY")}
+            className="w-full bg-transparent border-b py-4 text-xl outline-none transition-colors resize-none"
+            style={{
+              borderColor: "var(--border)",
+              color: "var(--text-body)",
+            }}
+            onFocus={(e) => {
+              onActiveFieldChange("MESSAGE_BODY");
+              e.currentTarget.style.borderColor = "var(--text-display)";
+            }}
             onBlur={() => onActiveFieldChange(null)}
             onChange={(e) => onFormStateChange({ message: e.target.value })}
             value={formState.message}
@@ -131,7 +181,23 @@ export const ContactForm = ({
         <button
           type="submit"
           disabled={isLoading || isSuccess}
-          className="group w-full md:w-auto flex items-center justify-between gap-6 bg-black text-white px-8 py-4 rounded-full text-lg hover:bg-[#e4e987] hover:text-black transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="group w-full md:w-auto flex items-center justify-between gap-6 px-8 py-4 rounded-full text-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+          style={{
+            backgroundColor: "var(--nav-surface)",
+            color: "var(--nav-text-idle)",
+          }}
+          onMouseEnter={(e) => {
+            if (!isLoading && !isSuccess) {
+              e.currentTarget.style.backgroundColor = "var(--bg-accent-glow)";
+              e.currentTarget.style.color = "var(--text-display)";
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!isLoading && !isSuccess) {
+              e.currentTarget.style.backgroundColor = "var(--nav-surface)";
+              e.currentTarget.style.color = "var(--nav-text-idle)";
+            }
+          }}
         >
           {isLoading ? (
             <>
@@ -179,7 +245,11 @@ export const ContactForm = ({
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="flex items-center gap-2 text-[#e4e987] bg-black px-4 py-2 rounded text-sm font-mono"
+              className="flex items-center gap-2 px-4 py-2 rounded text-sm font-mono"
+              style={{
+                color: "var(--bg-accent-glow)",
+                backgroundColor: "var(--nav-surface)",
+              }}
             >
               <CheckCircle2 className="w-4 h-4" />
               <span>

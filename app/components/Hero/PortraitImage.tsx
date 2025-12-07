@@ -1,4 +1,8 @@
+"use client";
+
 import Image from "next/image";
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 
 const IMAGE_CONFIG = {
   src: "/images/mine-image-3.png",
@@ -7,9 +11,6 @@ const IMAGE_CONFIG = {
   defaultHeight: 800,
   desktopHeight: 1000,
 } as const;
-
-const GRADIENT_MASK =
-  "linear-gradient(to bottom, black 80%, transparent 100%)";
 
 interface PortraitImageProps {
   className: string;
@@ -24,6 +25,23 @@ export const PortraitImage = ({
   priority = false,
   height = IMAGE_CONFIG.defaultHeight,
 }: PortraitImageProps) => {
+  const { theme, systemTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Determine if dark mode is active
+  const isDark =
+    mounted &&
+    (theme === "dark" || (theme === "system" && systemTheme === "dark"));
+
+  // Theme-aware gradient mask: use black in light mode, white in dark mode
+  const gradientMask = isDark
+    ? "linear-gradient(to bottom, white 80%, transparent 100%)"
+    : "linear-gradient(to bottom, black 80%, transparent 100%)";
+
   return (
     <Image
       src={IMAGE_CONFIG.src}
@@ -32,12 +50,11 @@ export const PortraitImage = ({
       height={height}
       className={className}
       style={{
-        WebkitMaskImage: GRADIENT_MASK,
-        maskImage: GRADIENT_MASK,
+        WebkitMaskImage: gradientMask,
+        maskImage: gradientMask,
         ...style,
       }}
       priority={priority}
     />
   );
 };
-

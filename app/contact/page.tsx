@@ -68,7 +68,10 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fafafa] p-4 md:p-8 pt-24 pb-32 md:px-28">
+    <div
+      className="min-h-screen p-4 md:p-8 pt-24 pb-32 md:px-28"
+      style={{ backgroundColor: "var(--bg-canvas)" }}
+    >
       <ContactHeader />
 
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-24">

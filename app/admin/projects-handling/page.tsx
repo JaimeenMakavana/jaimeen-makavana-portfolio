@@ -199,14 +199,30 @@ export default function ProjectCMS() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fafafa] text-neutral-900 font-sans md:px-28 relative">
+    <div
+      className="min-h-screen font-sans md:px-28 relative"
+      style={{
+        backgroundColor: "var(--bg-canvas)",
+        color: "var(--text-body)",
+      }}
+    >
       {/* HEADER */}
-      <header className="sticky top-0 left-0 right-0 bg-[#fafafa]/80 backdrop-blur-md border-b border-neutral-200 z-50 px-6 py-4 flex items-center justify-between">
+      <header
+        className="sticky top-0 left-0 right-0 backdrop-blur-md border-b z-50 px-6 py-4 flex items-center justify-between"
+        style={{
+          backgroundColor: "var(--bg-canvas)",
+          opacity: 0.8,
+          borderColor: "var(--border)",
+        }}
+      >
         <div className="flex items-center gap-3">
           <LayoutTemplate className="w-6 h-6" />
           <h1 className="font-bold text-xl tracking-tight">Project CMS</h1>
           {loading && (
-            <span className="text-xs font-mono text-neutral-400 animate-pulse">
+            <span
+              className="text-xs font-mono animate-pulse"
+              style={{ color: "var(--text-muted)" }}
+            >
               FETCHING_DATA...
             </span>
           )}
@@ -219,7 +235,12 @@ export default function ProjectCMS() {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0 }}
-                className="flex items-center gap-2 px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium"
+                className="flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium"
+                style={{
+                  backgroundColor: "var(--bg-accent-glow)",
+                  color: "var(--text-display)",
+                  opacity: 0.8,
+                }}
               >
                 <AlertCircle className="w-3 h-3" />
                 Unsaved Changes
@@ -230,8 +251,19 @@ export default function ProjectCMS() {
           <button
             onClick={fetchProjects}
             disabled={loading || isDirty}
-            className="p-2 hover:bg-neutral-100 rounded-lg transition-colors disabled:opacity-30"
+            className="p-2 rounded-lg transition-colors disabled:opacity-30"
             title="Reload from Gist"
+            style={{ color: "var(--text-body)" }}
+            onMouseEnter={(e) => {
+              if (!loading && !isDirty) {
+                e.currentTarget.style.backgroundColor = "var(--muted)";
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!loading && !isDirty) {
+                e.currentTarget.style.backgroundColor = "transparent";
+              }
+            }}
           >
             <RefreshCcw
               className={`w-5 h-5 ${loading ? "animate-spin" : ""}`}
@@ -241,11 +273,26 @@ export default function ProjectCMS() {
           <button
             onClick={handleSync}
             disabled={!isDirty || saving}
-            className={`flex items-center gap-2 px-6 py-2 rounded-full font-mono text-sm uppercase tracking-wide transition-all ${
-              isDirty
-                ? "bg-black text-[#e4e987] hover:scale-105 shadow-lg"
-                : "bg-neutral-200 text-neutral-400 cursor-not-allowed"
-            }`}
+            className="flex items-center gap-2 px-6 py-2 rounded-full font-mono text-sm uppercase tracking-wide transition-all"
+            style={{
+              backgroundColor: isDirty
+                ? "var(--nav-surface)"
+                : "var(--muted)",
+              color: isDirty
+                ? "var(--bg-accent-glow)"
+                : "var(--text-muted)",
+              cursor: isDirty ? "pointer" : "not-allowed",
+            }}
+            onMouseEnter={(e) => {
+              if (isDirty && !saving) {
+                e.currentTarget.style.transform = "scale(1.05)";
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (isDirty && !saving) {
+                e.currentTarget.style.transform = "scale(1)";
+              }
+            }}
           >
             {saving ? (
               <>Uploading...</>
@@ -263,12 +310,27 @@ export default function ProjectCMS() {
         {/* LEFT COLUMN: LIST */}
         <div className="lg:col-span-4 space-y-4">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-mono text-xs uppercase text-neutral-500 tracking-widest">
+            <h2
+              className="font-mono text-xs uppercase tracking-widest"
+              style={{ color: "var(--text-muted)" }}
+            >
               Inventory ({projects.length})
             </h2>
             <button
               onClick={handleCreateNew}
-              className="flex items-center gap-1 text-xs font-bold uppercase hover:bg-black hover:text-white px-3 py-1.5 rounded-md transition-colors border border-neutral-200"
+              className="flex items-center gap-1 text-xs font-bold uppercase px-3 py-1.5 rounded-md transition-colors border"
+              style={{
+                borderColor: "var(--border)",
+                color: "var(--text-body)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--nav-surface)";
+                e.currentTarget.style.color = "var(--nav-text-idle)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = "var(--text-body)";
+              }}
             >
               <Plus className="w-3 h-3" /> New Project
             </button>
@@ -276,22 +338,49 @@ export default function ProjectCMS() {
 
           <div className="space-y-3 pb-20">
             {loading && !hasInitialized ? (
-              <div className="p-8 text-center text-neutral-400">
+              <div
+                className="p-8 text-center"
+                style={{ color: "var(--text-muted)" }}
+              >
                 <RefreshCcw className="w-6 h-6 animate-spin mx-auto mb-2" />
                 <p className="text-sm">Loading projects from Gist...</p>
               </div>
             ) : projects.length === 0 ? (
-              <div className="p-8 text-center border-2 border-dashed border-neutral-200 rounded-xl">
-                <LayoutTemplate className="w-8 h-8 mx-auto mb-3 text-neutral-300" />
-                <p className="text-sm text-neutral-500 mb-2">
+              <div
+                className="p-8 text-center border-2 border-dashed rounded-xl"
+                style={{ borderColor: "var(--border)" }}
+              >
+                <LayoutTemplate
+                  className="w-8 h-8 mx-auto mb-3"
+                  style={{ color: "var(--text-muted)", opacity: 0.5 }}
+                />
+                <p
+                  className="text-sm mb-2"
+                  style={{ color: "var(--text-muted)" }}
+                >
                   No projects found in Gist
                 </p>
-                <p className="text-xs text-neutral-400 mb-4">
+                <p
+                  className="text-xs mb-4"
+                  style={{ color: "var(--text-muted)", opacity: 0.7 }}
+                >
                   Create your first project to initialize the database
                 </p>
                 <button
                   onClick={handleCreateNew}
-                  className="text-xs font-bold uppercase hover:bg-black hover:text-white px-4 py-2 rounded-md transition-colors border border-neutral-200"
+                  className="text-xs font-bold uppercase px-4 py-2 rounded-md transition-colors border"
+                  style={{
+                    borderColor: "var(--border)",
+                    color: "var(--text-body)",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = "var(--nav-surface)";
+                    e.currentTarget.style.color = "var(--nav-text-idle)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "transparent";
+                    e.currentTarget.style.color = "var(--text-body)";
+                  }}
                 >
                   Create First Project
                 </button>
@@ -302,35 +391,73 @@ export default function ProjectCMS() {
                   layoutId={`card-${project.id}`}
                   key={project.id}
                   onClick={() => handleSelect(project)}
-                  className={`group p-4 rounded-xl border cursor-pointer transition-all ${
-                    selectedId === project.id
-                      ? "bg-black text-white border-black ring-2 ring-offset-2 ring-[#e4e987]"
-                      : "bg-white border-neutral-200 hover:border-black/30"
-                  }`}
+                  className="group p-4 rounded-xl border cursor-pointer transition-all"
+                  style={{
+                    backgroundColor:
+                      selectedId === project.id
+                        ? "var(--nav-surface)"
+                        : "var(--card)",
+                    color:
+                      selectedId === project.id
+                        ? "var(--nav-text-idle)"
+                        : "var(--text-body)",
+                    borderColor:
+                      selectedId === project.id
+                        ? "var(--nav-surface)"
+                        : "var(--border)",
+                    boxShadow:
+                      selectedId === project.id
+                        ? "0 0 0 2px var(--bg-accent-glow)"
+                        : "none",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (selectedId !== project.id) {
+                      e.currentTarget.style.borderColor = "var(--text-display)";
+                      e.currentTarget.style.opacity = "0.3";
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (selectedId !== project.id) {
+                      e.currentTarget.style.borderColor = "var(--border)";
+                      e.currentTarget.style.opacity = "1";
+                    }
+                  }}
                 >
                   <div className="flex justify-between items-start mb-2">
                     <span
-                      className={`text-[10px] uppercase font-bold px-1.5 py-0.5 rounded ${
-                        selectedId === project.id
-                          ? "bg-neutral-800 text-[#e4e987]"
-                          : "bg-neutral-100 text-neutral-500"
-                      }`}
+                      className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded"
+                      style={{
+                        backgroundColor:
+                          selectedId === project.id
+                            ? "var(--muted)"
+                            : "var(--muted)",
+                        color:
+                          selectedId === project.id
+                            ? "var(--bg-accent-glow)"
+                            : "var(--text-muted)",
+                      }}
                     >
                       {project.category}
                     </span>
                     {selectedId === project.id && (
-                      <CheckCircle2 className="w-4 h-4 text-[#e4e987]" />
+                      <CheckCircle2
+                        className="w-4 h-4"
+                        style={{ color: "var(--bg-accent-glow)" }}
+                      />
                     )}
                   </div>
                   <h3 className="font-bold text-lg leading-tight mb-1">
                     {project.title}
                   </h3>
                   <p
-                    className={`text-xs line-clamp-2 ${
-                      selectedId === project.id
-                        ? "text-neutral-400"
-                        : "text-neutral-500"
-                    }`}
+                    className="text-xs line-clamp-2"
+                    style={{
+                      color:
+                        selectedId === project.id
+                          ? "var(--text-muted)"
+                          : "var(--text-muted)",
+                      opacity: selectedId === project.id ? 0.7 : 1,
+                    }}
                   >
                     {project.tagline}
                   </p>
@@ -343,25 +470,52 @@ export default function ProjectCMS() {
         {/* RIGHT COLUMN: EDITOR */}
         <div className="lg:col-span-8">
           <div className="sticky top-24">
-            <div className="bg-white rounded-2xl shadow-sm border border-neutral-200 overflow-hidden">
+            <div
+              className="rounded-2xl shadow-sm border overflow-hidden"
+              style={{
+                backgroundColor: "var(--card)",
+                borderColor: "var(--border)",
+              }}
+            >
               {/* Editor Header */}
-              <div className="px-8 py-6 border-b border-neutral-100 flex justify-between items-center bg-neutral-50/50">
+              <div
+                className="px-8 py-6 border-b flex justify-between items-center"
+                style={{
+                  backgroundColor: "var(--muted)",
+                  opacity: 0.5,
+                  borderColor: "var(--border)",
+                }}
+              >
                 <div>
-                  <h2 className="font-bold text-2xl">
+                  <h2
+                    className="font-bold text-2xl"
+                    style={{ color: "var(--text-display)" }}
+                  >
                     {selectedId
                       ? selectedId.startsWith("new")
                         ? "New Project"
                         : "Edit Project"
                       : "Select a Project"}
                   </h2>
-                  <p className="text-sm text-neutral-500 font-mono mt-1">
+                  <p
+                    className="text-sm font-mono mt-1"
+                    style={{ color: "var(--text-muted)" }}
+                  >
                     ID: {formData.id || "..."}
                   </p>
                 </div>
                 {selectedId && (
                   <button
                     onClick={() => handleDelete(formData.id)}
-                    className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors"
+                    className="p-2 rounded-lg transition-colors"
+                    style={{ color: "var(--destructive)" }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = "var(--destructive)";
+                      e.currentTarget.style.opacity = "0.1";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = "transparent";
+                    }}
                     title="Delete Project"
                   >
                     <Trash2 className="w-5 h-5" />
@@ -374,7 +528,10 @@ export default function ProjectCMS() {
                   {/* Row 1: Basic Info */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <label className="text-xs font-bold uppercase text-neutral-400">
+                      <label
+                        className="text-xs font-bold uppercase"
+                        style={{ color: "var(--text-muted)" }}
+                      >
                         Title
                       </label>
                       <input
@@ -390,11 +547,27 @@ export default function ProjectCMS() {
                             );
                           }
                         }}
-                        className="w-full bg-neutral-50 border border-neutral-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-black focus:outline-none"
+                        className="w-full rounded-lg px-4 py-3 focus:ring-2 focus:outline-none"
+                        style={{
+                          backgroundColor: "var(--muted)",
+                          borderColor: "var(--border)",
+                          borderWidth: "1px",
+                          borderStyle: "solid",
+                          color: "var(--text-body)",
+                        }}
+                        onFocus={(e) => {
+                          e.currentTarget.style.borderColor = "var(--text-display)";
+                        }}
+                        onBlur={(e) => {
+                          e.currentTarget.style.borderColor = "var(--border)";
+                        }}
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-xs font-bold uppercase text-neutral-400">
+                      <label
+                        className="text-xs font-bold uppercase"
+                        style={{ color: "var(--text-muted)" }}
+                      >
                         Category
                       </label>
                       <select
@@ -402,7 +575,20 @@ export default function ProjectCMS() {
                         onChange={(e) =>
                           handleFormChange("category", e.target.value)
                         }
-                        className="w-full bg-neutral-50 border border-neutral-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-black focus:outline-none"
+                        className="w-full rounded-lg px-4 py-3 focus:ring-2 focus:outline-none"
+                        style={{
+                          backgroundColor: "var(--muted)",
+                          borderColor: "var(--border)",
+                          borderWidth: "1px",
+                          borderStyle: "solid",
+                          color: "var(--text-body)",
+                        }}
+                        onFocus={(e) => {
+                          e.currentTarget.style.borderColor = "var(--text-display)";
+                        }}
+                        onBlur={(e) => {
+                          e.currentTarget.style.borderColor = "var(--border)";
+                        }}
                       >
                         <option>AI Engineering</option>
                         <option>System Design</option>
@@ -415,7 +601,10 @@ export default function ProjectCMS() {
                   {/* Row 2: Tagline & Desc */}
                   <div className="space-y-4">
                     <div className="space-y-2">
-                      <label className="text-xs font-bold uppercase text-neutral-400">
+                      <label
+                        className="text-xs font-bold uppercase"
+                        style={{ color: "var(--text-muted)" }}
+                      >
                         Tagline
                       </label>
                       <input
@@ -424,11 +613,27 @@ export default function ProjectCMS() {
                         onChange={(e) =>
                           handleFormChange("tagline", e.target.value)
                         }
-                        className="w-full bg-neutral-50 border border-neutral-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-black focus:outline-none font-mono text-sm"
+                        className="w-full rounded-lg px-4 py-3 focus:ring-2 focus:outline-none font-mono text-sm"
+                        style={{
+                          backgroundColor: "var(--muted)",
+                          borderColor: "var(--border)",
+                          borderWidth: "1px",
+                          borderStyle: "solid",
+                          color: "var(--text-body)",
+                        }}
+                        onFocus={(e) => {
+                          e.currentTarget.style.borderColor = "var(--text-display)";
+                        }}
+                        onBlur={(e) => {
+                          e.currentTarget.style.borderColor = "var(--border)";
+                        }}
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-xs font-bold uppercase text-neutral-400">
+                      <label
+                        className="text-xs font-bold uppercase"
+                        style={{ color: "var(--text-muted)" }}
+                      >
                         Description
                       </label>
                       <textarea
@@ -437,16 +642,38 @@ export default function ProjectCMS() {
                         onChange={(e) =>
                           handleFormChange("description", e.target.value)
                         }
-                        className="w-full bg-neutral-50 border border-neutral-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-black focus:outline-none resize-none"
+                        className="w-full rounded-lg px-4 py-3 focus:ring-2 focus:outline-none resize-none"
+                        style={{
+                          backgroundColor: "var(--muted)",
+                          borderColor: "var(--border)",
+                          borderWidth: "1px",
+                          borderStyle: "solid",
+                          color: "var(--text-body)",
+                        }}
+                        onFocus={(e) => {
+                          e.currentTarget.style.borderColor = "var(--text-display)";
+                        }}
+                        onBlur={(e) => {
+                          e.currentTarget.style.borderColor = "var(--border)";
+                        }}
                       />
                     </div>
                   </div>
 
                   {/* Row 3: Technical Details */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6 bg-neutral-50 rounded-xl border border-neutral-100">
+                  <div
+                    className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6 rounded-xl border"
+                    style={{
+                      backgroundColor: "var(--muted)",
+                      borderColor: "var(--border)",
+                    }}
+                  >
                     {/* Tech Stack */}
                     <div className="space-y-2">
-                      <label className="flex items-center gap-2 text-xs font-bold uppercase text-neutral-400">
+                      <label
+                        className="flex items-center gap-2 text-xs font-bold uppercase"
+                        style={{ color: "var(--text-muted)" }}
+                      >
                         <Cpu className="w-3 h-3" /> Tech Stack (Comma separated)
                       </label>
                       <input
@@ -458,7 +685,20 @@ export default function ProjectCMS() {
                             e.target.value.split(",").map((s) => s.trim())
                           )
                         }
-                        className="w-full bg-white border border-neutral-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-black focus:outline-none font-mono text-sm"
+                        className="w-full rounded-lg px-4 py-3 focus:ring-2 focus:outline-none font-mono text-sm"
+                        style={{
+                          backgroundColor: "var(--card)",
+                          borderColor: "var(--border)",
+                          borderWidth: "1px",
+                          borderStyle: "solid",
+                          color: "var(--text-body)",
+                        }}
+                        onFocus={(e) => {
+                          e.currentTarget.style.borderColor = "var(--text-display)";
+                        }}
+                        onBlur={(e) => {
+                          e.currentTarget.style.borderColor = "var(--border)";
+                        }}
                       />
                       <div className="flex flex-wrap gap-2 mt-2">
                         {formData.stack.map(
@@ -466,7 +706,12 @@ export default function ProjectCMS() {
                             tech && (
                               <span
                                 key={i}
-                                className="text-[10px] bg-white border px-2 py-1 rounded text-neutral-500"
+                                className="text-[10px] border px-2 py-1 rounded"
+                                style={{
+                                  backgroundColor: "var(--card)",
+                                  borderColor: "var(--border)",
+                                  color: "var(--text-muted)",
+                                }}
                               >
                                 {tech}
                               </span>
@@ -478,10 +723,16 @@ export default function ProjectCMS() {
                     {/* Complexity Slider */}
                     <div className="space-y-4">
                       <div className="flex justify-between">
-                        <label className="flex items-center gap-2 text-xs font-bold uppercase text-neutral-400">
+                        <label
+                          className="flex items-center gap-2 text-xs font-bold uppercase"
+                          style={{ color: "var(--text-muted)" }}
+                        >
                           <Code className="w-3 h-3" /> Complexity Score
                         </label>
-                        <span className="font-mono font-bold">
+                        <span
+                          className="font-mono font-bold"
+                          style={{ color: "var(--text-display)" }}
+                        >
                           {formData.complexity}%
                         </span>
                       </div>
@@ -496,7 +747,11 @@ export default function ProjectCMS() {
                             parseInt(e.target.value)
                           )
                         }
-                        className="w-full h-2 bg-neutral-200 rounded-lg appearance-none cursor-pointer accent-black"
+                        className="w-full h-2 rounded-lg appearance-none cursor-pointer"
+                        style={{
+                          backgroundColor: "var(--muted)",
+                          accentColor: "var(--text-display)",
+                        }}
                       />
                     </div>
                   </div>
@@ -504,7 +759,10 @@ export default function ProjectCMS() {
                   {/* Row 4: Visuals */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="space-y-2">
-                      <label className="flex items-center gap-2 text-xs font-bold uppercase text-neutral-400">
+                      <label
+                        className="flex items-center gap-2 text-xs font-bold uppercase"
+                        style={{ color: "var(--text-muted)" }}
+                      >
                         <LayoutTemplate className="w-3 h-3" /> Grid Size
                       </label>
                       <select
@@ -512,7 +770,20 @@ export default function ProjectCMS() {
                         onChange={(e) =>
                           handleFormChange("size", e.target.value)
                         }
-                        className="w-full bg-neutral-50 border border-neutral-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-black focus:outline-none"
+                        className="w-full rounded-lg px-4 py-3 focus:ring-2 focus:outline-none"
+                        style={{
+                          backgroundColor: "var(--muted)",
+                          borderColor: "var(--border)",
+                          borderWidth: "1px",
+                          borderStyle: "solid",
+                          color: "var(--text-body)",
+                        }}
+                        onFocus={(e) => {
+                          e.currentTarget.style.borderColor = "var(--text-display)";
+                        }}
+                        onBlur={(e) => {
+                          e.currentTarget.style.borderColor = "var(--border)";
+                        }}
                       >
                         <option value="small">Small (1x1)</option>
                         <option value="medium">Medium (2x1)</option>
@@ -522,7 +793,10 @@ export default function ProjectCMS() {
                     </div>
 
                     <div className="md:col-span-2 space-y-2">
-                      <label className="flex items-center gap-2 text-xs font-bold uppercase text-neutral-400">
+                      <label
+                        className="flex items-center gap-2 text-xs font-bold uppercase"
+                        style={{ color: "var(--text-muted)" }}
+                      >
                         <ImageIcon className="w-3 h-3" /> Image Path
                       </label>
                       <input
@@ -531,7 +805,20 @@ export default function ProjectCMS() {
                         onChange={(e) =>
                           handleFormChange("image", e.target.value)
                         }
-                        className="w-full bg-neutral-50 border border-neutral-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-black focus:outline-none font-mono text-sm"
+                        className="w-full rounded-lg px-4 py-3 focus:ring-2 focus:outline-none font-mono text-sm"
+                        style={{
+                          backgroundColor: "var(--muted)",
+                          borderColor: "var(--border)",
+                          borderWidth: "1px",
+                          borderStyle: "solid",
+                          color: "var(--text-body)",
+                        }}
+                        onFocus={(e) => {
+                          e.currentTarget.style.borderColor = "var(--text-display)";
+                        }}
+                        onBlur={(e) => {
+                          e.currentTarget.style.borderColor = "var(--border)";
+                        }}
                       />
                     </div>
                   </div>
@@ -539,7 +826,10 @@ export default function ProjectCMS() {
                   {/* Row 5: Metadata */}
                   <div className="grid grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <label className="text-xs font-bold uppercase text-neutral-400">
+                      <label
+                        className="text-xs font-bold uppercase"
+                        style={{ color: "var(--text-muted)" }}
+                      >
                         External Link
                       </label>
                       <input
@@ -549,11 +839,27 @@ export default function ProjectCMS() {
                           handleFormChange("link", e.target.value)
                         }
                         placeholder="https://..."
-                        className="w-full bg-neutral-50 border border-neutral-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-black focus:outline-none"
+                        className="w-full rounded-lg px-4 py-3 focus:ring-2 focus:outline-none"
+                        style={{
+                          backgroundColor: "var(--muted)",
+                          borderColor: "var(--border)",
+                          borderWidth: "1px",
+                          borderStyle: "solid",
+                          color: "var(--text-body)",
+                        }}
+                        onFocus={(e) => {
+                          e.currentTarget.style.borderColor = "var(--text-display)";
+                        }}
+                        onBlur={(e) => {
+                          e.currentTarget.style.borderColor = "var(--border)";
+                        }}
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-xs font-bold uppercase text-neutral-400">
+                      <label
+                        className="text-xs font-bold uppercase"
+                        style={{ color: "var(--text-muted)" }}
+                      >
                         Highlight Stat
                       </label>
                       <input
@@ -563,22 +869,55 @@ export default function ProjectCMS() {
                           handleFormChange("stat", e.target.value)
                         }
                         placeholder="e.g. < 50ms Latency"
-                        className="w-full bg-neutral-50 border border-neutral-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-black focus:outline-none"
+                        className="w-full rounded-lg px-4 py-3 focus:ring-2 focus:outline-none"
+                        style={{
+                          backgroundColor: "var(--muted)",
+                          borderColor: "var(--border)",
+                          borderWidth: "1px",
+                          borderStyle: "solid",
+                          color: "var(--text-body)",
+                        }}
+                        onFocus={(e) => {
+                          e.currentTarget.style.borderColor = "var(--text-display)";
+                        }}
+                        onBlur={(e) => {
+                          e.currentTarget.style.borderColor = "var(--border)";
+                        }}
                       />
                     </div>
                   </div>
 
-                  <div className="pt-4 border-t border-neutral-100 flex justify-end">
+                  <div
+                    className="pt-4 border-t flex justify-end"
+                    style={{ borderColor: "var(--border)" }}
+                  >
                     <button
                       type="submit"
-                      className="bg-black text-white px-8 py-3 rounded-xl font-bold hover:bg-[#e4e987] hover:text-black transition-all"
+                      className="px-8 py-3 rounded-xl font-bold transition-all"
+                      style={{
+                        backgroundColor: "var(--nav-surface)",
+                        color: "var(--nav-text-idle)",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor =
+                          "var(--bg-accent-glow)";
+                        e.currentTarget.style.color = "var(--text-display)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor =
+                          "var(--nav-surface)";
+                        e.currentTarget.style.color = "var(--nav-text-idle)";
+                      }}
                     >
                       Update Inventory
                     </button>
                   </div>
                 </form>
               ) : (
-                <div className="h-96 flex flex-col items-center justify-center text-neutral-400">
+                <div
+                  className="h-96 flex flex-col items-center justify-center"
+                  style={{ color: "var(--text-muted)" }}
+                >
                   <p>Select a project from the left to edit details.</p>
                 </div>
               )}
@@ -594,11 +933,17 @@ export default function ProjectCMS() {
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 50 }}
-            className={`fixed bottom-8 right-8 px-6 py-4 rounded-xl shadow-2xl font-bold flex items-center gap-3 z-50 ${
-              statusMsg.type === "success"
-                ? "bg-black text-[#e4e987]"
-                : "bg-red-500 text-white"
-            }`}
+            className="fixed bottom-8 right-8 px-6 py-4 rounded-xl shadow-2xl font-bold flex items-center gap-3 z-50"
+            style={{
+              backgroundColor:
+                statusMsg.type === "success"
+                  ? "var(--nav-surface)"
+                  : "var(--destructive)",
+              color:
+                statusMsg.type === "success"
+                  ? "var(--bg-accent-glow)"
+                  : "var(--destructive-foreground)",
+            }}
           >
             {statusMsg.type === "success" ? <CheckCircle2 /> : <AlertCircle />}
             {statusMsg.text}

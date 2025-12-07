@@ -67,13 +67,7 @@ const CAREER_MILESTONES: CareerMilestone[] = [
   },
 ];
 
-const THEME = {
-  bgCanvas: "#fafafa",
-  accentGlow: "#e4e987",
-  textDisplay: "#000000",
-  textBody: "#1a1a1a",
-  textMuted: "#666666",
-};
+// Theme colors now use CSS variables from globals.css
 
 // --- Sub-Component for Parallax Sections ---
 const ParallaxSection = ({
@@ -126,10 +120,13 @@ const ParallaxSection = ({
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
         <div className="flex items-center gap-3 mb-4 md:mb-6">
-          <div className="h-[2px] w-8 md:w-12 bg-black"></div>
+          <div
+            className="h-[2px] w-8 md:w-12"
+            style={{ backgroundColor: "var(--text-display)" }}
+          ></div>
           <span
             className="text-sm md:text-xl font-mono uppercase tracking-[0.2em]"
-            style={{ color: THEME.textMuted }}
+            style={{ color: "var(--text-muted)" }}
           >
             {milestone.era}
           </span>
@@ -138,18 +135,21 @@ const ParallaxSection = ({
         <h1
           className="text-6xl sm:text-7xl md:text-9xl font-black leading-[0.9] mb-6 md:mb-10 tracking-tighter"
           style={{
-            color: THEME.textDisplay,
+            color: "var(--text-display)",
             fontFamily: "var(--font-alumni), sans-serif",
           }}
         >
           {milestone.title}
         </h1>
 
-        <div className="md:border-l-4 md:border-black md:pl-8">
+        <div
+          className="md:border-l-4 md:pl-8"
+          style={{ borderColor: "var(--text-display)" }}
+        >
           <p
             className="text-2xl md:text-3xl font-semibold leading-relaxed max-w-2xl"
             style={{
-              color: THEME.textBody,
+              color: "var(--text-body)",
               fontFamily: "var(--font-alumni), sans-serif",
             }}
           >
@@ -191,10 +191,11 @@ export default function CareerTimeline() {
 
   return (
     <div
-      className="relative w-full overflow-x-hidden selection:bg-[#e4e987] selection:text-black"
+      className="relative w-full overflow-x-hidden"
       style={{
-        backgroundColor: THEME.bgCanvas,
+        backgroundColor: "var(--bg-canvas)",
         fontFamily: "var(--font-alumni), sans-serif",
+        color: "var(--text-body)",
       }}
     >
       {/* --- BACKGROUND LAYER --- */}
@@ -230,13 +231,13 @@ export default function CareerTimeline() {
             <div
               className="absolute top-0 left-0 w-full h-[60vh] opacity-60"
               style={{
-                background: `linear-gradient(to bottom, ${THEME.accentGlow} 0%, transparent 100%)`,
+                background: `linear-gradient(to bottom, var(--bg-accent-glow) 0%, transparent 100%)`,
               }}
             />
             <div
               className="absolute bottom-0 left-0 w-full h-[40vh]"
               style={{
-                background: `linear-gradient(to top, ${THEME.bgCanvas} 0%, transparent 100%)`,
+                background: `linear-gradient(to top, var(--bg-canvas) 0%, transparent 100%)`,
               }}
             />
           </motion.div>

@@ -24,16 +24,32 @@ export const ExpandedCard = ({ project, onClose }: ExpandedCardProps) => {
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
         <motion.div
           layoutId={project.id}
-          className="pointer-events-auto w-full max-w-3xl bg-white rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]"
+          className="pointer-events-auto w-full max-w-3xl rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]"
+          style={{ backgroundColor: "var(--card)" }}
         >
           {/* Expanded Header */}
-          <div className="relative p-8 md:p-12 bg-[#fafafa] border-b border-neutral-100">
+          <div
+            className="relative p-8 md:p-12 border-b"
+            style={{
+              backgroundColor: "var(--bg-canvas)",
+              borderColor: "var(--border)",
+            }}
+          >
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onClose();
               }}
-              className="absolute top-6 right-6 p-2 rounded-full bg-white hover:bg-neutral-100 transition-colors"
+              className="absolute top-6 right-6 p-2 rounded-full transition-colors"
+              style={{
+                backgroundColor: "var(--card)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--muted)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--card)";
+              }}
             >
               <svg
                 width="24"
@@ -47,17 +63,29 @@ export const ExpandedCard = ({ project, onClose }: ExpandedCardProps) => {
               </svg>
             </button>
 
-            <span className="text-xs font-mono text-[#e4e987] bg-black px-2 py-1 rounded inline-block mb-4">
+            <span
+              className="text-xs font-mono px-2 py-1 rounded inline-block mb-4"
+              style={{
+                color: "var(--bg-accent-glow)",
+                backgroundColor: "var(--nav-surface)",
+              }}
+            >
               {project.category}
             </span>
             <motion.h3
               layoutId={`title-${project.id}`}
               className="text-5xl md:text-7xl leading-none uppercase mb-2"
-              style={{ fontFamily: "var(--font-display)" }}
+              style={{
+                fontFamily: "var(--font-display)",
+                color: "var(--text-display)",
+              }}
             >
               {project.title}
             </motion.h3>
-            <p className="text-xl text-neutral-500 font-light">
+            <p
+              className="text-xl font-light"
+              style={{ color: "var(--text-muted)" }}
+            >
               {project.tagline}
             </p>
           </div>
@@ -67,10 +95,16 @@ export const ExpandedCard = ({ project, onClose }: ExpandedCardProps) => {
             <div className="grid md:grid-cols-3 gap-12">
               <div className="md:col-span-2 space-y-8">
                 <div>
-                  <h4 className="font-bold text-lg mb-2">
+                  <h4
+                    className="font-bold text-lg mb-2"
+                    style={{ color: "var(--text-display)" }}
+                  >
                     The Challenge & Solution
                   </h4>
-                  <p className="text-neutral-600 leading-relaxed text-lg">
+                  <p
+                    className="leading-relaxed text-lg"
+                    style={{ color: "var(--text-body)" }}
+                  >
                     {project.description}
                   </p>
                 </div>
@@ -78,7 +112,11 @@ export const ExpandedCard = ({ project, onClose }: ExpandedCardProps) => {
                   <Link
                     href={project.link}
                     target="_blank"
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-black text-[#e4e987] rounded-full font-medium hover:scale-105 transition-transform"
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-medium hover:scale-105 transition-transform"
+                    style={{
+                      backgroundColor: "var(--nav-surface)",
+                      color: "var(--bg-accent-glow)",
+                    }}
                   >
                     View Live Project
                     <svg
@@ -101,7 +139,10 @@ export const ExpandedCard = ({ project, onClose }: ExpandedCardProps) => {
 
               <div className="space-y-8">
                 <div>
-                  <h4 className="font-mono text-xs uppercase text-neutral-400 mb-4 tracking-widest">
+                  <h4
+                    className="font-mono text-xs uppercase mb-4 tracking-widest"
+                    style={{ color: "var(--text-muted)" }}
+                  >
                     Tech Stack
                   </h4>
                   <div className="flex flex-wrap gap-2">
@@ -119,4 +160,3 @@ export const ExpandedCard = ({ project, onClose }: ExpandedCardProps) => {
     </>
   );
 };
-
