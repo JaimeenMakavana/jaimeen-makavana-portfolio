@@ -3,8 +3,6 @@ import { Anton, Inter, Alumni_Sans_Pinstripe } from "next/font/google";
 import "./globals.css";
 import { NavigationWrapper } from "./components/Navigation/NavigationWrapper";
 import { ThemeProvider } from "./components/ThemeProvider";
-import { JivaPresenceProvider } from "./context/JivaPresenceContext";
-import { ShadowCursor } from "./components/Jiva/ShadowCursor";
 
 const anton = Anton({
   weight: "400",
@@ -46,11 +44,8 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <JivaPresenceProvider>
-            <ShadowCursor />
-            <NavigationWrapper />
-            {children}
-          </JivaPresenceProvider>
+          <NavigationWrapper />
+          {children}
         </ThemeProvider>
       </body>
     </html>

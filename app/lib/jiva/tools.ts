@@ -12,7 +12,7 @@ export const NAVIGATE_TOOL = {
       path: {
         type: "STRING" as const,
         description:
-          "The path to navigate to. Valid options: '/', '/about', '/projects', '/contact', '/jiva'",
+          "The path to navigate to. Valid options: '/', '/about', '/skills', '/projects', '/contact', '/jiva'",
       },
       filter: {
         type: "STRING" as const,

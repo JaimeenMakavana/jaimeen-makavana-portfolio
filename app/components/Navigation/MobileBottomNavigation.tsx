@@ -9,6 +9,7 @@ import {
   Sparkles,
   Menu,
   X,
+  Cpu,
 } from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -23,6 +24,7 @@ interface MobileBottomNavigationProps {
 const NAVIGATION_ITEMS = [
   { id: "home" as const, href: "/", label: "Home", icon: Home },
   { id: "about" as const, href: "/about", label: "About", icon: User },
+  { id: "skills" as const, href: "/skills", label: "Skills", icon: Cpu },
   {
     id: "projects" as const,
     href: "/projects",

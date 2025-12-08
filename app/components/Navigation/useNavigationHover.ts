@@ -3,6 +3,7 @@ import { useState, useCallback } from "react";
 export type NavigationLink =
   | "home"
   | "about"
+  | "skills"
   | "projects"
   | "contact"
   | "jiva"

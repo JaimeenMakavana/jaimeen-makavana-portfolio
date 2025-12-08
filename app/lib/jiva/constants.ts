@@ -15,6 +15,7 @@ export const ACTION_TYPES = {
 export const VALID_PATHS = [
   "/",
   "/about",
+  "/skills",
   "/projects",
   "/contact",
   "/jiva",
