@@ -1,90 +1,105 @@
 "use client";
 
 import React from "react";
-
 import { motion } from "framer-motion";
-
 import { Server, BrainCircuit, Layers, Cpu } from "lucide-react";
 
 // --- DATA STRUCTURES ---
 
-type SkillCategory = "Frontend" | "Backend" | "AI/ML";
+type ProficiencyLevel = "Beginner" | "Elementary" | "Intermediate" | "Expert";
+
+const PROFICIENCY_CONFIG: Record<
+  ProficiencyLevel,
+  { level: number; description: string }
+> = {
+  Beginner: {
+    level: 1,
+    description: "Just started, learning concepts",
+  },
+  Elementary: {
+    level: 2,
+    description: "Understands basics, can build simple things with help",
+  },
+  Intermediate: {
+    level: 3,
+    description: "Independent, can troubleshoot standard issues",
+  },
+  Expert: {
+    level: 4,
+    description: "Deep knowledge, creates architecture/best practices",
+  },
+};
+
+type SkillCategory = "Languages" | "Frontend" | "Backend" | "AI/ML";
 
 interface SkillItem {
   name: string;
-
-  proficiency: number; // 1-10
-
+  proficiency: ProficiencyLevel;
   tags: string[];
 }
 
 interface SkillSection {
   category: SkillCategory;
-
   icon: React.ElementType;
-
   skills: SkillItem[];
 }
 
+// Updated Data with new Categories
 const SKILL_DATA: SkillSection[] = [
+  {
+    category: "Languages",
+    icon: Cpu,
+    skills: [
+      {
+        name: "JavaScript",
+        proficiency: "Intermediate",
+        tags: ["ES6+", "Async/Await", "DOM"],
+      },
+      {
+        name: "Python",
+        proficiency: "Elementary",
+        tags: ["Scripting", "Automation"],
+      },
+    ],
+  },
   {
     category: "Frontend",
     icon: Layers,
     skills: [
       {
         name: "React",
-        proficiency: 8,
+        proficiency: "Expert",
         tags: ["Hooks", "Components", "JSX"],
       },
       {
         name: "Next.js",
-        proficiency: 8,
+        proficiency: "Expert",
         tags: ["RSC", "App Router", "SSR"],
       },
       {
         name: "State Management",
-        proficiency: 8,
-        tags: ["Redux", "Zustand", "Context API", "React Query"],
+        proficiency: "Expert",
+        tags: ["Redux", "Zustand", "Context"],
       },
       {
         name: "Middleware",
-        proficiency: 7,
+        proficiency: "Intermediate",
         tags: ["Next.js", "Auth", "Routing"],
       },
       {
         name: "Authentication",
-        proficiency: 8,
+        proficiency: "Intermediate",
         tags: ["JWT", "OAuth", "Session"],
       },
       {
-        name: "File Uploads",
-        proficiency: 7,
-        tags: ["Multipart", "Cloud Storage"],
-      },
-      {
-        name: "Performance Optimization",
-        proficiency: 8,
-        tags: ["Prefetching", "Preloading", "Lighthouse"],
-      },
-      {
         name: "Tailwind CSS",
-        proficiency: 9,
+        proficiency: "Expert",
         tags: ["Utility-First", "Responsive"],
       },
       {
         name: "Responsive Design",
-        proficiency: 9,
+        proficiency: "Expert",
         tags: ["Mobile-First", "Breakpoints"],
-      },
-      {
-        name: "Forms",
-        proficiency: 9,
-        tags: ["Formik", "React Hook Form", "Validation"],
-      },
-      {
-        name: "WebSockets",
-        proficiency: 8,
-        tags: ["Real-time", "Socket.io"],
       },
     ],
   },
@@ -94,23 +109,18 @@ const SKILL_DATA: SkillSection[] = [
     skills: [
       {
         name: "Node.js",
-        proficiency: 5,
-        tags: ["Runtime", "Event Loop", "NPM"],
+        proficiency: "Elementary",
+        tags: ["Runtime", "Event Loop"],
       },
       {
         name: "Express",
-        proficiency: 4,
-        tags: ["REST", "Middleware", "Routing"],
+        proficiency: "Elementary",
+        tags: ["REST", "Middleware"],
       },
       {
         name: "Databases",
-        proficiency: 5,
-        tags: ["SQL", "NoSQL", "MongoDB", "PostgreSQL"],
-      },
-      {
-        name: "Authentication",
-        proficiency: 5,
-        tags: ["JWT", "Bcrypt", "OAuth"],
+        proficiency: "Elementary",
+        tags: ["SQL", "NoSQL", "MongoDB"],
       },
     ],
   },
@@ -120,23 +130,18 @@ const SKILL_DATA: SkillSection[] = [
     skills: [
       {
         name: "Machine Learning",
-        proficiency: 7,
-        tags: ["Algorithms", "Models", "Training"],
+        proficiency: "Intermediate",
+        tags: ["Algorithms", "Models"],
       },
       {
         name: "Agent Creation",
-        proficiency: 6,
-        tags: ["LLM", "Orchestration", "Tools"],
+        proficiency: "Elementary",
+        tags: ["LLM", "Orchestration"],
       },
       {
         name: "RAG Systems",
-        proficiency: 5,
-        tags: ["Vector DBs", "Embeddings", "Retrieval"],
-      },
-      {
-        name: "Recommendation Systems",
-        proficiency: 5,
-        tags: ["Collaborative", "Content-Based"],
+        proficiency: "Elementary",
+        tags: ["Vector DBs", "Embeddings"],
       },
     ],
   },
@@ -144,30 +149,60 @@ const SKILL_DATA: SkillSection[] = [
 
 // --- COMPONENTS ---
 
-// Visualizes proficiency as a "Server Load" bar
-const ProficiencyBar = ({ score, index }: { score: number; index: number }) => {
+// Visualizes proficiency as 4 discrete blocks
+const ProficiencyDisplay = ({
+  level,
+  index,
+}: {
+  level: ProficiencyLevel;
+  index: number;
+}) => {
+  const config = PROFICIENCY_CONFIG[level];
+  const maxLevel = 4;
+
   return (
-    <div className="flex items-center gap-1 h-1.5 w-full mt-4">
-      {Array.from({ length: 10 }).map((_, i) => (
-        <motion.div
-          key={i}
-          initial={{ opacity: 0, scaleY: 0 }}
-          whileInView={{
-            opacity: i < score ? 1 : 0.15,
-            scaleY: 1,
-          }}
-          transition={{
-            duration: 0.4,
-            delay: index * 0.05 + i * 0.03,
-            ease: "backOut",
-          }}
-          className="flex-1 h-full rounded-sm"
-          style={{
-            backgroundColor:
-              i < score ? "var(--bg-accent-glow)" : "currentColor",
-          }}
-        />
-      ))}
+    <div className="mt-5">
+      {/* Label and Blocks Container */}
+      <div className="flex items-center justify-between mb-2">
+        <span
+          className="text-[10px] font-mono uppercase font-bold tracking-wider"
+          style={{ color: "var(--bg-accent-glow)" }}
+        >
+          {level}
+        </span>
+      </div>
+
+      {/* The 4 Blocks */}
+      <div className="flex gap-1.5 h-2 w-full">
+        {Array.from({ length: maxLevel }).map((_, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, scaleY: 0 }}
+            whileInView={{
+              opacity: i < config.level ? 1 : 0.1,
+              scaleY: 1,
+            }}
+            transition={{
+              duration: 0.3,
+              delay: index * 0.05 + i * 0.1,
+              ease: "backOut",
+            }}
+            className="flex-1 h-full rounded-sm"
+            style={{
+              backgroundColor:
+                i < config.level ? "var(--bg-accent-glow)" : "currentColor",
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Description Context */}
+      <p
+        className="text-[10px] mt-2 leading-tight opacity-60 font-mono"
+        style={{ color: "var(--text-muted)" }}
+      >
+        {config.description}
+      </p>
     </div>
   );
 };
@@ -178,7 +213,7 @@ const SkillCard = ({ skill, index }: { skill: SkillItem; index: number }) => (
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true }}
     transition={{ delay: index * 0.1 }}
-    className="group relative p-6 rounded-2xl border transition-all duration-300"
+    className="group relative p-6 rounded-2xl border transition-all duration-300 flex flex-col h-full"
     onMouseEnter={(e) => {
       e.currentTarget.style.borderColor = "var(--text-display)";
     }}
@@ -194,18 +229,9 @@ const SkillCard = ({ skill, index }: { skill: SkillItem; index: number }) => (
       <h3
         className="font-bold text-lg leading-tight transition-colors"
         style={{ color: "var(--text-display)" }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.color = "var(--bg-accent-glow)";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.color = "var(--text-display)";
-        }}
       >
         {skill.name}
       </h3>
-      <span className="font-mono text-[10px] uppercase tracking-widest opacity-50">
-        Load: {skill.proficiency}0%
-      </span>
     </div>
 
     <div className="flex flex-wrap gap-2 mb-4">
@@ -220,8 +246,9 @@ const SkillCard = ({ skill, index }: { skill: SkillItem; index: number }) => (
       ))}
     </div>
 
-    {/* Visualization of the Score */}
-    <ProficiencyBar score={skill.proficiency} index={index} />
+    <div className="mt-auto">
+      <ProficiencyDisplay level={skill.proficiency} index={index} />
+    </div>
 
     {/* Hover Glow Effect */}
     <div
@@ -242,7 +269,6 @@ export default function SkillsPage() {
       style={{ backgroundColor: "var(--bg-canvas)", color: "var(--text-body)" }}
     >
       {/* Header */}
-
       <div className="max-w-7xl mx-auto mb-20 pt-20">
         <div className="flex items-center gap-3 mb-4">
           <div
@@ -266,8 +292,9 @@ export default function SkillsPage() {
           }}
         >
           Technical <br />
+          {/* Added slight spacing to fix kerning issue */}
           <span
-            className="text-transparent"
+            className="text-transparent block mt-2 md:mt-4"
             style={{ WebkitTextStroke: "1px var(--text-display)" }}
           >
             Arsenal
@@ -276,12 +303,10 @@ export default function SkillsPage() {
       </div>
 
       {/* Skills Layout */}
-
       <div className="max-w-7xl mx-auto space-y-24">
         {SKILL_DATA.map((section, sectionIdx) => (
           <div key={section.category} className="relative">
             {/* Section Header */}
-
             <div
               className="flex items-end gap-4 mb-8 border-b pb-4"
               style={{ borderColor: "var(--border)" }}
@@ -300,12 +325,11 @@ export default function SkillsPage() {
                 className="font-mono text-xs mb-1 ml-auto"
                 style={{ color: "var(--text-muted)" }}
               >
-                Module 0{sectionIdx + 1}
+                CORE STACK 0{sectionIdx + 1}
               </span>
             </div>
 
             {/* Responsive Grid */}
-
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
               {section.skills.map((skill, idx) => (
                 <SkillCard key={skill.name} skill={skill} index={idx} />
