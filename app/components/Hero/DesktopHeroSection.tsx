@@ -15,7 +15,7 @@ export const DesktopHeroSection = () => {
           className="font-display text-[22vw] leading-none tracking-tighter select-none text-end m-0 p-0"
           style={{
             color: "var(--text-display)",
-            opacity: 0.3,
+            opacity: 0.1,
           }}
         >
           {NAME_TEXT}

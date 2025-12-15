@@ -12,7 +12,7 @@ export const MobileHeroSection = () => {
             className="absolute bottom-[70px] left-0 right-0 w-full font-display text-[32vw] leading-none tracking-tighter select-none text-center"
             style={{
               color: "var(--text-display)",
-              opacity: 0.5,
+              opacity: 0.1,
             }}
           >
             {NAME_TEXT}
