@@ -1,5 +1,11 @@
 import type { Metadata } from "next";
-import { Anton, Inter, Alumni_Sans_Pinstripe } from "next/font/google";
+import {
+  Anton,
+  Inter,
+  Alumni_Sans_Pinstripe,
+  Italianno,
+  Poiret_One,
+} from "next/font/google";
 import "./globals.css";
 import { NavigationWrapper } from "./components/Navigation/NavigationWrapper";
 import { ThemeProvider } from "./components/ThemeProvider";
@@ -22,6 +28,18 @@ const alumniSansPinstripe = Alumni_Sans_Pinstripe({
   subsets: ["latin"],
 });
 
+const italianno = Italianno({
+  weight: "400",
+  variable: "--font-italianno",
+  subsets: ["latin"],
+});
+
+const poiretOne = Poiret_One({
+  weight: "400",
+  variable: "--font-poiret",
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
   title: "Jay makavana Portfolio",
   description:
@@ -36,7 +54,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${anton.variable} ${inter.variable} ${alumniSansPinstripe.variable} antialiased font-body`}
+        className={`${anton.variable} ${inter.variable} ${alumniSansPinstripe.variable} ${italianno.variable} ${poiretOne.variable} antialiased font-body`}
       >
         <ThemeProvider
           attribute="class"

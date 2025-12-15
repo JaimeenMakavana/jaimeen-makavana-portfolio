@@ -81,14 +81,14 @@ export const DesktopNavigation = ({
     >
       {/* Center Sparkles FAB */}
       <motion.div
-        className="relative group p-2"
+        className="relative group mb-2"
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.1 }}
       >
         <Link
           href="/jiva"
-          className="w-12 h-12 rounded-full flex items-center justify-center shadow-xl transition-all hover:scale-110 active:scale-95"
+          className="size-14 rounded-full flex items-center justify-center shadow-xl transition-all hover:scale-110 active:scale-95"
           style={{
             backgroundColor: "var(--bg-accent-glow)",
             color: "black",
