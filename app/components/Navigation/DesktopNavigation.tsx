@@ -31,7 +31,6 @@ const NAVIGATION_ITEMS = [
     label: "Projects",
     icon: FolderKanban,
   },
-  { id: "contact" as const, href: "/contact", label: "Contact", icon: Mail },
 ] as const;
 
 const containerVariants = {
@@ -79,7 +78,7 @@ export const DesktopNavigation = ({
       className="hidden md:block fixed left-6 top-1/2 -translate-y-1/2 z-50"
       aria-label="Main navigation"
     >
-      {/* Center Sparkles FAB */}
+      {/* Jiva Agent FAB */}
       <motion.div
         className="relative group mb-2"
         initial={{ scale: 0, opacity: 0 }}
@@ -105,6 +104,34 @@ export const DesktopNavigation = ({
           }}
         >
           जीवा: AI agent
+        </span>
+      </motion.div>
+      {/* Contact FAB */}
+      <motion.div
+        className="relative group mb-2"
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.15 }}
+      >
+        <Link
+          href="/contact"
+          className="size-14 rounded-full flex items-center justify-center shadow-xl transition-all hover:scale-110 active:scale-95"
+          style={{
+            backgroundColor: "var(--bg-accent-glow)",
+            color: "black",
+          }}
+          aria-label="Contact"
+        >
+          <Mail className="w-5 h-5" strokeWidth={1} />
+        </Link>
+        <span
+          className="absolute left-full top-1/2 -translate-y-1/2 ml-3 px-2 py-1 rounded whitespace-nowrap text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+          style={{
+            backgroundColor: "var(--nav-surface)",
+            color: "var(--bg-accent-glow)",
+          }}
+        >
+          Contact
         </span>
       </motion.div>
       <motion.div

@@ -31,7 +31,6 @@ const NAVIGATION_ITEMS = [
     label: "Projects",
     icon: FolderKanban,
   },
-  { id: "contact" as const, href: "/contact", label: "Contact", icon: Mail },
 ] as const;
 
 export const MobileBottomNavigation = ({
@@ -78,8 +77,9 @@ export const MobileBottomNavigation = ({
       )}
 
       <div className="md:hidden fixed bottom-6 left-6 right-6 z-50 flex items-end justify-between pointer-events-none">
-        {/* --- LEFT: JIVA AGENT FAB --- */}
-        <div className="pointer-events-auto">
+        {/* --- LEFT: JIVA AGENT & CONTACT FABS --- */}
+        <div className="flex flex-row gap-3 pointer-events-auto">
+          {/* Jiva Agent FAB */}
           <Link
             href="/jiva"
             onClick={() => onLinkClick(null)}
@@ -93,6 +93,22 @@ export const MobileBottomNavigation = ({
             <Sparkles className="w-6 h-6" strokeWidth={1.5} />
             <span className="text-xs font-medium whitespace-nowrap">
               जीवा: AI agent
+            </span>
+          </Link>
+          {/* Contact FAB */}
+          <Link
+            href="/contact"
+            onClick={() => onLinkClick(null)}
+            className="h-14 px-4 rounded-full flex items-center justify-center shadow-2xl transition-transform active:scale-90 hover:scale-105 gap-2"
+            style={{
+              backgroundColor: "var(--bg-accent-glow)",
+              color: "black",
+            }}
+            aria-label="Contact"
+          >
+            <Mail className="w-6 h-6" strokeWidth={1.5} />
+            <span className="text-xs font-medium whitespace-nowrap">
+              Contact
             </span>
           </Link>
         </div>
