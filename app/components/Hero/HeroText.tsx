@@ -1,9 +1,6 @@
 const MOBILE_TEXT =
   "Engineering smarter products with Next.js, Python, and a stubborn obsession for AI";
 
-const DESKTOP_TEXT =
-  "I'm Jaimeen Makavana, a developer who specializes in crafting scalable, thoughtful, AI-ready software. Engineering smarter products with Next.js, Python, and a stubborn obsession for AI";
-
 export const HeroText = () => {
   return (
     <div
@@ -20,7 +17,13 @@ export const HeroText = () => {
         className="text-5xl font-bold leading-tight text-center md:text-5xl 2xl:text-5xl lg:block hidden"
         style={{ fontFamily: "var(--font-poiret), sans-serif" }}
       >
-        {DESKTOP_TEXT}
+        I'm{" "}
+        <span className="inline-block bg-linear-to-r from-(--text-display) via-(--bg-accent-glow) to-(--text-display) bg-clip-text text-transparent">
+          Jaimeen Makavana
+        </span>
+        , a developer who specializes in crafting scalable, thoughtful, AI-ready
+        software. Engineering smarter products with Next.js, Python, and a
+        stubborn obsession for AI
       </p>
     </div>
   );
