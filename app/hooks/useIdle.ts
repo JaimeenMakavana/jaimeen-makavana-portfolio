@@ -45,7 +45,7 @@ export function useIdle(options: UseIdleOptions = {}) {
       }
     };
 
-    const handleMouseMove = () => {
+    const handleActivity = () => {
       // Clear existing timeout
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
@@ -82,10 +82,17 @@ export function useIdle(options: UseIdleOptions = {}) {
       onIdle?.();
     }, threshold);
 
-    window.addEventListener("mousemove", handleMouseMove);
+    // Support both mouse and touch events for mobile compatibility
+    window.addEventListener("mousemove", handleActivity);
+    window.addEventListener("touchstart", handleActivity, { passive: true });
+    window.addEventListener("touchmove", handleActivity, { passive: true });
+    window.addEventListener("scroll", handleActivity, { passive: true });
 
     return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mousemove", handleActivity);
+      window.removeEventListener("touchstart", handleActivity);
+      window.removeEventListener("touchmove", handleActivity);
+      window.removeEventListener("scroll", handleActivity);
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }

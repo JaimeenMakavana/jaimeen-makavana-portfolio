@@ -63,9 +63,9 @@ export function SentientCursor() {
   const currentThresholdIndexRef = useRef<number>(-1);
   const messageSeedRef = useRef<number>(0);
 
-  // Track cursor position and instantly hide on movement
+  // Track cursor/touch position and instantly hide on movement
   useEffect(() => {
-    // Initialize cursor position to center of screen if not yet moved
+    // Initialize position to center of screen if not yet moved
     if (typeof window !== "undefined" && !hasInitializedRef.current) {
       setCursorPosition({
         x: window.innerWidth / 2,
@@ -78,17 +78,33 @@ export function SentientCursor() {
     let lastX = 0;
     let lastY = 0;
 
-    const handleMouseMove = (e: MouseEvent) => {
+    const handleActivity = (e: MouseEvent | TouchEvent) => {
       // Throttle using requestAnimationFrame (60fps max)
       if (rafId === null) {
         rafId = requestAnimationFrame(() => {
+          let clientX: number;
+          let clientY: number;
+
+          // Handle both mouse and touch events
+          if (e instanceof MouseEvent) {
+            clientX = e.clientX;
+            clientY = e.clientY;
+          } else if (e.touches && e.touches.length > 0) {
+            // Use first touch point
+            clientX = e.touches[0].clientX;
+            clientY = e.touches[0].clientY;
+          } else {
+            rafId = null;
+            return;
+          }
+
           // Only update if position actually changed (micro-optimization)
-          if (e.clientX !== lastX || e.clientY !== lastY) {
-            lastX = e.clientX;
-            lastY = e.clientY;
+          if (clientX !== lastX || clientY !== lastY) {
+            lastX = clientX;
+            lastY = clientY;
 
             // Batch all state updates together
-            setCursorPosition({ x: e.clientX, y: e.clientY });
+            setCursorPosition({ x: clientX, y: clientY });
             setShowMessage(false);
             setDisplayedMessage("");
 
@@ -101,9 +117,13 @@ export function SentientCursor() {
       }
     };
 
-    window.addEventListener("mousemove", handleMouseMove, { passive: true });
+    // Support both mouse and touch events for mobile compatibility
+    window.addEventListener("mousemove", handleActivity, { passive: true });
+    window.addEventListener("touchmove", handleActivity, { passive: true });
+
     return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mousemove", handleActivity);
+      window.removeEventListener("touchmove", handleActivity);
       if (rafId !== null) {
         cancelAnimationFrame(rafId);
       }
@@ -212,14 +232,13 @@ export function SentientCursor() {
             duration: 0.3, // Faster entrance animation
             ease: [0.16, 1, 0.3, 1], // Custom easing for smooth float
           }}
-          className="fixed pointer-events-none"
+          className="fixed pointer-events-none max-w-[250px]"
           style={{
             left: `${cursorPosition.x}px`,
             top: `${cursorPosition.y}px`,
             fontFamily: "monospace",
-            fontSize: "11px",
+            fontSize: "13px",
             textShadow: "0 0 8px var(--bg-accent-glow)",
-            whiteSpace: "nowrap",
             userSelect: "none",
             fontWeight: "400",
             letterSpacing: "0.5px",
