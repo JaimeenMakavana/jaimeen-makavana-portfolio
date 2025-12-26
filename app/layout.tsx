@@ -9,6 +9,8 @@ import {
 import "./globals.css";
 import { NavigationWrapper } from "./components/Navigation/NavigationWrapper";
 import { ThemeProvider } from "./components/ThemeProvider";
+import { DecryptionSystem } from "./components/DecryptionSystem";
+import { VisitorTracker } from "./components/VisitorTracker";
 
 const anton = Anton({
   weight: "400",
@@ -62,6 +64,8 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <VisitorTracker />
+          <DecryptionSystem />
           <NavigationWrapper />
           {children}
         </ThemeProvider>

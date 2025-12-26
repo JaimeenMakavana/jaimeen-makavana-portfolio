@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Sparkles, ArrowRight, Lock, User } from "lucide-react";
+import { Sparkles, ArrowRight, Lock, User, Home } from "lucide-react";
 import { loginAction } from "@/app/actions/auth";
+import Link from "next/link";
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
@@ -115,6 +116,17 @@ export default function LoginPage() {
             )}
           </button>
         </form>
+
+        <div className="mt-6 text-center">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-sm text-neutral-600 hover:text-black transition-colors"
+            style={{ color: "var(--text-muted)" }}
+          >
+            <Home className="w-4 h-4" />
+            <span>Back to Portfolio</span>
+          </Link>
+        </div>
       </motion.div>
     </div>
   );

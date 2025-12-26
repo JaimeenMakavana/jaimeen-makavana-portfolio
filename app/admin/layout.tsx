@@ -11,6 +11,8 @@ import {
   LogOut,
   Terminal,
   Settings,
+  BarChart3,
+  Home,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { logoutAction } from "@/app/actions/auth";
@@ -26,6 +28,11 @@ const NAV_ITEMS = [
     label: "Signals / Inbox",
     href: "/admin/contact-list",
     icon: MessageSquare,
+  },
+  {
+    label: "Analytics",
+    href: "/admin/analytics",
+    icon: BarChart3,
   },
   {
     label: "Project CMS",
@@ -102,8 +109,15 @@ export default function AdminLayout({
           })}
         </nav>
 
-        {/* Footer / Logout */}
-        <div className="p-4 border-t border-neutral-900">
+        {/* Footer / Actions */}
+        <div className="p-4 border-t border-neutral-900 space-y-2">
+          <Link
+            href="/"
+            className="w-full flex items-center gap-3 px-4 py-3 text-neutral-400 hover:bg-neutral-900/50 hover:text-white rounded-xl transition-colors"
+          >
+            <Home className="w-5 h-5" />
+            <span className="text-sm font-medium">View Portfolio</span>
+          </Link>
           <button
             onClick={() => logoutAction()}
             className="w-full flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-red-500/10 hover:text-red-300 rounded-xl transition-colors"
@@ -122,12 +136,21 @@ export default function AdminLayout({
             ADMIN
           </span>
         </div>
-        <button
-          onClick={() => logoutAction()}
-          className="p-2 hover:bg-neutral-800 rounded-lg transition-colors"
-        >
-          <LogOut className="w-5 h-5 text-neutral-400" />
-        </button>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/"
+            className="p-2 hover:bg-neutral-800 rounded-lg transition-colors"
+            title="View Portfolio"
+          >
+            <Home className="w-5 h-5 text-neutral-400" />
+          </Link>
+          <button
+            onClick={() => logoutAction()}
+            className="p-2 hover:bg-neutral-800 rounded-lg transition-colors"
+          >
+            <LogOut className="w-5 h-5 text-neutral-400" />
+          </button>
+        </div>
       </div>
 
       {/* 3. MOBILE BOTTOM NAV */}

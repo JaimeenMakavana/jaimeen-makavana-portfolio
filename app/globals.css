@@ -145,3 +145,13 @@ body {
   filter: grayscale(100%) contrast(110%)
     drop-shadow(0 0 20px rgba(228, 233, 135, 0.4));
 }
+
+/* Scanline animation for decryption completion */
+@keyframes scanline {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(100vh);
+  }
+}
