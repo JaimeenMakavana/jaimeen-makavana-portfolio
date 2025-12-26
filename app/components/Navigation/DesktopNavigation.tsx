@@ -75,37 +75,9 @@ export const DesktopNavigation = ({
 
   return (
     <nav
-      className="hidden md:block fixed left-6 top-1/2 -translate-y-1/2 z-50"
+      className="hidden md:block fixed right-6 top-1/2 -translate-y-1/2 z-50"
       aria-label="Main navigation"
     >
-      {/* Jiva Agent FAB */}
-      <motion.div
-        className="relative group mb-2"
-        initial={{ scale: 0, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-      >
-        <Link
-          href="/jiva"
-          className="size-14 rounded-full flex items-center justify-center shadow-xl transition-all hover:scale-110 active:scale-95"
-          style={{
-            backgroundColor: "var(--bg-accent-glow)",
-            color: "black",
-          }}
-          aria-label="जीवा: AI Agent"
-        >
-          <Sparkles className="w-5 h-5" strokeWidth={1} />
-        </Link>
-        <span
-          className="absolute left-full top-1/2 -translate-y-1/2 ml-3 px-2 py-1 rounded whitespace-nowrap text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-          style={{
-            backgroundColor: "var(--nav-surface)",
-            color: "var(--bg-accent-glow)",
-          }}
-        >
-          जीवा: AI agent
-        </span>
-      </motion.div>
       {/* Contact FAB */}
       <motion.div
         className="relative group mb-2"
@@ -125,7 +97,7 @@ export const DesktopNavigation = ({
           <Mail className="w-5 h-5" strokeWidth={1} />
         </Link>
         <span
-          className="absolute left-full top-1/2 -translate-y-1/2 ml-3 px-2 py-1 rounded whitespace-nowrap text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+          className="absolute right-full top-1/2 -translate-y-1/2 mr-3 px-2 py-1 rounded whitespace-nowrap text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
           style={{
             backgroundColor: "var(--nav-surface)",
             color: "var(--bg-accent-glow)",
@@ -134,6 +106,44 @@ export const DesktopNavigation = ({
           Contact
         </span>
       </motion.div>
+      {/* Jiva Agent FAB */}
+      <motion.div
+        className="relative group mb-2"
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+      >
+        <Link
+          href="/jiva"
+          className="size-14 rounded-full flex items-center justify-center shadow-xl transition-all hover:scale-110 active:scale-95"
+          style={{
+            backgroundColor: "var(--nav-surface)",
+            color:
+              activeLink === "jiva"
+                ? "var(--bg-accent-glow)"
+                : "var(--nav-text-idle)",
+          }}
+          aria-label="जीवा: AI Agent"
+        >
+          <Sparkles className="w-5 h-5" strokeWidth={1} />
+        </Link>
+        <span
+          className="absolute right-full top-1/2 -translate-y-1/2 mr-3 px-2 py-1 rounded whitespace-nowrap text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+          style={{
+            backgroundColor:
+              activeLink === "jiva"
+                ? "var(--bg-accent-glow)"
+                : "var(--nav-surface)",
+            color:
+              activeLink === "jiva"
+                ? "var(--bg-accent-glow)"
+                : "var(--nav-text-idle)",
+          }}
+        >
+          जीवा: AI agent
+        </span>
+      </motion.div>
+
       <motion.div
         className="px-2 py-2 rounded-full flex flex-col items-center gap-3 shadow-lg"
         style={{

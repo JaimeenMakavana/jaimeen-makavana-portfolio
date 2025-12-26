@@ -21,9 +21,9 @@ export const HeroText = () => {
         <span className="inline-block bg-linear-to-r from-(--text-display) via-(--bg-accent-glow) to-(--text-display) bg-clip-text text-transparent">
           Jaimeen Makavana
         </span>
-        , a developer who specializes in crafting scalable, thoughtful, AI-ready
-        software. Engineering smarter products with Next.js, Python, and a
-        stubborn obsession for AI
+        , a frontend developer who specializes in crafting scalable, thoughtful,
+        AI-ready software. Engineering smarter products with Next.js, Python,
+        and a stubborn obsession for AI
       </p>
     </div>
   );

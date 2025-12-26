@@ -3,6 +3,7 @@
 import { HeroText } from "./components/Hero/HeroText";
 import { MobileHeroSection } from "./components/Hero/MobileHeroSection";
 import { DesktopHeroSection } from "./components/Hero/DesktopHeroSection";
+import { SentientCursor } from "./components/SentientCursor";
 
 const Page = () => {
   return (
@@ -13,6 +14,7 @@ const Page = () => {
           "radial-gradient(circle at 50% 30%, var(--bg-accent-glow) 0%, var(--bg-canvas) 70%)",
       }}
     >
+      <SentientCursor />
       <HeroText />
       <MobileHeroSection />
       <DesktopHeroSection />
