@@ -1,6 +1,5 @@
 "use client";
-
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { ContactHeader } from "../components/contact/ContactHeader";
 import { ContactInfoSection } from "../components/contact/ContactInfoSection";
 import { ContactForm } from "../components/contact/ContactForm";
@@ -18,54 +17,61 @@ export default function ContactPage() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleFormStateChange = (newState: Partial<FormState>) => {
+  const handleFormStateChange = useCallback((newState: Partial<FormState>) => {
     setFormState((prev) => ({ ...prev, ...newState }));
     // Clear error when user starts typing
-    if (error) setError(null);
-  };
+    setError((prevError) => (prevError ? null : prevError));
+  }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError(null);
-    setIsSuccess(false);
+  const handleActiveFieldChange = useCallback((field: string | null) => {
+    setActiveField(field);
+  }, []);
 
-    try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formState),
-      });
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      setIsLoading(true);
+      setError(null);
+      setIsSuccess(false);
 
-      const data = await response.json();
+      try {
+        const response = await fetch("/api/contact", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formState),
+        });
 
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to submit form");
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Failed to submit form");
+        }
+
+        // Success - reset form and show success message
+        setIsSuccess(true);
+        setFormState({
+          name: "",
+          email: "",
+          message: "",
+          intent: "project",
+        });
+
+        // Reset success state after 5 seconds
+        setTimeout(() => {
+          setIsSuccess(false);
+        }, 5000);
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "An unexpected error occurred"
+        );
+      } finally {
+        setIsLoading(false);
       }
-
-      // Success - reset form and show success message
-      setIsSuccess(true);
-      setFormState({
-        name: "",
-        email: "",
-        message: "",
-        intent: "project",
-      });
-
-      // Reset success state after 5 seconds
-      setTimeout(() => {
-        setIsSuccess(false);
-      }, 5000);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "An unexpected error occurred"
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    },
+    [formState]
+  );
 
   return (
     <div
@@ -79,9 +85,8 @@ export default function ContactPage() {
 
         <ContactForm
           formState={formState}
-          activeField={activeField}
           onFormStateChange={handleFormStateChange}
-          onActiveFieldChange={setActiveField}
+          onActiveFieldChange={handleActiveFieldChange}
           onSubmit={handleSubmit}
           isLoading={isLoading}
           isSuccess={isSuccess}

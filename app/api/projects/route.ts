@@ -81,16 +81,6 @@ export async function GET() {
     });
 
     if (!dbGist) {
-      // Log available gist filenames for debugging
-      console.log(
-        "Available gists:",
-        gists.map((g: any) => ({
-          id: g.id,
-          description: g.description,
-          files: g.files ? Object.keys(g.files) : [],
-        }))
-      );
-      // If not found, return empty (Frontend will use seed data)
       return NextResponse.json({ found: false, data: [] });
     }
 

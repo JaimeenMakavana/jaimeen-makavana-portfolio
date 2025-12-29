@@ -1,5 +1,3 @@
-"use client";
-
 import { HeroText } from "./components/Hero/HeroText";
 import { MobileHeroSection } from "./components/Hero/MobileHeroSection";
 import { DesktopHeroSection } from "./components/Hero/DesktopHeroSection";

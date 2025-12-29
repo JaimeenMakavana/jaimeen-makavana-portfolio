@@ -1,6 +1,8 @@
 "use client";
 
-export const ContactHeader = () => {
+import { memo } from "react";
+
+export const ContactHeader = memo(() => {
   return (
     <div className="max-w-7xl mx-auto mb-12">
       <h1
@@ -41,4 +43,6 @@ export const ContactHeader = () => {
       </div>
     </div>
   );
-};
+});
+
+ContactHeader.displayName = "ContactHeader";
