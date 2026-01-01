@@ -22,15 +22,13 @@ function getUniqueUserId(): string {
       screen.height,
       new Date().getTimezoneOffset(),
     ].join("|");
-    
+
     // Simple hash of fingerprint
-    const hash = fingerprint
-      .split("")
-      .reduce((acc, char) => {
-        const hash = ((acc << 5) - acc) + char.charCodeAt(0);
-        return hash & hash;
-      }, 0);
-    
+    const hash = fingerprint.split("").reduce((acc, char) => {
+      const hash = (acc << 5) - acc + char.charCodeAt(0);
+      return hash & hash;
+    }, 0);
+
     userId = `user_${Date.now()}_${Math.abs(hash).toString(36)}`;
     localStorage.setItem(storageKey, userId);
   }
@@ -42,7 +40,7 @@ function getUniqueUserId(): string {
 // Using sessionStorage so returning visitors are tracked again
 function hasUserBeenTracked(): boolean {
   if (typeof window === "undefined") return false;
-  
+
   const storageKey = "portfolio_user_tracked_session";
   return sessionStorage.getItem(storageKey) === "true";
 }
@@ -50,7 +48,7 @@ function hasUserBeenTracked(): boolean {
 // Mark user as tracked for this session
 function markUserAsTracked(): void {
   if (typeof window === "undefined") return;
-  
+
   const storageKey = "portfolio_user_tracked_session";
   sessionStorage.setItem(storageKey, "true");
 }
@@ -58,17 +56,10 @@ function markUserAsTracked(): void {
 export function useVisitorTracking(options: VisitorTrackingOptions = {}) {
   const { enabled = true } = options;
   const [isTracking, setIsTracking] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
 
-  // Ensure we're on the client before accessing browser APIs
+  // Track unique user only once
   useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  // Track unique user only once (after hydration)
-  useEffect(() => {
-    // Only run on client after hydration
-    if (!enabled || !isMounted) return;
+    if (!enabled) return;
 
     // Check if user was already tracked
     if (hasUserBeenTracked()) {
@@ -109,8 +100,7 @@ export function useVisitorTracking(options: VisitorTrackingOptions = {}) {
           // Handle rate limit errors gracefully
           if (response.status === 429) {
             const retryAfter = response.headers.get("Retry-After");
-            console.warn(
-              `Analytics rate limited. Retry after ${retryAfter}s`);
+            console.warn(`Analytics rate limited. Retry after ${retryAfter}s`);
           } else if (response.status === 503) {
             console.warn(
               "Analytics service temporarily unavailable (GitHub API limit)"
@@ -127,7 +117,7 @@ export function useVisitorTracking(options: VisitorTrackingOptions = {}) {
     }, 1000);
 
     return () => clearTimeout(timeout);
-  }, [enabled, isMounted]); // Run when mounted
+  }, [enabled]); // Only run once on mount
 
   return { isTracking };
 }

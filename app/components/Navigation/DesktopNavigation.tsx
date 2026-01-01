@@ -87,14 +87,10 @@ export const DesktopNavigation = ({
       >
         <Link
           href="/contact"
-          className="size-14 rounded-full flex items-center justify-center shadow-xl transition-all hover:scale-110 active:scale-95"
-          style={{
-            backgroundColor: "var(--bg-accent-glow)",
-            color: "black",
-          }}
+          className="shiny-cta size-14 flex items-center justify-center shadow-xl transition-all hover:scale-110 active:scale-95 focus:outline-none"
           aria-label="Contact"
         >
-          <Mail className="w-5 h-5" strokeWidth={1} />
+          <Mail className="w-5 h-5" strokeWidth={1.5} />
         </Link>
         <span
           className="absolute right-full top-1/2 -translate-y-1/2 mr-3 px-2 py-1 rounded whitespace-nowrap text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
