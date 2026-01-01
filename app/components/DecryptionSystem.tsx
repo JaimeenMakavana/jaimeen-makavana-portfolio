@@ -3,7 +3,6 @@
 import { useEffect, useState, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { useExploration } from "../hooks/useExploration";
-import { DecryptionProgressBar } from "./DecryptionProgressBar";
 import { CompletionPopup } from "./TerminalPopup";
 
 const POPUP_SHOWN_KEY = "portfolio_exploration_popup_shown";
@@ -89,9 +88,6 @@ export function DecryptionSystem() {
 
   return (
     <>
-      {/* Only show progress bar if not complete and not on excluded paths */}
-      {!isComplete && !isExcludedPath && <DecryptionProgressBar />}
-
       {/* Scanline Overlay - appears on completion */}
       {showScanline && (
         <div

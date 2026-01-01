@@ -179,7 +179,6 @@ export function useExploration() {
   }, [pathname, hasThemeChanged, theme, mounted]);
 
   const totalProgress = visitedPaths.length + (hasThemeChanged ? 1 : 0);
-  const progress = Math.min((totalProgress / TOTAL_STEPS) * 100, 100);
   const currentStage = Math.min(
     Math.ceil((totalProgress / TOTAL_STEPS) * 6),
     6
@@ -187,7 +186,6 @@ export function useExploration() {
 
   return {
     visitedPaths,
-    progress,
     currentStage,
     isComplete,
     totalSteps: TOTAL_STEPS,
