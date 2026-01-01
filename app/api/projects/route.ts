@@ -1,7 +1,111 @@
 import { NextRequest, NextResponse } from "next/server";
+import type { Project } from "@/app/components/ProjectComponents/types";
 
 const GITHUB_TOKEN = process.env.GITHUB_GIST_TOKEN;
 const GIST_FILENAME = "projects-list";
+
+// Fallback projects when Gist is not found
+export const fallbackProjects: Project[] = [
+  {
+    id: "keyai-chat",
+    title: "Real-Time Chat Module",
+    category: "AI Engineering",
+    tagline: "Low-latency chat for AI-first communities",
+    description:
+      "Built a real-time chat system for an AI-driven platform, supporting high-frequency message updates, typing indicators, notifications, and user preferences. Focused on performance, scroll optimization, and scalable state management.",
+    stack: ["React", "Next.js", "TypeScript", "WebSockets", "REST APIs"],
+    complexity: 5,
+    size: "large",
+    image: "/projects/keyai-chat.png",
+  },
+  {
+    id: "keyai-community",
+    title: "AI-Based Community Creation",
+    category: "AI Engineering",
+    tagline: "Generate and manage AI-powered communities",
+    description:
+      "Developed frontend architecture for AI-assisted community creation workflows, integrating backend AI services and dynamic configuration UIs. Emphasis on clean UX for complex, multi-step flows.",
+    stack: ["React", "Next.js", "TypeScript", "AI APIs"],
+    complexity: 4,
+    size: "large",
+    image: "/projects/keyai-community.png",
+  },
+  {
+    id: "koffeekodes-accounting",
+    title: "Enterprise Accounting Platform",
+    category: "System Design",
+    tagline: "Accounting workflows built from scratch",
+    description:
+      "Led frontend foundation for an accounting system handling financial records, reports, and validations. Built form-heavy, state-intensive interfaces with a strong focus on correctness and maintainability.",
+    stack: ["React", "TypeScript", "REST APIs"],
+    complexity: 5,
+    size: "large",
+    image: "/projects/accounting.png",
+  },
+  {
+    id: "koffeekodes-transactions",
+    title: "Financial Transaction Web App",
+    category: "System Design",
+    tagline: "Transaction processing for enterprise users",
+    description:
+      "Built core UI flows for an enterprise financial transaction system, including dashboards, transaction history, and role-based access. Focused on performance and predictable UI behavior.",
+    stack: ["React", "TypeScript", "APIs"],
+    complexity: 4,
+    size: "medium",
+    image: "/projects/transactions.png",
+  },
+  {
+    id: "webapster-services",
+    title: "Client-Facing Service Applications",
+    category: "Frontend Arch",
+    tagline: "Reusable UI systems for service projects",
+    description:
+      "Worked on multiple service-based React applications, building reusable components, improving performance, and delivering production-ready UI for diverse client requirements.",
+    stack: ["React", "JavaScript", "CSS"],
+    complexity: 3,
+    size: "medium",
+    image: "/projects/services.png",
+  },
+  {
+    id: "star-interrogator",
+    title: "Star Interrogator",
+    category: "AI Engineering",
+    tagline: "AI-powered image interrogation tool",
+    description:
+      "Side project using vision-capable LLMs to dynamically question images and extract structured insights. Focused on prompt design, frontend UX, and clear presentation of AI outputs.",
+    stack: ["Next.js", "TypeScript", "LLMs", "Vision APIs"],
+    complexity: 4,
+    size: "medium",
+    image: "/projects/star-interrogator.png",
+    link: "https://github.com/JaimeenMakavana/star-interrogator",
+  },
+  {
+    id: "project-management-system",
+    title: "Project Management System",
+    category: "System Design",
+    tagline: "Multi-tenant task and analytics platform",
+    description:
+      "Built a multi-tenant project management system with organization isolation, task boards, and analytics. Focused on scalable frontend architecture and clear data flows.",
+    stack: ["React", "Next.js", "TypeScript", "GraphQL"],
+    complexity: 5,
+    size: "large",
+    image: "/projects/pms.png",
+    link: "https://github.com/JaimeenMakavana/project-management-system",
+  },
+  {
+    id: "portfolio",
+    title: "Personal Portfolio",
+    category: "Frontend Arch",
+    tagline: "Engineering-focused portfolio site",
+    description:
+      "Designed and built a personal portfolio to showcase projects, technical depth, and engineering approach. Emphasis on performance, clarity, and maintainable UI.",
+    stack: ["Next.js", "TypeScript", "CSS"],
+    complexity: 2,
+    size: "small",
+    image: "/projects/portfolio.png",
+    link: "https://jaimeen-makavana-portfolio.vercel.app/",
+  },
+];
 
 // Helper function to get authentication header (consistent with contact route)
 function getAuthHeader(token: string): string {
@@ -11,11 +115,9 @@ function getAuthHeader(token: string): string {
 }
 
 export async function GET() {
+  // If no token, return fallback projects instead of error
   if (!GITHUB_TOKEN) {
-    return NextResponse.json(
-      { error: "Server configuration error: GitHub token not configured" },
-      { status: 500 }
-    );
+    return NextResponse.json({ found: false, data: fallbackProjects });
   }
 
   try {
@@ -81,7 +183,7 @@ export async function GET() {
     });
 
     if (!dbGist) {
-      return NextResponse.json({ found: false, data: [] });
+      return NextResponse.json({ found: false, data: fallbackProjects });
     }
 
     // Get the actual filename (might be case-different or auto-named by GitHub)
@@ -123,25 +225,27 @@ export async function GET() {
         gistId: dbGist.id,
         availableFiles: Object.keys(gistDetail.files || {}),
       });
-      return NextResponse.json({ found: false, data: [] });
+      return NextResponse.json({ found: false, data: fallbackProjects });
     }
 
     // Parse the JSON content
     const data = JSON.parse(file.content);
+    const projectsArray = Array.isArray(data) ? data : [];
+
+    // If Gist exists but is empty, use fallback
+    if (projectsArray.length === 0) {
+      return NextResponse.json({ found: false, data: fallbackProjects });
+    }
 
     return NextResponse.json({
       found: true,
       gistId: dbGist.id,
-      data: Array.isArray(data) ? data : [],
+      data: projectsArray,
     });
   } catch (error) {
     console.error("Error fetching projects:", error);
-    const errorMessage =
-      error instanceof Error ? error.message : "Failed to fetch projects";
-    return NextResponse.json(
-      { error: `Failed to fetch projects: ${errorMessage}` },
-      { status: 500 }
-    );
+    // Return fallback projects on error instead of error response
+    return NextResponse.json({ found: false, data: fallbackProjects });
   }
 }
 

@@ -23,10 +23,11 @@ export default function ProjectsPage() {
         const res = await fetch("/api/projects");
         const json = await res.json();
 
-        if (json.found && json.data && Array.isArray(json.data)) {
+        // Use data if available (either from Gist or fallback)
+        if (json.data && Array.isArray(json.data) && json.data.length > 0) {
           setProjects(json.data);
         } else {
-          // If no Gist found, set empty array
+          // Only set empty if truly no data available
           setProjects([]);
         }
       } catch (error) {
