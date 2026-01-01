@@ -132,7 +132,7 @@ export const DesktopNavigation = ({
                 : "var(--nav-surface)",
             color:
               activeLink === "jiva"
-                ? "var(--bg-accent-glow)"
+                ? "var(--text-display)"
                 : "var(--nav-text-idle)",
           }}
         >
