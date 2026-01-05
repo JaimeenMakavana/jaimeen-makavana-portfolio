@@ -40,7 +40,11 @@ interface SkillItem {
 
 interface SkillSection {
   category: SkillCategory;
-  icon: React.ElementType;
+  icon: React.ComponentType<{
+    className?: string;
+    strokeWidth?: number;
+    style?: React.CSSProperties;
+  }>;
   skills: SkillItem[];
 }
 
