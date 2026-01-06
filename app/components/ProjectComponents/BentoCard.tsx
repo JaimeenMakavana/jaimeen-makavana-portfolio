@@ -51,6 +51,51 @@ export const BentoCard = ({ project, onClick }: BentoCardProps) => {
       }}
       onMouseMove={handleMouseMove}
     >
+      {/* Background Image */}
+      {project.image && (
+        <>
+          {/* Desktop Background Image */}
+          <div
+            className="hidden md:block absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity duration-500"
+            style={{
+              backgroundImage: `url(${project.image})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
+            }}
+          />
+          {/* Mobile Background Image */}
+          {project.imageMobile && (
+            <div
+              className="md:hidden absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity duration-500"
+              style={{
+                backgroundImage: `url(${project.imageMobile})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
+              }}
+            />
+          )}
+          {/* Fallback for mobile if no imageMobile provided */}
+          {!project.imageMobile && (
+            <div
+              className="md:hidden absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity duration-500"
+              style={{
+                backgroundImage: `url(${project.image})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
+              }}
+            />
+          )}
+          {/* Gradient overlay to ensure text readability */}
+          <div
+            className="absolute inset-0 bg-gradient-to-t from-[var(--card)] via-transparent to-transparent pointer-events-none"
+            style={{ opacity: 0.7 }}
+          />
+        </>
+      )}
+
       {/* 1. HOVER: Spotlight Effect */}
       <motion.div
         className="pointer-events-none absolute -inset-px rounded-3xl opacity-0 transition duration-300 group-hover:opacity-100"

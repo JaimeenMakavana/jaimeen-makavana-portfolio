@@ -16,6 +16,7 @@ export interface Project {
   complexity: number;
   size: ProjectSize;
   image: string;
+  imageMobile?: string;
   link?: string;
   stat?: string;
 }

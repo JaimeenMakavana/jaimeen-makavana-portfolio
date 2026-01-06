@@ -29,12 +29,56 @@ export const ExpandedCard = ({ project, onClose }: ExpandedCardProps) => {
         >
           {/* Expanded Header */}
           <div
-            className="relative p-8 md:p-12 border-b"
+            className="relative p-8 md:p-12 border-b overflow-hidden"
             style={{
               backgroundColor: "var(--bg-canvas)",
               borderColor: "var(--border)",
             }}
           >
+            {/* Background Image in Header */}
+            {project.image && (
+              <>
+                {/* Desktop Background Image */}
+                <div
+                  className="hidden md:block absolute inset-0 opacity-5"
+                  style={{
+                    backgroundImage: `url(${project.image})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    backgroundRepeat: "no-repeat",
+                  }}
+                />
+                {/* Mobile Background Image */}
+                {project.imageMobile && (
+                  <div
+                    className="md:hidden absolute inset-0 opacity-5"
+                    style={{
+                      backgroundImage: `url(${project.imageMobile})`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                      backgroundRepeat: "no-repeat",
+                    }}
+                  />
+                )}
+                {/* Fallback for mobile if no imageMobile provided */}
+                {!project.imageMobile && (
+                  <div
+                    className="md:hidden absolute inset-0 opacity-5"
+                    style={{
+                      backgroundImage: `url(${project.image})`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                      backgroundRepeat: "no-repeat",
+                    }}
+                  />
+                )}
+                {/* Gradient overlay to ensure text readability */}
+                <div
+                  className="absolute inset-0 bg-gradient-to-b from-[var(--bg-canvas)] via-transparent to-transparent pointer-events-none"
+                  style={{ opacity: 0.8 }}
+                />
+              </>
+            )}
             <button
               onClick={(e) => {
                 e.stopPropagation();
