@@ -37,7 +37,7 @@ export const NavigationLinkItem = ({
     >
       <Icon className="w-5 h-5 transition-all duration-300" strokeWidth={1} />
       <span
-        className="absolute right-full mr-3 px-2 py-1 rounded whitespace-nowrap text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+        className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 px-2 py-1 rounded whitespace-nowrap text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
         style={{
           backgroundColor: "var(--nav-surface)",
           color: isActive ? "var(--bg-accent-glow)" : "var(--nav-text-idle)",

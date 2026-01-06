@@ -6,7 +6,7 @@ export const DesktopHeroSection = () => {
   return (
     <>
       <PortraitImage
-        className="hidden lg:block absolute right-0 2xl:right-20 2xl:top-20 z-10 top-0 h-full w-auto subject-image object-contain"
+        className="hidden lg:block absolute right-0 2xl:right-20 2xl:top-20 z-10 top-0 h-full w-auto object-contain"
         height={1000}
         priority
       />

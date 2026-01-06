@@ -18,7 +18,7 @@ export const MobileHeroSection = () => {
             {NAME_TEXT}
           </h1>
           <PortraitImage
-            className="subject-image w-full md:w-[70%] mx-auto object-contain mb-[80px]"
+            className="w-full md:w-[70%] mx-auto object-contain mb-[80px]"
             style={{ opacity: 0.7 }}
             priority
           />

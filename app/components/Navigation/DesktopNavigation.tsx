@@ -69,85 +69,86 @@ export const DesktopNavigation = ({
 }: DesktopNavigationProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  // Split items for top and bottom of FAB
-  const topItems = NAVIGATION_ITEMS.slice(0, 2);
-  const bottomItems = NAVIGATION_ITEMS.slice(2);
-
   return (
     <nav
-      className="hidden md:block fixed right-6 top-1/2 -translate-y-1/2 z-50"
+      className="hidden md:flex fixed bottom-6 left-1/2 -translate-x-1/2 z-50 items-center gap-3"
       aria-label="Main navigation"
     >
-      {/* Contact FAB */}
-      <motion.div
-        className="relative group mb-2"
-        initial={{ scale: 0, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.15 }}
-      >
-        <Link
-          href="/contact"
-          className="shiny-cta size-14 flex items-center justify-center shadow-xl transition-all hover:scale-110 active:scale-95 focus:outline-none"
-          aria-label="Contact"
+      {/* Contact and Jiva FABs - Grouped together on one side */}
+      <div className="flex items-center gap-3">
+        {/* Contact FAB */}
+        <motion.div
+          className="relative group"
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.15 }}
         >
-          <Mail className="w-5 h-5" strokeWidth={1.5} />
-        </Link>
-        <span
-          className="absolute right-full top-1/2 -translate-y-1/2 mr-3 px-2 py-1 rounded whitespace-nowrap text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-          style={{
-            backgroundColor: "var(--nav-surface)",
-            color: "var(--bg-accent-glow)",
-          }}
-        >
-          Contact
-        </span>
-      </motion.div>
-      {/* Jiva Agent FAB */}
-      <motion.div
-        className="relative group mb-2"
-        initial={{ scale: 0, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-      >
-        <Link
-          href="/jiva"
-          className="size-14 rounded-full flex items-center justify-center shadow-xl transition-all hover:scale-110 active:scale-95"
-          style={{
-            backgroundColor: "var(--nav-surface)",
-            color:
-              activeLink === "jiva"
-                ? "var(--bg-accent-glow)"
-                : "var(--nav-text-idle)",
-          }}
-          aria-label="जीवा: AI Agent"
-        >
-          <Sparkles className="w-5 h-5" strokeWidth={1} />
-        </Link>
-        <span
-          className="absolute right-full top-1/2 -translate-y-1/2 mr-3 px-2 py-1 rounded whitespace-nowrap text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-          style={{
-            backgroundColor:
-              activeLink === "jiva"
-                ? "var(--bg-accent-glow)"
-                : "var(--nav-surface)",
-            color:
-              activeLink === "jiva"
-                ? "var(--text-display)"
-                : "var(--nav-text-idle)",
-          }}
-        >
-          जीवा: AI agent
-        </span>
-      </motion.div>
+          <Link
+            href="/contact"
+            className="shiny-cta size-14 flex items-center justify-center shadow-xl transition-all hover:scale-110 active:scale-95 focus:outline-none"
+            aria-label="Contact"
+          >
+            <Mail className="w-5 h-5" strokeWidth={1.5} />
+          </Link>
+          <span
+            className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 px-2 py-1 rounded whitespace-nowrap text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+            style={{
+              backgroundColor: "var(--nav-surface)",
+              color: "var(--bg-accent-glow)",
+            }}
+          >
+            Contact
+          </span>
+        </motion.div>
 
+        {/* Jiva Agent FAB */}
+        <motion.div
+          className="relative group"
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          <Link
+            href="/jiva"
+            className="size-14 rounded-full flex items-center justify-center shadow-xl transition-all hover:scale-110 active:scale-95"
+            style={{
+              backgroundColor: "var(--nav-surface)",
+              color:
+                activeLink === "jiva"
+                  ? "var(--bg-accent-glow)"
+                  : "var(--nav-text-idle)",
+            }}
+            aria-label="जीवा: AI Agent"
+          >
+            <Sparkles className="w-5 h-5" strokeWidth={1} />
+          </Link>
+          <span
+            className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 px-2 py-1 rounded whitespace-nowrap text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+            style={{
+              backgroundColor:
+                activeLink === "jiva"
+                  ? "var(--bg-accent-glow)"
+                  : "var(--nav-surface)",
+              color:
+                activeLink === "jiva"
+                  ? "var(--text-display)"
+                  : "var(--nav-text-idle)",
+            }}
+          >
+            जीवा: AI agent
+          </span>
+        </motion.div>
+      </div>
+
+      {/* Main Menu Bar */}
       <motion.div
-        className="px-2 py-2 rounded-full flex flex-col items-center gap-3 shadow-lg"
+        className="flex items-center gap-3 px-4 py-2 rounded-full shadow-lg"
         style={{
           backgroundColor: "var(--nav-surface)",
           color: "var(--nav-text-idle)",
         }}
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
+        initial={{ opacity: 0, y: 20, scale: 0.8 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.3 }}
       >
         {/* Toggle Button */}
@@ -184,29 +185,14 @@ export const DesktopNavigation = ({
         <AnimatePresence>
           {isOpen && (
             <motion.div
-              className="flex flex-col items-center gap-3"
+              className="flex items-center gap-3"
               variants={containerVariants}
               initial="hidden"
               animate="visible"
               exit="exit"
             >
-              {/* Top items */}
-              {topItems.map((item) => (
-                <motion.div key={item.id} variants={itemVariants}>
-                  <NavigationLinkItem
-                    href={item.href}
-                    label={item.label}
-                    icon={item.icon}
-                    activeLink={activeLink}
-                    linkId={item.id}
-                    onMouseEnter={onMouseEnter}
-                    onMouseLeave={onMouseLeave}
-                  />
-                </motion.div>
-              ))}
-
-              {/* Bottom items */}
-              {bottomItems.map((item) => (
+              {/* Navigation items */}
+              {NAVIGATION_ITEMS.map((item) => (
                 <motion.div key={item.id} variants={itemVariants}>
                   <NavigationLinkItem
                     href={item.href}
