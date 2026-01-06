@@ -466,17 +466,10 @@ export default function Scene() {
     },
     {
       url: isMobile
-        ? "/project-images/bookself-sm.png"
-        : "/project-images/bookself-lg.png",
-      title: "Bookself",
-      projectUrl: "https://books-collections-five.vercel.app/",
-    },
-    {
-      url: isMobile
-        ? "/project-images/growth-vector-sm.png"
-        : "/project-images/growth-vector-lg.png",
-      title: "Growth Vector",
-      projectUrl: "https://growth-vector.vercel.app/",
+        ? "/project-images/agent-vis-sm.png"
+        : "/project-images/agent-vis-lg.png",
+      title: "Agent Vis",
+      projectUrl: "https://agent-vis.vercel.app/",
     },
     {
       url: isMobile
@@ -491,6 +484,34 @@ export default function Scene() {
         : "/project-images/growth-vector-lg.png",
       title: "Growth Vector",
       projectUrl: "https://growth-vector.vercel.app/",
+    },
+    {
+      url: isMobile
+        ? "/project-images/agent-vis-sm.png"
+        : "/project-images/agent-vis-lg.png",
+      title: "Agent Vis",
+      projectUrl: "https://agent-vis.vercel.app/",
+    },
+    {
+      url: isMobile
+        ? "/project-images/bookself-sm.png"
+        : "/project-images/bookself-lg.png",
+      title: "Bookself",
+      projectUrl: "https://books-collections-five.vercel.app/",
+    },
+    {
+      url: isMobile
+        ? "/project-images/growth-vector-sm.png"
+        : "/project-images/growth-vector-lg.png",
+      title: "Growth Vector",
+      projectUrl: "https://growth-vector.vercel.app/",
+    },
+    {
+      url: isMobile
+        ? "/project-images/agent-vis-sm.png"
+        : "/project-images/agent-vis-lg.png",
+      title: "Agent Vis",
+      projectUrl: "https://agent-vis.vercel.app/",
     },
   ];
 
