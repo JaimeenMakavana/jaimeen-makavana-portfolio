@@ -35,7 +35,7 @@ const CAREER_MILESTONES: CareerMilestone[] = [
       "https://images.unsplash.com/photo-1510915361405-ef8a93d77744?q=80&w=2070&auto=format&fit=crop",
   },
   {
-    era: "2022 - 2023",
+    era: "2021 - 2023",
     title: "Webapster",
     description:
       "First professional role. Real production chaos, UI systems, and state management. Theory became practice.",
