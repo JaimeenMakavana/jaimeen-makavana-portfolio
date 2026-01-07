@@ -24,6 +24,7 @@ export const NavigationWrapper = () => {
     if (path.startsWith("/about")) return "about"; // startsWith is safer for nested routes
     if (path.startsWith("/skills")) return "skills";
     if (path.startsWith("/projects")) return "projects";
+    if (path.startsWith("/interests")) return "interests";
     if (path.startsWith("/contact")) return "contact";
     if (path.startsWith("/jiva")) return "jiva";
     return null;
