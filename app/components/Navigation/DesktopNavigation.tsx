@@ -7,6 +7,7 @@ import {
   Menu,
   X,
   Cpu,
+  Heart,
 } from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -30,6 +31,12 @@ const NAVIGATION_ITEMS = [
     href: "/projects",
     label: "Projects",
     icon: FolderKanban,
+  },
+  {
+    id: "interests" as const,
+    href: "/interests",
+    label: "Interests",
+    icon: Heart,
   },
 ] as const;
 

@@ -5,6 +5,7 @@ export type NavigationLink =
   | "about"
   | "skills"
   | "projects"
+  | "interests"
   | "contact"
   | "jiva"
   | null;
