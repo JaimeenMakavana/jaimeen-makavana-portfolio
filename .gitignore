@@ -42,3 +42,4 @@ next-env.d.ts
 
 # RAG Index
 app/data/codebase-index.json
+config.bat
