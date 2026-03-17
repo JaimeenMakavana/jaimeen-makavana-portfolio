@@ -17,7 +17,7 @@ export default function JivaPage() {
   }, [messages]);
 
   return (
-    <div className="min-h-screen bg-[#fafafa] flex flex-col items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-[#fafafa] flex flex-col items-center justify-center p-4 relative overflow-hidden lg:pb-48">
       {/* Background Ambient Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] bg-[#e4e987] opacity-10 blur-[150px] rounded-full pointer-events-none" />
 

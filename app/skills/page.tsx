@@ -269,7 +269,7 @@ const SkillCard = ({ skill, index }: { skill: SkillItem; index: number }) => (
 export default function SkillsPage() {
   return (
     <div
-      className="min-h-screen p-4 md:py-20 md:px-28 pb-32"
+      className="min-h-screen p-4 md:py-20 md:px-28 pb-32 lg:pb-48"
       style={{ backgroundColor: "var(--bg-canvas)", color: "var(--text-body)" }}
     >
       {/* Header */}

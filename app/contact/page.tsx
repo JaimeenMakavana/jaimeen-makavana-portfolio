@@ -64,18 +64,18 @@ export default function ContactPage() {
         }, 5000);
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : "An unexpected error occurred"
+          err instanceof Error ? err.message : "An unexpected error occurred",
         );
       } finally {
         setIsLoading(false);
       }
     },
-    [formState]
+    [formState],
   );
 
   return (
     <div
-      className="min-h-screen p-4 md:p-8 pt-24 pb-32 md:px-28"
+      className="min-h-screen p-4 md:p-8 py-24  lg:pb-48 md:px-28"
       style={{ backgroundColor: "var(--bg-canvas)" }}
     >
       <ContactHeader />

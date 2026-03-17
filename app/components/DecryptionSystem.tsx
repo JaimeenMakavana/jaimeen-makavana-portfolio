@@ -3,7 +3,6 @@
 import { useEffect, useState, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { useExploration } from "../hooks/useExploration";
-import { CompletionPopup } from "./TerminalPopup";
 
 const POPUP_SHOWN_KEY = "portfolio_exploration_popup_shown";
 const EXCLUDED_PATHS = ["/admin", "/login"];
@@ -23,7 +22,7 @@ export function DecryptionSystem() {
 
   // Check if we're on an excluded path (admin, login, etc.)
   const isExcludedPath = EXCLUDED_PATHS.some((excluded) =>
-    pathname?.startsWith(excluded)
+    pathname?.startsWith(excluded),
   );
 
   // Trigger effects when completion is reached (only once)
@@ -99,9 +98,6 @@ export function DecryptionSystem() {
           }}
         />
       )}
-
-      {/* Completion Popup */}
-      <CompletionPopup isOpen={showTerminal} onClose={handleTerminalClose} />
     </>
   );
 }
