@@ -134,7 +134,7 @@ export default function ProjectCmsClient({
   };
 
   return (
-    <AdminPageShell className="relative min-h-full">
+    <AdminPageShell className="relative flex flex-col h-full overflow-hidden">
       <AdminEditorHeader
         icon={LayoutTemplate}
         title="Project CMS"
@@ -150,10 +150,10 @@ export default function ProjectCmsClient({
         syncingLabel="Uploading..."
       />
 
-      <main className="pt-24 px-6 pb-20 max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12">
+      <main className="p-4 grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1 min-h-0 overflow-hidden">
         {/* LEFT COLUMN: LIST */}
-        <div className="lg:col-span-4 space-y-4">
-          <div className="flex items-center justify-between mb-4">
+        <div className="lg:col-span-4 flex flex-col min-h-0">
+          <div className="flex items-center justify-between mb-4 flex-shrink-0">
             <h2
               className="font-mono text-xs uppercase tracking-widest"
               style={{ color: "var(--text-muted)" }}
@@ -180,7 +180,7 @@ export default function ProjectCmsClient({
             </button>
           </div>
 
-          <div className="space-y-3 pb-20">
+          <div className="space-y-3 pb-20 flex-1 min-h-0 overflow-y-auto">
             {projects.length === 0 ? (
               <div
                 className="p-8 text-center border-2 border-dashed rounded-xl"
@@ -250,13 +250,11 @@ export default function ProjectCmsClient({
                   onMouseEnter={(e) => {
                     if (selectedId !== project.id) {
                       e.currentTarget.style.borderColor = "var(--text-display)";
-                      e.currentTarget.style.opacity = "0.3";
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (selectedId !== project.id) {
                       e.currentTarget.style.borderColor = "var(--border)";
-                      e.currentTarget.style.opacity = "1";
                     }
                   }}
                 >
@@ -264,10 +262,6 @@ export default function ProjectCmsClient({
                     <span
                       className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded"
                       style={{
-                        backgroundColor:
-                          selectedId === project.id
-                            ? "var(--muted)"
-                            : "var(--muted)",
                         color:
                           selectedId === project.id
                             ? "var(--bg-accent-glow)"
@@ -305,8 +299,8 @@ export default function ProjectCmsClient({
         </div>
 
         {/* RIGHT COLUMN: EDITOR */}
-        <div className="lg:col-span-8">
-          <div className="sticky top-24">
+        <div className="lg:col-span-8 min-h-0 overflow-y-auto">
+          <div>
             <div
               className="rounded-2xl shadow-sm border overflow-hidden"
               style={{

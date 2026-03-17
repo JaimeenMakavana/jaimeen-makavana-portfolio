@@ -31,7 +31,7 @@ export function AdminEditorHeader({
 }: AdminEditorHeaderProps) {
   return (
     <header
-      className="sticky top-0 left-0 right-0 z-50 flex items-center justify-between border-b px-6 py-4 backdrop-blur-md"
+      className="flex items-center justify-between border-b px-6 py-4 backdrop-blur-md"
       style={{
         backgroundColor: "var(--bg-canvas)",
         opacity: 0.8,

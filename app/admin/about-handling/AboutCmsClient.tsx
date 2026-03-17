@@ -167,7 +167,7 @@ export default function AboutCmsClient({
   };
 
   return (
-    <AdminPageShell className="min-h-full">
+    <AdminPageShell className="relative flex flex-col h-full overflow-hidden">
       <AdminEditorHeader
         icon={History}
         title="Career Journey CMS"
@@ -182,10 +182,10 @@ export default function AboutCmsClient({
         onSync={handleSync}
       />
 
-      <main className="pt-24 px-6 pb-20 max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12">
+      <main className="p-4 grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1 min-h-0 overflow-hidden">
         {/* LEFT COLUMN: TIMELINE LIST */}
-        <div className="lg:col-span-4 space-y-4">
-          <div className="flex items-center justify-between mb-4">
+        <div className="lg:col-span-4 flex flex-col min-h-0">
+          <div className="flex items-center justify-between mb-4 flex-shrink-0">
             <h2
               className="font-mono text-xs uppercase tracking-widest"
               style={{ color: "var(--text-muted)" }}
@@ -213,7 +213,7 @@ export default function AboutCmsClient({
           </div>
 
           <div
-            className="relative border-l ml-4 space-y-6 pb-12"
+            className="relative border-l ml-4 space-y-6 pb-12 flex-1 min-h-0 overflow-y-auto"
             style={{ borderColor: "var(--border)" }}
           >
             {milestones.map((item, index) => (
@@ -261,13 +261,11 @@ export default function AboutCmsClient({
                   onMouseEnter={(e) => {
                     if (selectedId !== item.id) {
                       e.currentTarget.style.borderColor = "var(--text-display)";
-                      e.currentTarget.style.opacity = "0.3";
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (selectedId !== item.id) {
                       e.currentTarget.style.borderColor = "var(--border)";
-                      e.currentTarget.style.opacity = "1";
                     }
                   }}
                 >
@@ -275,10 +273,6 @@ export default function AboutCmsClient({
                     <span
                       className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded"
                       style={{
-                        backgroundColor:
-                          selectedId === item.id
-                            ? "var(--muted)"
-                            : "var(--muted)",
                         color:
                           selectedId === item.id
                             ? "var(--bg-accent-glow)"
@@ -349,11 +343,7 @@ export default function AboutCmsClient({
                   <p
                     className="text-xs line-clamp-2"
                     style={{
-                      color:
-                        selectedId === item.id
-                          ? "var(--text-muted)"
-                          : "var(--text-muted)",
-                      opacity: selectedId === item.id ? 0.7 : 1,
+                      color: "var(--text-muted)",
                     }}
                   >
                     {item.description}
@@ -365,8 +355,8 @@ export default function AboutCmsClient({
         </div>
 
         {/* RIGHT COLUMN: EDITOR */}
-        <div className="lg:col-span-8">
-          <div className="sticky top-24">
+        <div className="lg:col-span-8 min-h-0 overflow-y-auto">
+          <div>
             <div
               className="rounded-2xl shadow-sm border overflow-hidden"
               style={{
