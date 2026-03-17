@@ -4,13 +4,16 @@ import { motion, useMotionValue, useMotionTemplate } from "framer-motion";
 import { Project } from "./types";
 import { ComplexityMeter } from "./ComplexityMeter";
 import { TechBadge } from "./TechBadge";
+import type { BentoPlacement } from "@/app/lib/projects/bentoGrid";
 
 interface BentoCardProps {
   project: Project;
   onClick: (id: string) => void;
+  /** When using 12-col packed grid, pass placement from packBentoGrid. Omit for auto (e.g. mobile). */
+  placement?: BentoPlacement | null;
 }
 
-export const BentoCard = ({ project, onClick }: BentoCardProps) => {
+export const BentoCard = ({ project, onClick, placement }: BentoCardProps) => {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
@@ -24,26 +27,20 @@ export const BentoCard = ({ project, onClick }: BentoCardProps) => {
     mouseY.set(clientY - top);
   }
 
-  // Size classes mapping
-  const sizeClasses = {
-    small: "md:col-span-1 md:row-span-1",
-    medium: "md:col-span-2 md:row-span-1",
-    tall: "md:col-span-1 md:row-span-2",
-    large: "md:col-span-2 md:row-span-2",
-  };
-
   return (
     <motion.div
       layoutId={project.id}
       onClick={() => onClick(project.id)}
-      className={`group relative rounded-3xl overflow-hidden p-6 flex flex-col justify-between cursor-pointer ${
-        sizeClasses[project.size]
-      }`}
+      className="group relative rounded-3xl overflow-hidden p-6 flex flex-col justify-between cursor-pointer"
       style={{
         backgroundColor: "var(--card)",
         borderColor: "var(--border)",
         borderWidth: "1px",
         borderStyle: "solid",
+        ...(placement && {
+          gridColumn: `${placement.col + 1} / span ${placement.colSpan}`,
+          gridRow: `${placement.row + 1} / span ${placement.rowSpan}`,
+        }),
       }}
       variants={{
         hidden: { opacity: 0, y: 20 },
