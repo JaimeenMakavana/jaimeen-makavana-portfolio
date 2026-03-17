@@ -1,60 +1,68 @@
-"use client";
-
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import type { CSSProperties, ComponentType, ReactNode } from "react";
 import {
-  Users,
-  RefreshCcw,
+  BarChart3,
+  Calendar,
+  Clock,
+  Filter,
+  Globe,
   Monitor,
+  RefreshCcw,
   Smartphone,
   Tablet,
-  Globe,
-  Clock,
   TrendingUp,
-  MapPin,
-  Calendar,
-  Filter,
-  BarChart3,
+  Users,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { z } from "zod";
 
-// --- TYPES ---
-interface VisitorData {
-  eventId: string;
-  userId: string;
-  timestamp: string;
-  ip?: string;
-  userAgent?: string;
-  referrer?: string;
-  screenWidth?: number;
-  screenHeight?: number;
-  timezone?: string;
-  language?: string;
-  deviceType?: "mobile" | "tablet" | "desktop";
-  browser?: string;
-  os?: string;
-  createdAt: string;
-  updatedAt: string;
+import { applyAnalyticsFilters } from "./actions";
+import {
+  type AnalyticsVisitor,
+  getAnalyticsAdminPageData,
+} from "@/app/lib/analytics/repository";
+
+const analyticsSearchParamsSchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  deviceType: z.enum(["mobile", "tablet", "desktop"]).optional(),
+  dateFrom: z.string().trim().optional(),
+  dateTo: z.string().trim().optional(),
+});
+
+type AnalyticsPageProps = {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+};
+
+function renderDeviceIcon(
+  deviceType: string | undefined,
+  className: string,
+  style: CSSProperties,
+): ReactNode {
+  switch (deviceType) {
+    case "mobile":
+      return <Smartphone className={className} style={style} />;
+    case "tablet":
+      return <Tablet className={className} style={style} />;
+    case "desktop":
+      return <Monitor className={className} style={style} />;
+    default:
+      return <Monitor className={className} style={style} />;
+  }
 }
 
-interface AnalyticsResponse {
-  success: boolean;
-  count: number;
-  total: number;
-  hasMore?: boolean;
-  nextCursor?: string | null;
-  stats: {
-    totalUniqueUsers: number;
-    totalRecords: number;
-    deviceBreakdown: Record<string, number>;
-    browserBreakdown: Record<string, number>;
-    osBreakdown: Record<string, number>;
-  };
-  visitors: VisitorData[];
-  error?: string;
+function getDeviceColor(deviceType?: string) {
+  switch (deviceType) {
+    case "mobile":
+      return "var(--bg-accent-glow)";
+    case "tablet":
+      return "var(--muted)";
+    case "desktop":
+      return "var(--text-display)";
+    default:
+      return "var(--text-muted)";
+  }
 }
 
-// --- UTILS ---
-const formatDate = (isoString: string) => {
+function formatDate(isoString: string) {
   try {
     return new Date(isoString).toLocaleString("en-US", {
       month: "short",
@@ -66,637 +74,386 @@ const formatDate = (isoString: string) => {
   } catch {
     return "Unknown Date";
   }
-};
+}
 
-const getDeviceIcon = (deviceType?: string) => {
-  switch (deviceType) {
-    case "mobile":
-      return Smartphone;
-    case "tablet":
-      return Tablet;
-    case "desktop":
-      return Monitor;
-    default:
-      return Monitor;
+function buildPageHref(
+  page: number,
+  filters: {
+    deviceType?: string;
+    dateFrom?: string;
+    dateTo?: string;
+  },
+) {
+  const searchParams = new URLSearchParams();
+
+  if (page > 1) {
+    searchParams.set("page", String(page));
   }
-};
-
-const getDeviceColor = (deviceType?: string) => {
-  switch (deviceType) {
-    case "mobile":
-      return "var(--bg-accent-glow)";
-    case "tablet":
-      return "var(--muted)";
-    case "desktop":
-      return "var(--text-display)";
-    default:
-      return "var(--text-muted)";
+  if (filters.deviceType) {
+    searchParams.set("deviceType", filters.deviceType);
   }
-};
+  if (filters.dateFrom) {
+    searchParams.set("dateFrom", filters.dateFrom);
+  }
+  if (filters.dateTo) {
+    searchParams.set("dateTo", filters.dateTo);
+  }
 
-export default function AdminAnalytics() {
-  const [visitors, setVisitors] = useState<VisitorData[]>([]);
-  const [stats, setStats] = useState<AnalyticsResponse["stats"] | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [selectedDevice, setSelectedDevice] = useState<string>("ALL");
-  const [nextCursor, setNextCursor] = useState<string | null>(null);
-  const [hasMore, setHasMore] = useState(false);
-  const [total, setTotal] = useState(0);
-  const loadMoreRef = useRef<HTMLDivElement>(null);
+  const query = searchParams.toString();
+  return query.length > 0 ? `/admin/analytics?${query}` : "/admin/analytics";
+}
 
-  // --- DATA FETCHING ---
-  const fetchAnalytics = useCallback(async (
-    cursor: string | null = null,
-    append = false
-  ) => {
-    if (append) {
-      setLoadingMore(true);
-    } else {
-      setLoading(true);
-      setError(null);
-    }
-
-    try {
-      const url = cursor
-        ? `/api/analytics?limit=50&cursor=${cursor}`
-        : "/api/analytics?limit=50";
-      const response = await fetch(url);
-      const json: AnalyticsResponse = await response.json();
-
-      if (!response.ok) {
-        // Handle rate limit errors
-        if (response.status === 429) {
-          const retryAfter = response.headers.get("Retry-After");
-          throw new Error(
-            `Rate limit exceeded. Please wait ${retryAfter}s before trying again.`
-          );
-        } else if (response.status === 503) {
-          throw new Error("Service temporarily unavailable.");
-        }
-        throw new Error(json.error || "Failed to fetch analytics");
-      }
-
-      if (json.success) {
-        if (append) {
-          // Append new visitors
-          setVisitors((prev) => [...prev, ...json.visitors]);
-        } else {
-          // Replace all data
-          setVisitors(json.visitors);
-        }
-        setStats(json.stats);
-        setNextCursor(json.nextCursor || null);
-        setHasMore(json.hasMore || false);
-        setTotal(json.total);
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Unknown error occurred");
-    } finally {
-      setLoading(false);
-      setLoadingMore(false);
-    }
-  }, []);
-
-  // Load more data
-  const loadMore = useCallback(() => {
-    if (!loadingMore && hasMore && nextCursor) {
-      void fetchAnalytics(nextCursor, true);
-    }
-  }, [fetchAnalytics, hasMore, loadingMore, nextCursor]);
-
-  // Intersection Observer for infinite scroll
-  useEffect(() => {
-    const currentLoadMoreRef = loadMoreRef.current;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasMore && !loadingMore) {
-          loadMore();
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    if (currentLoadMoreRef) {
-      observer.observe(currentLoadMoreRef);
-    }
-
-    return () => {
-      if (currentLoadMoreRef) {
-        observer.unobserve(currentLoadMoreRef);
-      }
-    };
-  }, [hasMore, loadingMore, loadMore]);
-
-  useEffect(() => {
-    void fetchAnalytics();
-  }, [fetchAnalytics]);
-
-  // Filter visitors
-  const filteredVisitors = visitors.filter((visitor) => {
-    if (selectedDevice !== "ALL" && visitor.deviceType !== selectedDevice)
-      return false;
-    return true;
-  });
-
-  // Get unique device types
-  const deviceTypes = Array.from(
-    new Set(visitors.map((v) => v.deviceType || "unknown"))
-  )
-    .filter((d) => d !== "unknown")
-    .sort();
+function StatCard(props: {
+  label: string;
+  value: string | number;
+  icon: ComponentType<{ className?: string; style?: CSSProperties }>;
+  accent: ComponentType<{ className?: string; style?: CSSProperties }>;
+}) {
+  const { label, value, icon: Icon, accent: Accent } = props;
 
   return (
     <div
-      className="min-h-screen p-6 md:py-12 md:px-28 font-sans"
+      className="rounded-2xl border p-6"
+      style={{
+        backgroundColor: "var(--card)",
+        borderColor: "var(--border)",
+      }}
+    >
+      <div className="mb-4 flex items-center justify-between">
+        <Icon className="h-5 w-5" style={{ color: "var(--text-muted)" }} />
+        <Accent className="h-4 w-4" style={{ color: "var(--text-muted)" }} />
+      </div>
+      <div
+        className="mb-1 text-3xl font-black"
+        style={{ color: "var(--text-display)" }}
+      >
+        {value}
+      </div>
+      <div
+        className="text-xs font-mono uppercase tracking-wider"
+        style={{ color: "var(--text-muted)" }}
+      >
+        {label}
+      </div>
+    </div>
+  );
+}
+
+function VisitorRow({ visitor }: { visitor: AnalyticsVisitor }) {
+  return (
+    <tr className="border-b" style={{ borderColor: "var(--border)" }}>
+      <td className="p-4 align-top">
+        <div
+          className="mb-1 text-sm font-bold"
+          style={{ color: "var(--text-display)" }}
+        >
+          {visitor.userId}
+        </div>
+        <div
+          className="text-xs font-mono"
+          style={{ color: "var(--text-muted)" }}
+        >
+          {visitor.ip ?? "unknown"}
+        </div>
+      </td>
+      <td className="p-4 align-top">
+        <div className="flex items-center gap-2">
+          {renderDeviceIcon(visitor.deviceType, "h-4 w-4", {
+            color: getDeviceColor(visitor.deviceType),
+          })}
+          <span
+            className="text-xs font-mono uppercase"
+            style={{ color: "var(--text-body)" }}
+          >
+            {visitor.deviceType ?? "unknown"}
+          </span>
+        </div>
+      </td>
+      <td className="p-4 align-top">
+        <div className="text-sm" style={{ color: "var(--text-body)" }}>
+          {visitor.browser ?? "unknown"}
+        </div>
+        <div
+          className="text-xs font-mono"
+          style={{ color: "var(--text-muted)" }}
+        >
+          {visitor.os ?? "unknown"}
+        </div>
+      </td>
+      <td className="p-4 align-top">
+        <div className="text-sm" style={{ color: "var(--text-body)" }}>
+          {visitor.referrer ?? "direct"}
+        </div>
+        <div
+          className="text-xs font-mono"
+          style={{ color: "var(--text-muted)" }}
+        >
+          {visitor.language ?? "unknown"} / {visitor.timezone ?? "unknown"}
+        </div>
+      </td>
+      <td className="p-4 align-top">
+        <div className="text-sm" style={{ color: "var(--text-body)" }}>
+          {visitor.screenWidth && visitor.screenHeight
+            ? `${visitor.screenWidth} x ${visitor.screenHeight}`
+            : "unknown"}
+        </div>
+      </td>
+      <td className="p-4 align-top text-right">
+        <div
+          className="text-xs font-mono"
+          style={{ color: "var(--text-muted)" }}
+        >
+          {formatDate(visitor.timestamp)}
+        </div>
+      </td>
+    </tr>
+  );
+}
+
+export default async function AdminAnalytics({
+  searchParams,
+}: AnalyticsPageProps) {
+  const resolvedSearchParams = (await searchParams) ?? {};
+  const parsedSearchParams = analyticsSearchParamsSchema.parse({
+    page: Array.isArray(resolvedSearchParams.page)
+      ? resolvedSearchParams.page[0]
+      : resolvedSearchParams.page,
+    deviceType: Array.isArray(resolvedSearchParams.deviceType)
+      ? resolvedSearchParams.deviceType[0]
+      : resolvedSearchParams.deviceType,
+    dateFrom: Array.isArray(resolvedSearchParams.dateFrom)
+      ? resolvedSearchParams.dateFrom[0]
+      : resolvedSearchParams.dateFrom,
+    dateTo: Array.isArray(resolvedSearchParams.dateTo)
+      ? resolvedSearchParams.dateTo[0]
+      : resolvedSearchParams.dateTo,
+  });
+
+  const pageSize = 25;
+  const data = await getAnalyticsAdminPageData({
+    page: parsedSearchParams.page,
+    pageSize,
+    deviceType: parsedSearchParams.deviceType ?? null,
+    dateFrom: parsedSearchParams.dateFrom ?? null,
+    dateTo: parsedSearchParams.dateTo ?? null,
+  });
+
+  const filters = {
+    deviceType: parsedSearchParams.deviceType,
+    dateFrom: parsedSearchParams.dateFrom,
+    dateTo: parsedSearchParams.dateTo,
+  };
+  const hasPreviousPage = data.page > 1;
+  const hasNextPage = data.page < data.totalPages;
+
+  return (
+    <div
+      className="min-h-screen p-6 font-sans md:px-6 md:py-12"
       style={{
         backgroundColor: "var(--bg-canvas)",
         color: "var(--text-body)",
       }}
     >
-      {/* HEADER */}
-      <div className="max-w-7xl mx-auto mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <div className="mx-auto mb-8 flex max-w-7xl flex-col justify-between gap-6 md:flex-row md:items-end">
         <div>
-          <div className="flex items-center gap-2 mb-2">
+          <div className="mb-2 flex items-center gap-2">
             <span
-              className="w-2 h-2 rounded-full animate-pulse"
+              className="h-2 w-2 animate-pulse rounded-full"
               style={{ backgroundColor: "var(--bg-accent-glow)" }}
-            ></span>
+            />
             <h5
-              className="font-mono text-xs uppercase tracking-widest"
+              className="text-xs font-mono uppercase tracking-widest"
               style={{ color: "var(--text-muted)" }}
             >
-              Analytics Dashboard / Live Metrics
+              Analytics Dashboard / Server Rendered
             </h5>
           </div>
           <h1
-            className="text-4xl md:text-5xl font-black tracking-tighter uppercase"
+            className="text-4xl font-black uppercase tracking-tighter md:text-5xl"
             style={{ color: "var(--text-display)" }}
           >
             Unique{" "}
             <span style={{ color: "var(--bg-accent-glow)" }}>Visitors</span>
           </h1>
         </div>
-
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => fetchAnalytics(null, false)}
-            disabled={loading}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg transition-all disabled:opacity-70 disabled:cursor-not-allowed group"
+        <div className="flex justify-end items-center gap-3">
+          <div className="">UNIQUES : {data.stats.totalUniqueUsers}</div>
+          <Link
+            href={buildPageHref(data.page, filters)}
+            className="inline-flex items-center gap-2 rounded-lg px-4 py-2 transition-all"
             style={{
               backgroundColor: "var(--nav-surface)",
               color: "var(--nav-text-idle)",
             }}
-            onMouseEnter={(e) => {
-              if (!loading) {
-                e.currentTarget.style.backgroundColor = "var(--bg-accent-glow)";
-                e.currentTarget.style.color = "var(--text-display)";
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!loading) {
-                e.currentTarget.style.backgroundColor = "var(--nav-surface)";
-                e.currentTarget.style.color = "var(--nav-text-idle)";
-              }
-            }}
           >
-            <RefreshCcw
-              className={`w-4 h-4 ${
-                loading
-                  ? "animate-spin"
-                  : "group-hover:rotate-180 transition-transform"
-              }`}
-            />
-            <span className="font-mono text-sm uppercase tracking-wide">
+            <RefreshCcw className="h-4 w-4" />
+            <span className="text-sm font-mono uppercase tracking-wide">
               Refresh
             </span>
-          </button>
+          </Link>
         </div>
       </div>
 
-      {/* STATS CARDS */}
-      {stats && (
-        <div className="max-w-7xl mx-auto mb-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* Total Visits */}
-          <div
-            className="p-6 rounded-2xl border"
-            style={{
-              backgroundColor: "var(--card)",
-              borderColor: "var(--border)",
-            }}
+      <form
+        action={applyAnalyticsFilters}
+        className="mx-auto mb-6 flex max-w-7xl flex-col gap-4 md:flex-row"
+      >
+        <div
+          className="flex items-center gap-3 rounded-xl border px-4 py-3"
+          style={{
+            backgroundColor: "var(--card)",
+            borderColor: "var(--border)",
+          }}
+        >
+          <Filter className="h-4 w-4" style={{ color: "var(--text-muted)" }} />
+          <select
+            name="deviceType"
+            defaultValue={parsedSearchParams.deviceType ?? "ALL"}
+            className="bg-transparent text-sm font-mono outline-none"
           >
-            <div className="flex items-center justify-between mb-4">
-              <Users
-                className="w-5 h-5"
-                style={{ color: "var(--text-muted)" }}
-              />
-              <TrendingUp
-                className="w-4 h-4"
-                style={{ color: "var(--text-muted)" }}
-              />
-            </div>
-            <div
-              className="text-3xl font-black mb-1"
-              style={{ color: "var(--text-display)" }}
-            >
-              {stats.totalUniqueUsers}
-            </div>
-            <div
-              className="text-xs font-mono uppercase tracking-wider"
-              style={{ color: "var(--text-muted)" }}
-            >
-              Unique Users
-            </div>
-          </div>
-
-          {/* Unique Sessions */}
-          <div
-            className="p-6 rounded-2xl border"
-            style={{
-              backgroundColor: "var(--card)",
-              borderColor: "var(--border)",
-            }}
-          >
-            <div className="flex items-center justify-between mb-4">
-              <Globe
-                className="w-5 h-5"
-                style={{ color: "var(--text-muted)" }}
-              />
-              <BarChart3
-                className="w-4 h-4"
-                style={{ color: "var(--text-muted)" }}
-              />
-            </div>
-            <div
-              className="text-3xl font-black mb-1"
-              style={{ color: "var(--text-display)" }}
-            >
-              {stats.totalRecords}
-            </div>
-            <div
-              className="text-xs font-mono uppercase tracking-wider"
-              style={{ color: "var(--text-muted)" }}
-            >
-              Total Records
-            </div>
-          </div>
-
-          {/* Avg Duration */}
-          <div
-            className="p-6 rounded-2xl border"
-            style={{
-              backgroundColor: "var(--card)",
-              borderColor: "var(--border)",
-            }}
-          >
-            <div className="flex items-center justify-between mb-4">
-              <Clock
-                className="w-5 h-5"
-                style={{ color: "var(--text-muted)" }}
-              />
-              <TrendingUp
-                className="w-4 h-4"
-                style={{ color: "var(--text-muted)" }}
-              />
-            </div>
-          </div>
-
-          {/* Device Breakdown */}
-          <div
-            className="p-6 rounded-2xl border"
-            style={{
-              backgroundColor: "var(--card)",
-              borderColor: "var(--border)",
-            }}
-          >
-            <div className="flex items-center justify-between mb-4">
-              <Monitor
-                className="w-5 h-5"
-                style={{ color: "var(--text-muted)" }}
-              />
-              <BarChart3
-                className="w-4 h-4"
-                style={{ color: "var(--text-muted)" }}
-              />
-            </div>
-            <div className="space-y-2">
-              {Object.entries(stats.deviceBreakdown).map(([device, count]) => {
-                const DeviceIcon = getDeviceIcon(device);
-                return (
-                  <div
-                    key={device}
-                    className="flex items-center justify-between"
-                  >
-                    <div className="flex items-center gap-2">
-                      <DeviceIcon
-                        className="w-3 h-3"
-                        style={{ color: getDeviceColor(device) }}
-                      />
-                      <span
-                        className="text-xs font-mono uppercase"
-                        style={{ color: "var(--text-muted)" }}
-                      >
-                        {device}
-                      </span>
-                    </div>
-                    <span
-                      className="text-sm font-bold"
-                      style={{ color: "var(--text-display)" }}
-                    >
-                      {count}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* FILTERS */}
-      <div className="max-w-7xl mx-auto mb-6 space-y-4">
-        <div className="flex flex-col md:flex-row gap-4">
-          {/* Device Filter */}
-          <div
-            className="flex p-1 rounded-xl overflow-x-auto border"
-            style={{
-              backgroundColor: "var(--card)",
-              borderColor: "var(--border)",
-            }}
-          >
-            {["ALL", ...deviceTypes].map((device) => (
-              <button
-                key={device}
-                onClick={() => setSelectedDevice(device)}
-                className="px-4 py-2 rounded-lg text-xs font-bold font-mono transition-all whitespace-nowrap"
-                style={{
-                  backgroundColor:
-                    selectedDevice === device
-                      ? "var(--nav-surface)"
-                      : "transparent",
-                  color:
-                    selectedDevice === device
-                      ? "var(--bg-accent-glow)"
-                      : "var(--text-muted)",
-                }}
-              >
-                {device}
-              </button>
+            <option value="ALL">ALL DEVICES</option>
+            {data.deviceTypes.map((deviceType) => (
+              <option key={deviceType} value={deviceType}>
+                {deviceType.toUpperCase()}
+              </option>
             ))}
-          </div>
+          </select>
         </div>
-      </div>
 
-      {/* VISITORS TABLE */}
+        <input
+          type="date"
+          name="dateFrom"
+          defaultValue={parsedSearchParams.dateFrom ?? ""}
+          className="rounded-xl border px-4 py-3 text-sm outline-none"
+          style={{
+            backgroundColor: "var(--card)",
+            borderColor: "var(--border)",
+          }}
+        />
+
+        <input
+          type="date"
+          name="dateTo"
+          defaultValue={parsedSearchParams.dateTo ?? ""}
+          className="rounded-xl border px-4 py-3 text-sm outline-none"
+          style={{
+            backgroundColor: "var(--card)",
+            borderColor: "var(--border)",
+          }}
+        />
+
+        <button
+          type="submit"
+          className="rounded-xl px-4 py-3 text-sm font-mono uppercase tracking-wide"
+          style={{
+            backgroundColor: "var(--nav-surface)",
+            color: "var(--nav-text-idle)",
+          }}
+        >
+          Apply Filters
+        </button>
+
+        <Link
+          href="/admin/analytics"
+          className="rounded-xl border px-4 py-3 text-center text-sm font-mono uppercase tracking-wide"
+          style={{
+            borderColor: "var(--border)",
+            color: "var(--text-muted)",
+          }}
+        >
+          Reset
+        </Link>
+      </form>
+
       <div
-        className="max-w-7xl mx-auto rounded-2xl overflow-hidden shadow-sm min-h-[400px] border"
+        className="mx-auto max-w-7xl overflow-hidden rounded-2xl border"
         style={{
           backgroundColor: "var(--card)",
           borderColor: "var(--border)",
         }}
       >
-        {/* Loading */}
-        {loading && (
+        {data.visitors.length === 0 ? (
           <div
-            className="h-96 flex flex-col items-center justify-center space-y-4"
+            className="flex min-h-80 flex-col items-center justify-center gap-4"
             style={{ color: "var(--text-muted)" }}
           >
-            <div className="relative">
-              <div
-                className="w-12 h-12 border-4 rounded-full animate-spin"
-                style={{
-                  borderColor: "var(--muted)",
-                  borderTopColor: "var(--text-display)",
-                }}
-              ></div>
-            </div>
-            <p className="font-mono text-xs uppercase tracking-widest">
-              Loading Analytics...
-            </p>
+            <Filter className="h-8 w-8 opacity-30" />
+            <p>No analytics records match the current filters.</p>
           </div>
-        )}
-
-        {/* Error */}
-        {!loading && error && (
-          <div
-            className="h-96 flex flex-col items-center justify-center space-y-4 p-8 text-center"
-            style={{ color: "var(--destructive)" }}
-          >
-            <Filter className="w-10 h-10" />
-            <h3 className="text-lg font-bold">Connection Failed</h3>
-            <p
-              className="font-mono text-sm p-4 rounded border"
-              style={{
-                backgroundColor: "var(--destructive)",
-                opacity: 0.1,
-                borderColor: "var(--destructive)",
-              }}
-            >
-              {error}
-            </p>
-          </div>
-        )}
-
-        {/* Empty State */}
-        {!loading && !error && filteredVisitors.length === 0 && (
-          <div
-            className="h-96 flex flex-col items-center justify-center"
-            style={{ color: "var(--text-muted)" }}
-          >
-            <div
-              className="w-16 h-16 rounded-full flex items-center justify-center mb-4"
-              style={{ backgroundColor: "var(--muted)" }}
-            >
-              <Users className="w-8 h-8 opacity-20" />
-            </div>
-            <p>No visitor data found.</p>
-          </div>
-        )}
-
-        {/* Table Content */}
-        {!loading && !error && filteredVisitors.length > 0 && (
+        ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+            <table className="w-full border-collapse text-left">
               <thead>
                 <tr
-                  className="border-b text-[10px] md:text-xs font-mono uppercase tracking-wider"
+                  className="border-b text-xs font-mono uppercase tracking-wider"
                   style={{
                     backgroundColor: "var(--muted)",
                     borderColor: "var(--border)",
                     color: "var(--text-muted)",
                   }}
                 >
-                  <th className="p-4 pl-6 font-medium">User ID</th>
+                  <th className="p-4 font-medium">Visitor</th>
                   <th className="p-4 font-medium">Device</th>
                   <th className="p-4 font-medium">Browser / OS</th>
-                  <th className="p-4 font-medium">Referrer</th>
-                  <th className="p-4 font-medium">Timestamp</th>
-                  <th className="p-4 pr-6 font-medium text-right">Location</th>
+                  <th className="p-4 font-medium">Referrer / Locale</th>
+                  <th className="p-4 font-medium">Viewport</th>
+                  <th className="p-4 text-right font-medium">Timestamp</th>
                 </tr>
               </thead>
-              <tbody
-                className="divide-y"
-                style={{ borderColor: "var(--border)" }}
-              >
-                <AnimatePresence>
-                  {filteredVisitors.map((visitor) => {
-                    const DeviceIcon = getDeviceIcon(visitor.deviceType);
-                    return (
-                      <motion.tr
-                        key={visitor.eventId}
-                        initial={{ opacity: 0, y: 5 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="group transition-colors"
-                        style={{
-                          borderColor: "var(--border)",
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor =
-                            "var(--muted)";
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = "transparent";
-                        }}
-                      >
-                        <td className="p-4 pl-6 align-top">
-                          <span
-                            className="text-xs font-mono"
-                            style={{ color: "var(--text-body)" }}
-                          >
-                            {visitor.userId
-                              ? `${visitor.userId.substring(0, 20)}...`
-                              : "Unknown"}
-                          </span>
-                        </td>
-                        <td className="p-4 align-top">
-                          <div className="flex items-center gap-2">
-                            <DeviceIcon
-                              className="w-4 h-4"
-                              style={{
-                                color: getDeviceColor(visitor.deviceType),
-                              }}
-                            />
-                            <span
-                              className="text-xs font-mono uppercase"
-                              style={{ color: "var(--text-display)" }}
-                            >
-                              {visitor.deviceType || "unknown"}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="p-4 align-top">
-                          <div className="space-y-1">
-                            <div
-                              className="text-xs font-mono"
-                              style={{ color: "var(--text-body)" }}
-                            >
-                              {visitor.browser || "Unknown"}
-                            </div>
-                            <div
-                              className="text-xs"
-                              style={{ color: "var(--text-muted)" }}
-                            >
-                              {visitor.os || "Unknown"}
-                            </div>
-                          </div>
-                        </td>
-                        <td className="p-4 align-top">
-                          <span
-                            className="text-xs font-mono"
-                            style={{ color: "var(--text-body)" }}
-                          >
-                            {visitor.referrer === "direct" ? (
-                              <span style={{ color: "var(--text-muted)" }}>
-                                Direct
-                              </span>
-                            ) : (
-                              <a
-                                href={visitor.referrer}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="hover:underline"
-                                style={{ color: "var(--bg-accent-glow)" }}
-                              >
-                                {new URL(visitor.referrer || "").hostname}
-                              </a>
-                            )}
-                          </span>
-                        </td>
-                        <td className="p-4 align-top">
-                          <div
-                            className="flex items-center gap-1.5 text-xs font-mono"
-                            style={{ color: "var(--text-muted)" }}
-                          >
-                            <Calendar className="w-3 h-3" />
-                            {formatDate(visitor.timestamp)}
-                          </div>
-                        </td>
-                        <td className="p-4 pr-6 align-top text-right">
-                          <div
-                            className="flex items-center justify-end gap-1.5 text-xs font-mono"
-                            style={{ color: "var(--text-muted)" }}
-                          >
-                            <MapPin className="w-3 h-3" />
-                            {visitor.timezone || "Unknown"}
-                          </div>
-                        </td>
-                      </motion.tr>
-                    );
-                  })}
-                </AnimatePresence>
+              <tbody>
+                {data.visitors.map((visitor) => (
+                  <VisitorRow key={visitor.eventId} visitor={visitor} />
+                ))}
               </tbody>
             </table>
           </div>
         )}
-
-        {/* Infinite Scroll Trigger */}
-        {hasMore && (
-          <div
-            ref={loadMoreRef}
-            className="h-20 flex items-center justify-center"
-            style={{ color: "var(--text-muted)" }}
-          >
-            {loadingMore && (
-              <div className="flex items-center gap-3">
-                <div
-                  className="w-5 h-5 border-2 rounded-full animate-spin"
-                  style={{
-                    borderColor: "var(--muted)",
-                    borderTopColor: "var(--text-display)",
-                  }}
-                ></div>
-                <span className="font-mono text-xs uppercase tracking-wider">
-                  Loading more...
-                </span>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* End of List */}
-        {!hasMore && filteredVisitors.length > 0 && (
-          <div
-            className="h-20 flex items-center justify-center"
-            style={{ color: "var(--text-muted)" }}
-          >
-            <span className="font-mono text-xs uppercase tracking-wider">
-              All records loaded
-            </span>
-          </div>
-        )}
       </div>
 
-      {/* Footer Stats */}
-      <div
-        className="max-w-7xl mx-auto mt-4 flex justify-between items-center text-[10px] font-mono uppercase"
-        style={{ color: "var(--text-muted)" }}
-      >
-        <span>
-          Displaying {filteredVisitors.length} of {total} records
-          {hasMore && " (more available)"}
-        </span>
-        <span>Secure Connection | Neon Storage</span>
+      <div className="mx-auto mt-6 flex max-w-7xl items-center justify-between gap-4">
+        <div
+          className="text-xs font-mono uppercase"
+          style={{ color: "var(--text-muted)" }}
+        >
+          Showing {(data.page - 1) * data.pageSize + (data.total > 0 ? 1 : 0)}-
+          {Math.min(data.page * data.pageSize, data.total)} of {data.total}{" "}
+          records
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Link
+            aria-disabled={!hasPreviousPage}
+            href={hasPreviousPage ? buildPageHref(data.page - 1, filters) : "#"}
+            className="rounded-lg border px-4 py-2 text-sm font-mono uppercase tracking-wide"
+            style={{
+              borderColor: "var(--border)",
+              color: hasPreviousPage ? "var(--text-body)" : "var(--text-muted)",
+              pointerEvents: hasPreviousPage ? "auto" : "none",
+              opacity: hasPreviousPage ? 1 : 0.5,
+            }}
+          >
+            Previous
+          </Link>
+          <span
+            className="text-xs font-mono uppercase"
+            style={{ color: "var(--text-muted)" }}
+          >
+            Page {data.page} of {data.totalPages}
+          </span>
+          <Link
+            aria-disabled={!hasNextPage}
+            href={hasNextPage ? buildPageHref(data.page + 1, filters) : "#"}
+            className="rounded-lg border px-4 py-2 text-sm font-mono uppercase tracking-wide"
+            style={{
+              borderColor: "var(--border)",
+              color: hasNextPage ? "var(--text-body)" : "var(--text-muted)",
+              pointerEvents: hasNextPage ? "auto" : "none",
+              opacity: hasNextPage ? 1 : 0.5,
+            }}
+          >
+            Next
+          </Link>
+        </div>
       </div>
     </div>
   );

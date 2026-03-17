@@ -1,3 +1,5 @@
+import "server-only";
+
 import { sql } from "@/lib/db/client";
 
 export type AnalyticsVisitor = {
@@ -39,6 +41,28 @@ type AnalyticsEventRow = {
 type BreakdownRow = {
   label: string | null;
   count: string;
+};
+
+type DeviceTypeRow = {
+  label: string | null;
+};
+
+export type AnalyticsStats = {
+  totalUniqueUsers: number;
+  totalRecords: number;
+  deviceBreakdown: Record<string, number>;
+  browserBreakdown: Record<string, number>;
+  osBreakdown: Record<string, number>;
+};
+
+export type AnalyticsAdminPageData = {
+  visitors: AnalyticsVisitor[];
+  total: number;
+  totalPages: number;
+  page: number;
+  pageSize: number;
+  stats: AnalyticsStats;
+  deviceTypes: Array<"mobile" | "tablet" | "desktop">;
 };
 
 function toIsoString(value: Date | string): string {
@@ -257,5 +281,107 @@ export async function getAnalyticsData(filters: {
       browserBreakdown: mapBreakdown(browserBreakdownRows),
       osBreakdown: mapBreakdown(osBreakdownRows),
     },
+  };
+}
+
+export async function getAnalyticsAdminPageData(filters: {
+  page: number;
+  pageSize: number;
+  deviceType?: "mobile" | "tablet" | "desktop" | null;
+  dateFrom?: string | null;
+  dateTo?: string | null;
+}): Promise<AnalyticsAdminPageData> {
+  const normalizedPage = Math.max(filters.page, 1);
+  const normalizedPageSize = Math.min(Math.max(filters.pageSize, 1), 100);
+
+  const statsWhere = buildWhereClause({
+    deviceType: filters.deviceType,
+    dateFrom: filters.dateFrom,
+    dateTo: filters.dateTo,
+  });
+
+  const [totals, deviceBreakdownRows, browserBreakdownRows, osBreakdownRows, deviceRows] =
+    await Promise.all([
+      sql<{ total_records: string; total_unique_users: string }[]>`
+        select
+          count(*)::text as total_records,
+          count(distinct user_id)::text as total_unique_users
+        from analytics_events
+        where ${statsWhere}
+      `,
+      sql<BreakdownRow[]>`
+        select coalesce(device_type, 'unknown') as label, count(*)::text as count
+        from analytics_events
+        where ${statsWhere}
+        group by coalesce(device_type, 'unknown')
+      `,
+      sql<BreakdownRow[]>`
+        select coalesce(browser, 'unknown') as label, count(*)::text as count
+        from analytics_events
+        where ${statsWhere}
+        group by coalesce(browser, 'unknown')
+      `,
+      sql<BreakdownRow[]>`
+        select coalesce(os, 'unknown') as label, count(*)::text as count
+        from analytics_events
+        where ${statsWhere}
+        group by coalesce(os, 'unknown')
+      `,
+      sql<DeviceTypeRow[]>`
+        select distinct device_type as label
+        from analytics_events
+        where device_type is not null
+        order by device_type asc
+      `,
+    ]);
+
+  const total = Number(totals[0]?.total_records ?? 0);
+  const totalPages = total === 0 ? 1 : Math.ceil(total / normalizedPageSize);
+  const effectivePage = Math.min(normalizedPage, totalPages);
+  const offset = (effectivePage - 1) * normalizedPageSize;
+
+  const rows = await sql<AnalyticsEventRow[]>`
+    select
+      id,
+      user_id,
+      timestamp,
+      ip,
+      user_agent,
+      referrer,
+      screen_width,
+      screen_height,
+      timezone,
+      language,
+      device_type,
+      browser,
+      os,
+      created_at,
+      updated_at
+    from analytics_events
+    where ${statsWhere}
+    order by timestamp desc, id desc
+    limit ${normalizedPageSize}
+    offset ${offset}
+  `;
+
+  return {
+    visitors: rows.map(mapEventRow),
+    total,
+    totalPages,
+    page: effectivePage,
+    pageSize: normalizedPageSize,
+    stats: {
+      totalUniqueUsers: Number(totals[0]?.total_unique_users ?? 0),
+      totalRecords: total,
+      deviceBreakdown: mapBreakdown(deviceBreakdownRows),
+      browserBreakdown: mapBreakdown(browserBreakdownRows),
+      osBreakdown: mapBreakdown(osBreakdownRows),
+    },
+    deviceTypes: deviceRows
+      .map((row) => row.label)
+      .filter(
+        (value): value is "mobile" | "tablet" | "desktop" =>
+          value === "mobile" || value === "tablet" || value === "desktop"
+      ),
   };
 }

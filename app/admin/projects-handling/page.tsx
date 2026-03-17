@@ -110,7 +110,7 @@ export default function ProjectCMS() {
         setHasInitialized(true);
         showStatus(
           "success",
-          "No Neon data found. Create your first project to initialize the database."
+          "No Neon data found. Create your first project to initialize the database.",
         );
       }
     } catch (e) {
@@ -148,7 +148,7 @@ export default function ProjectCMS() {
         setIsDirty(false);
         showStatus(
           "success",
-          json.message || "Database Synchronized Successfully"
+          json.message || "Database Synchronized Successfully",
         );
       } else {
         throw new Error("Save failed: Unknown error");
@@ -213,7 +213,7 @@ export default function ProjectCMS() {
 
   return (
     <div
-      className="min-h-screen font-sans md:px-28 relative"
+      className="min-h-screen font-sans relative"
       style={{
         backgroundColor: "var(--bg-canvas)",
         color: "var(--text-body)",
@@ -554,7 +554,7 @@ export default function ProjectCMS() {
                           if (selectedId.startsWith("new")) {
                             handleFormChange(
                               "id",
-                              e.target.value.toLowerCase().replace(/\s+/g, "-")
+                              e.target.value.toLowerCase().replace(/\s+/g, "-"),
                             );
                           }
                         }}
@@ -697,7 +697,7 @@ export default function ProjectCMS() {
                         onChange={(e) =>
                           handleFormChange(
                             "stack",
-                            e.target.value.split(",").map((s) => s.trim())
+                            e.target.value.split(",").map((s) => s.trim()),
                           )
                         }
                         className="w-full rounded-lg px-4 py-3 focus:ring-2 focus:outline-none font-mono text-sm"
@@ -731,7 +731,7 @@ export default function ProjectCMS() {
                               >
                                 {tech}
                               </span>
-                            )
+                            ),
                         )}
                       </div>
                     </div>
@@ -760,7 +760,7 @@ export default function ProjectCMS() {
                         onChange={(e) =>
                           handleFormChange(
                             "complexity",
-                            parseInt(e.target.value)
+                            parseInt(e.target.value),
                           )
                         }
                         className="w-full h-2 rounded-lg appearance-none cursor-pointer"

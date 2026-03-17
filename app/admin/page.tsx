@@ -173,7 +173,7 @@ export default function AdminDashboard() {
           hour12: false,
           hour: "2-digit",
           minute: "2-digit",
-        })
+        }),
       );
     };
     updateTime();
@@ -182,7 +182,7 @@ export default function AdminDashboard() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#fafafa] p-6 md:p-12 md:px-28 text-neutral-900">
+    <div className="min-h-screen bg-[#fafafa] p-6 text-neutral-900">
       {/* 1. HEADER */}
       <header className="max-w-7xl mx-auto mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>

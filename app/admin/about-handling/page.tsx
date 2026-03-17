@@ -117,9 +117,9 @@ export default function AboutCMS() {
         const validatedData = json.data
           .filter(isCareerMilestone)
           .map((item: CareerMilestone, idx: number) => ({
-          ...item,
-          id: item.id || `legacy-${idx}-${Date.now()}`,
-        }));
+            ...item,
+            id: item.id || `legacy-${idx}-${Date.now()}`,
+          }));
         setMilestones(validatedData);
         setIsDirty(false);
       } else {
@@ -184,7 +184,7 @@ export default function AboutCMS() {
   const saveLocal = (e: React.FormEvent) => {
     e.preventDefault();
     setMilestones((prev) =>
-      prev.map((m) => (m.id === formData.id ? formData : m))
+      prev.map((m) => (m.id === formData.id ? formData : m)),
     );
     setIsDirty(true);
     showStatus("success", "Milestone updated locally");
@@ -220,7 +220,7 @@ export default function AboutCMS() {
 
   return (
     <div
-      className="min-h-screen font-sans md:px-28"
+      className="min-h-screen font-sans"
       style={{
         backgroundColor: "var(--bg-canvas)",
         color: "var(--text-body)",

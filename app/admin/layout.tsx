@@ -54,9 +54,9 @@ export default function AdminLayout({
   const pathname = usePathname();
 
   return (
-    <div className="min-h-screen bg-[#fafafa]">
+    <div className="h-dvh bg-[#fafafa] md:flex">
       {/* 1. DESKTOP SIDEBAR */}
-      <aside className="hidden md:flex flex-col w-64 fixed inset-y-0 left-0 bg-black text-white border-r border-neutral-800 z-50">
+      <aside className="hidden h-full md:flex flex-col w-56  bg-black text-white border-r border-neutral-800 z-50">
         {/* Logo / Header */}
         <div className="p-6 border-b border-neutral-900">
           <div className="flex items-center gap-3 text-[#e4e987]">
@@ -183,7 +183,7 @@ export default function AdminLayout({
       </nav>
 
       {/* 4. MAIN CONTENT WRAPPER */}
-      <main className="md:pl-64 min-h-screen pt-16 md:pt-0 pb-24 md:pb-0 transition-all duration-300">
+      <main className="md:flex-1 h-full overflow-y-auto pt-16 md:pt-0 pb-24 md:pb-0 transition-all duration-300">
         {children}
       </main>
     </div>
