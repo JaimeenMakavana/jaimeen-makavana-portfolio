@@ -98,7 +98,7 @@ export default function ProjectsPage() {
       {!loading && projects.length > 0 && (
         <>
           <motion.div
-            className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 auto-rows-[minmax(300px,auto)] gap-4 md:gap-6"
+            className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-[150px_150px_1fr_1fr] auto-rows-[minmax(250px,auto)] gap-4 md:gap-6"
             initial="hidden"
             animate="visible"
             variants={{

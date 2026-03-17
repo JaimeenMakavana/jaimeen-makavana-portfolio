@@ -1,5 +1,4 @@
 "use client";
-import { motion } from "framer-motion";
 import {
   InterestCardV2,
   INTERESTS_DATA,
