@@ -1,20 +1,11 @@
 import Link from "next/link";
-import type { CSSProperties, ComponentType, ReactNode } from "react";
-import {
-  BarChart3,
-  Calendar,
-  Clock,
-  Filter,
-  Globe,
-  Monitor,
-  RefreshCcw,
-  Smartphone,
-  Tablet,
-  TrendingUp,
-  Users,
-} from "lucide-react";
+import type { CSSProperties, ReactNode } from "react";
+import { Filter, Monitor, RefreshCcw, Smartphone, Tablet } from "lucide-react";
 import { z } from "zod";
 
+import { AdminPageHeader } from "@/app/components/ui/AdminPageHeader";
+import { AdminPageShell } from "@/app/components/ui/AdminPageShell";
+import { AdminScrollPanel } from "@/app/components/ui/AdminScrollPanel";
 import { applyAnalyticsFilters } from "./actions";
 import {
   type AnalyticsVisitor,
@@ -101,42 +92,6 @@ function buildPageHref(
 
   const query = searchParams.toString();
   return query.length > 0 ? `/admin/analytics?${query}` : "/admin/analytics";
-}
-
-function StatCard(props: {
-  label: string;
-  value: string | number;
-  icon: ComponentType<{ className?: string; style?: CSSProperties }>;
-  accent: ComponentType<{ className?: string; style?: CSSProperties }>;
-}) {
-  const { label, value, icon: Icon, accent: Accent } = props;
-
-  return (
-    <div
-      className="rounded-2xl border p-6"
-      style={{
-        backgroundColor: "var(--card)",
-        borderColor: "var(--border)",
-      }}
-    >
-      <div className="mb-4 flex items-center justify-between">
-        <Icon className="h-5 w-5" style={{ color: "var(--text-muted)" }} />
-        <Accent className="h-4 w-4" style={{ color: "var(--text-muted)" }} />
-      </div>
-      <div
-        className="mb-1 text-3xl font-black"
-        style={{ color: "var(--text-display)" }}
-      >
-        {value}
-      </div>
-      <div
-        className="text-xs font-mono uppercase tracking-wider"
-        style={{ color: "var(--text-muted)" }}
-      >
-        {label}
-      </div>
-    </div>
-  );
 }
 
 function VisitorRow({ visitor }: { visitor: AnalyticsVisitor }) {
@@ -247,56 +202,37 @@ export default async function AdminAnalytics({
   const hasNextPage = data.page < data.totalPages;
 
   return (
-    <div
-      className="min-h-screen p-6 font-sans md:px-6 md:py-12"
-      style={{
-        backgroundColor: "var(--bg-canvas)",
-        color: "var(--text-body)",
-      }}
-    >
-      <div className="mx-auto mb-8 flex max-w-7xl flex-col justify-between gap-6 md:flex-row md:items-end">
-        <div>
-          <div className="mb-2 flex items-center gap-2">
-            <span
-              className="h-2 w-2 animate-pulse rounded-full"
-              style={{ backgroundColor: "var(--bg-accent-glow)" }}
-            />
-            <h5
-              className="text-xs font-mono uppercase tracking-widest"
-              style={{ color: "var(--text-muted)" }}
+    <AdminPageShell className="flex h-full min-h-0 flex-col space-y-4 overflow-hidden p-6 md:px-6">
+      <AdminPageHeader
+        eyebrow="Analytics Dashboard / Server Rendered"
+        title={
+          <>
+            Unique <span style={{ color: "var(--bg-accent-glow)" }}>Visitors</span>
+          </>
+        }
+        actions={
+          <>
+            <div>UNIQUES : {data.stats.totalUniqueUsers}</div>
+            <Link
+              href={buildPageHref(data.page, filters)}
+              className="inline-flex items-center gap-2 rounded-lg px-4 py-2 transition-all"
+              style={{
+                backgroundColor: "var(--nav-surface)",
+                color: "var(--nav-text-idle)",
+              }}
             >
-              Analytics Dashboard / Server Rendered
-            </h5>
-          </div>
-          <h1
-            className="text-4xl font-black uppercase tracking-tighter md:text-5xl"
-            style={{ color: "var(--text-display)" }}
-          >
-            Unique{" "}
-            <span style={{ color: "var(--bg-accent-glow)" }}>Visitors</span>
-          </h1>
-        </div>
-        <div className="flex justify-end items-center gap-3">
-          <div className="">UNIQUES : {data.stats.totalUniqueUsers}</div>
-          <Link
-            href={buildPageHref(data.page, filters)}
-            className="inline-flex items-center gap-2 rounded-lg px-4 py-2 transition-all"
-            style={{
-              backgroundColor: "var(--nav-surface)",
-              color: "var(--nav-text-idle)",
-            }}
-          >
-            <RefreshCcw className="h-4 w-4" />
-            <span className="text-sm font-mono uppercase tracking-wide">
-              Refresh
-            </span>
-          </Link>
-        </div>
-      </div>
+              <RefreshCcw className="h-4 w-4" />
+              <span className="text-sm font-mono uppercase tracking-wide">
+                Refresh
+              </span>
+            </Link>
+          </>
+        }
+      />
 
       <form
         action={applyAnalyticsFilters}
-        className="mx-auto mb-6 flex max-w-7xl flex-col gap-4 md:flex-row"
+        className="flex max-w-7xl flex-col gap-4 md:flex-row"
       >
         <div
           className="flex items-center gap-3 rounded-xl border px-4 py-3"
@@ -365,96 +301,94 @@ export default async function AdminAnalytics({
         </Link>
       </form>
 
-      <div
-        className="mx-auto max-w-7xl overflow-hidden rounded-2xl border"
-        style={{
-          backgroundColor: "var(--card)",
-          borderColor: "var(--border)",
-        }}
-      >
-        {data.visitors.length === 0 ? (
-          <div
-            className="flex min-h-80 flex-col items-center justify-center gap-4"
-            style={{ color: "var(--text-muted)" }}
-          >
-            <Filter className="h-8 w-8 opacity-30" />
-            <p>No analytics records match the current filters.</p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse text-left">
-              <thead>
-                <tr
-                  className="border-b text-xs font-mono uppercase tracking-wider"
-                  style={{
-                    backgroundColor: "var(--muted)",
-                    borderColor: "var(--border)",
-                    color: "var(--text-muted)",
-                  }}
-                >
-                  <th className="p-4 font-medium">Visitor</th>
-                  <th className="p-4 font-medium">Device</th>
-                  <th className="p-4 font-medium">Browser / OS</th>
-                  <th className="p-4 font-medium">Referrer / Locale</th>
-                  <th className="p-4 font-medium">Viewport</th>
-                  <th className="p-4 text-right font-medium">Timestamp</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.visitors.map((visitor) => (
-                  <VisitorRow key={visitor.eventId} visitor={visitor} />
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+      <AdminScrollPanel>
+          {data.visitors.length === 0 ? (
+            <div
+              className="flex h-full min-h-80 flex-col items-center justify-center gap-4"
+              style={{ color: "var(--text-muted)" }}
+            >
+              <Filter className="h-8 w-8 opacity-30" />
+              <p>No analytics records match the current filters.</p>
+            </div>
+          ) : (
+            <div className="h-full overflow-auto">
+              <table className="w-full border-collapse text-left">
+                <thead className="sticky top-0 z-10">
+                  <tr
+                    className="border-b text-xs font-mono uppercase tracking-wider"
+                    style={{
+                      backgroundColor: "var(--muted)",
+                      borderColor: "var(--border)",
+                      color: "var(--text-muted)",
+                    }}
+                  >
+                    <th className="p-4 font-medium">Visitor</th>
+                    <th className="p-4 font-medium">Device</th>
+                    <th className="p-4 font-medium">Browser / OS</th>
+                    <th className="p-4 font-medium">Referrer / Locale</th>
+                    <th className="p-4 font-medium">Viewport</th>
+                    <th className="p-4 text-right font-medium">Timestamp</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.visitors.map((visitor) => (
+                    <VisitorRow key={visitor.eventId} visitor={visitor} />
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+      </AdminScrollPanel>
 
       <div className="mx-auto mt-6 flex max-w-7xl items-center justify-between gap-4">
-        <div
-          className="text-xs font-mono uppercase"
-          style={{ color: "var(--text-muted)" }}
-        >
-          Showing {(data.page - 1) * data.pageSize + (data.total > 0 ? 1 : 0)}-
-          {Math.min(data.page * data.pageSize, data.total)} of {data.total}{" "}
-          records
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Link
-            aria-disabled={!hasPreviousPage}
-            href={hasPreviousPage ? buildPageHref(data.page - 1, filters) : "#"}
-            className="rounded-lg border px-4 py-2 text-sm font-mono uppercase tracking-wide"
-            style={{
-              borderColor: "var(--border)",
-              color: hasPreviousPage ? "var(--text-body)" : "var(--text-muted)",
-              pointerEvents: hasPreviousPage ? "auto" : "none",
-              opacity: hasPreviousPage ? 1 : 0.5,
-            }}
-          >
-            Previous
-          </Link>
-          <span
+          <div
             className="text-xs font-mono uppercase"
             style={{ color: "var(--text-muted)" }}
           >
-            Page {data.page} of {data.totalPages}
-          </span>
-          <Link
-            aria-disabled={!hasNextPage}
-            href={hasNextPage ? buildPageHref(data.page + 1, filters) : "#"}
-            className="rounded-lg border px-4 py-2 text-sm font-mono uppercase tracking-wide"
-            style={{
-              borderColor: "var(--border)",
-              color: hasNextPage ? "var(--text-body)" : "var(--text-muted)",
-              pointerEvents: hasNextPage ? "auto" : "none",
-              opacity: hasNextPage ? 1 : 0.5,
-            }}
-          >
-            Next
-          </Link>
-        </div>
+            Showing {(data.page - 1) * data.pageSize + (data.total > 0 ? 1 : 0)}
+            -{Math.min(data.page * data.pageSize, data.total)} of {data.total}{" "}
+            records
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Link
+              aria-disabled={!hasPreviousPage}
+              href={
+                hasPreviousPage ? buildPageHref(data.page - 1, filters) : "#"
+              }
+              className="rounded-lg border px-4 py-2 text-sm font-mono uppercase tracking-wide"
+              style={{
+                borderColor: "var(--border)",
+                color: hasPreviousPage
+                  ? "var(--text-body)"
+                  : "var(--text-muted)",
+                pointerEvents: hasPreviousPage ? "auto" : "none",
+                opacity: hasPreviousPage ? 1 : 0.5,
+              }}
+            >
+              Previous
+            </Link>
+            <span
+              className="text-xs font-mono uppercase"
+              style={{ color: "var(--text-muted)" }}
+            >
+              Page {data.page} of {data.totalPages}
+            </span>
+            <Link
+              aria-disabled={!hasNextPage}
+              href={hasNextPage ? buildPageHref(data.page + 1, filters) : "#"}
+              className="rounded-lg border px-4 py-2 text-sm font-mono uppercase tracking-wide"
+              style={{
+                borderColor: "var(--border)",
+                color: hasNextPage ? "var(--text-body)" : "var(--text-muted)",
+                pointerEvents: hasNextPage ? "auto" : "none",
+                opacity: hasNextPage ? 1 : 0.5,
+              }}
+            >
+              Next
+            </Link>
+          </div>
       </div>
-    </div>
+    </AdminPageShell>
   );
 }

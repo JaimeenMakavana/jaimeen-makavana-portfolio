@@ -1,7 +1,17 @@
 import Link from "next/link";
-import { Calendar, Database, Filter, Mail, RefreshCcw, Search } from "lucide-react";
+import {
+  Calendar,
+  Database,
+  Filter,
+  Mail,
+  RefreshCcw,
+  Search,
+} from "lucide-react";
 import { z } from "zod";
 
+import { AdminPageHeader } from "@/app/components/ui/AdminPageHeader";
+import { AdminPageShell } from "@/app/components/ui/AdminPageShell";
+import { AdminScrollPanel } from "@/app/components/ui/AdminScrollPanel";
 import { applyContactFilters } from "./actions";
 import {
   type ContactSubmission,
@@ -66,7 +76,7 @@ function buildPageHref(
   filters: {
     intent?: string;
     search?: string;
-  }
+  },
 ) {
   const searchParams = new URLSearchParams();
 
@@ -81,7 +91,9 @@ function buildPageHref(
   }
 
   const query = searchParams.toString();
-  return query.length > 0 ? `/admin/contact-list?${query}` : "/admin/contact-list";
+  return query.length > 0
+    ? `/admin/contact-list?${query}`
+    : "/admin/contact-list";
 }
 
 function SubmissionRow({ submission }: { submission: ContactSubmission }) {
@@ -90,7 +102,10 @@ function SubmissionRow({ submission }: { submission: ContactSubmission }) {
   return (
     <tr className="border-b" style={{ borderColor: "var(--border)" }}>
       <td className="p-4 pl-6 align-top">
-        <div className="text-sm font-bold" style={{ color: "var(--text-display)" }}>
+        <div
+          className="text-sm font-bold"
+          style={{ color: "var(--text-display)" }}
+        >
           {submission.name}
         </div>
         <a
@@ -144,7 +159,9 @@ function SubmissionRow({ submission }: { submission: ContactSubmission }) {
   );
 }
 
-export default async function AdminContactList({ searchParams }: ContactPageProps) {
+export default async function AdminContactList({
+  searchParams,
+}: ContactPageProps) {
   const resolvedSearchParams = (await searchParams) ?? {};
   const parsedSearchParams = contactSearchParamsSchema.parse({
     page: Array.isArray(resolvedSearchParams.page)
@@ -174,51 +191,35 @@ export default async function AdminContactList({ searchParams }: ContactPageProp
   const hasNextPage = data.page < data.totalPages;
 
   return (
-    <div
-      className="min-h-screen p-6 font-sans"
-      style={{
-        backgroundColor: "var(--bg-canvas)",
-        color: "var(--text-body)",
-      }}
-    >
-      <div className="mx-auto mb-8 flex max-w-7xl flex-col justify-between gap-6 md:flex-row md:items-end">
-        <div>
-          <div className="mb-2 flex items-center gap-2">
-            <span
-              className="h-2 w-2 animate-pulse rounded-full"
-              style={{ backgroundColor: "var(--bg-accent-glow)" }}
-            />
-            <h5
-              className="text-xs font-mono uppercase tracking-widest"
-              style={{ color: "var(--text-muted)" }}
-            >
-              Neon Database / Server Rendered
-            </h5>
-          </div>
-          <h1
-            className="text-4xl font-black uppercase tracking-tighter md:text-5xl"
-            style={{ color: "var(--text-display)" }}
+    <AdminPageShell className="flex h-full min-h-0 flex-col space-y-4 overflow-hidden p-6">
+      <AdminPageHeader
+        eyebrow="Neon Database / Server Rendered"
+        title={
+          <>
+            Incoming{" "}
+            <span style={{ color: "var(--bg-accent-glow)" }}>Signals</span>
+          </>
+        }
+        actions={
+          <Link
+            href={buildPageHref(data.page, filters)}
+            className="inline-flex items-center gap-2 rounded-lg px-4 py-2 transition-all"
+            style={{
+              backgroundColor: "var(--nav-surface)",
+              color: "var(--nav-text-idle)",
+            }}
           >
-            Incoming <span style={{ color: "var(--bg-accent-glow)" }}>Signals</span>
-          </h1>
-        </div>
-
-        <Link
-          href={buildPageHref(data.page, filters)}
-          className="inline-flex items-center gap-2 rounded-lg px-4 py-2 transition-all"
-          style={{
-            backgroundColor: "var(--nav-surface)",
-            color: "var(--nav-text-idle)",
-          }}
-        >
-          <RefreshCcw className="h-4 w-4" />
-          <span className="text-sm font-mono uppercase tracking-wide">Refresh</span>
-        </Link>
-      </div>
+            <RefreshCcw className="h-4 w-4" />
+            <span className="text-sm font-mono uppercase tracking-wide">
+              Refresh
+            </span>
+          </Link>
+        }
+      />
 
       <form
         action={applyContactFilters}
-        className="mx-auto mb-6 flex max-w-7xl flex-col gap-4 md:flex-row"
+        className="flex max-w-7xl flex-col gap-4 md:flex-row"
       >
         <div className="relative flex-1">
           <Search
@@ -284,16 +285,10 @@ export default async function AdminContactList({ searchParams }: ContactPageProp
         </Link>
       </form>
 
-      <div
-        className="mx-auto min-h-[400px] max-w-7xl overflow-hidden rounded-2xl border shadow-sm"
-        style={{
-          backgroundColor: "var(--card)",
-          borderColor: "var(--border)",
-        }}
-      >
+      <AdminScrollPanel className="shadow-sm">
         {data.submissions.length === 0 ? (
           <div
-            className="flex h-96 flex-col items-center justify-center"
+            className="flex h-full min-h-80 flex-col items-center justify-center"
             style={{ color: "var(--text-muted)" }}
           >
             <div
@@ -305,9 +300,9 @@ export default async function AdminContactList({ searchParams }: ContactPageProp
             <p>No transmissions found matching parameters.</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="h-full overflow-auto">
             <table className="w-full border-collapse text-left">
-              <thead>
+              <thead className="sticky top-0 z-10">
                 <tr
                   className="border-b text-[10px] font-mono uppercase tracking-wider md:text-xs"
                   style={{
@@ -325,21 +320,25 @@ export default async function AdminContactList({ searchParams }: ContactPageProp
               </thead>
               <tbody>
                 {data.submissions.map((submission) => (
-                  <SubmissionRow key={submission.submissionId} submission={submission} />
+                  <SubmissionRow
+                    key={submission.submissionId}
+                    submission={submission}
+                  />
                 ))}
               </tbody>
             </table>
           </div>
         )}
-      </div>
+      </AdminScrollPanel>
 
-      <div className="mx-auto mt-6 flex max-w-7xl items-center justify-between gap-4">
+      <div className="mt-6 flex items-center justify-between gap-4">
         <div
           className="text-xs font-mono uppercase"
           style={{ color: "var(--text-muted)" }}
         >
           Showing {(data.page - 1) * data.pageSize + (data.total > 0 ? 1 : 0)}-
-          {Math.min(data.page * data.pageSize, data.total)} of {data.total} records
+          {Math.min(data.page * data.pageSize, data.total)} of {data.total}{" "}
+          records
         </div>
 
         <div className="flex items-center gap-2">
@@ -377,6 +376,6 @@ export default async function AdminContactList({ searchParams }: ContactPageProp
           </Link>
         </div>
       </div>
-    </div>
+    </AdminPageShell>
   );
 }

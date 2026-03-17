@@ -15,7 +15,6 @@ import {
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { NavigationLink } from "./useNavigationHover";
-import { ThemeToggle } from "../ThemeToggle";
 
 interface MobileBottomNavigationProps {
   activeLink: NavigationLink;
@@ -177,7 +176,8 @@ export const MobileBottomNavigation = ({
                     </motion.div>
                   );
                 })}
-                {/* 1. Theme Toggle (Top of stack) */}
+                {/* Theme switch disabled for now. */}
+                {/*
                 <motion.div variants={itemVariants}>
                   <div
                     className="p-3 rounded-full shadow-lg border border-white/10"
@@ -186,6 +186,7 @@ export const MobileBottomNavigation = ({
                     <ThemeToggle />
                   </div>
                 </motion.div>
+                */}
               </motion.nav>
             )}
           </AnimatePresence>

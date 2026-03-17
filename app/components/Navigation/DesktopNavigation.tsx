@@ -13,7 +13,6 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { NavigationLinkItem } from "./NavigationLink";
 import { NavigationLink } from "./useNavigationHover";
-import { ThemeToggle } from "../ThemeToggle";
 import { useState } from "react";
 
 interface DesktopNavigationProps {
@@ -213,10 +212,12 @@ export const DesktopNavigation = ({
                 </motion.div>
               ))}
 
-              {/* Theme Toggle */}
+              {/* Theme switch disabled for now. */}
+              {/*
               <motion.div variants={itemVariants}>
                 <ThemeToggle variant="desktop" />
               </motion.div>
+              */}
             </motion.div>
           )}
         </AnimatePresence>
