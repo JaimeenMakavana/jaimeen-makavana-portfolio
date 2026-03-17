@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Users,
   RefreshCcw,
@@ -13,13 +13,13 @@ import {
   MapPin,
   Calendar,
   Filter,
-  Download,
   BarChart3,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 // --- TYPES ---
 interface VisitorData {
+  eventId: string;
   userId: string;
   timestamp: string;
   ip?: string;
@@ -32,8 +32,6 @@ interface VisitorData {
   deviceType?: "mobile" | "tablet" | "desktop";
   browser?: string;
   os?: string;
-  gistId: string;
-  gistUrl: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -65,7 +63,7 @@ const formatDate = (isoString: string) => {
       hour: "numeric",
       minute: "2-digit",
     });
-  } catch (e) {
+  } catch {
     return "Unknown Date";
   }
 };
@@ -109,7 +107,7 @@ export default function AdminAnalytics() {
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
   // --- DATA FETCHING ---
-  const fetchAnalytics = async (
+  const fetchAnalytics = useCallback(async (
     cursor: string | null = null,
     append = false
   ) => {
@@ -135,9 +133,7 @@ export default function AdminAnalytics() {
             `Rate limit exceeded. Please wait ${retryAfter}s before trying again.`
           );
         } else if (response.status === 503) {
-          throw new Error(
-            "Service temporarily unavailable. GitHub API rate limit reached."
-          );
+          throw new Error("Service temporarily unavailable.");
         }
         throw new Error(json.error || "Failed to fetch analytics");
       }
@@ -161,17 +157,18 @@ export default function AdminAnalytics() {
       setLoading(false);
       setLoadingMore(false);
     }
-  };
+  }, []);
 
   // Load more data
-  const loadMore = () => {
+  const loadMore = useCallback(() => {
     if (!loadingMore && hasMore && nextCursor) {
-      fetchAnalytics(nextCursor, true);
+      void fetchAnalytics(nextCursor, true);
     }
-  };
+  }, [fetchAnalytics, hasMore, loadingMore, nextCursor]);
 
   // Intersection Observer for infinite scroll
   useEffect(() => {
+    const currentLoadMoreRef = loadMoreRef.current;
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && hasMore && !loadingMore) {
@@ -181,20 +178,20 @@ export default function AdminAnalytics() {
       { threshold: 0.1 }
     );
 
-    if (loadMoreRef.current) {
-      observer.observe(loadMoreRef.current);
+    if (currentLoadMoreRef) {
+      observer.observe(currentLoadMoreRef);
     }
 
     return () => {
-      if (loadMoreRef.current) {
-        observer.unobserve(loadMoreRef.current);
+      if (currentLoadMoreRef) {
+        observer.unobserve(currentLoadMoreRef);
       }
     };
-  }, [hasMore, loadingMore, nextCursor]);
+  }, [hasMore, loadingMore, loadMore]);
 
   useEffect(() => {
-    fetchAnalytics();
-  }, []);
+    void fetchAnalytics();
+  }, [fetchAnalytics]);
 
   // Filter visitors
   const filteredVisitors = visitors.filter((visitor) => {
@@ -547,7 +544,7 @@ export default function AdminAnalytics() {
                     const DeviceIcon = getDeviceIcon(visitor.deviceType);
                     return (
                       <motion.tr
-                        key={visitor.gistId}
+                        key={visitor.eventId}
                         initial={{ opacity: 0, y: 5 }}
                         animate={{ opacity: 1, y: 0 }}
                         className="group transition-colors"
@@ -699,7 +696,7 @@ export default function AdminAnalytics() {
           Displaying {filteredVisitors.length} of {total} records
           {hasMore && " (more available)"}
         </span>
-        <span>Secure Connection • Gist Storage</span>
+        <span>Secure Connection | Neon Storage</span>
       </div>
     </div>
   );

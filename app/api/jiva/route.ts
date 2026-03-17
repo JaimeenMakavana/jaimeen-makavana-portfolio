@@ -1,4 +1,7 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import {
+  FunctionCallingMode,
+  GoogleGenerativeAI,
+} from "@google/generative-ai";
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
@@ -91,7 +94,7 @@ async function retrieveContext(
   try {
     // Embed the USER'S query
     const embeddingModel = genAI.getGenerativeModel({
-      model: "text-embedding-004",
+      model: "gemini-embedding-001",
     });
 
     // Use string directly - SDK supports this format
@@ -213,8 +216,10 @@ Answer based on the provided code. Be concise, technical, and reference specific
     const model = genAI.getGenerativeModel({
       model: modelName,
       systemInstruction: systemInstruction,
-      tools: TOOLS as any,
-      toolConfig: { functionCallingConfig: { mode: "AUTO" as any } },
+      tools: TOOLS,
+      toolConfig: {
+        functionCallingConfig: { mode: FunctionCallingMode.AUTO },
+      },
     });
 
     // Start Chat

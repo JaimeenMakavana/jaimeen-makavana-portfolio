@@ -77,7 +77,7 @@ async function generateEmbeddings() {
     try {
       existingIndex = JSON.parse(fs.readFileSync(indexPath, "utf-8"));
       console.log(`📚 Found existing index with ${existingIndex.length} entries.`);
-    } catch (e) {
+    } catch {
       console.warn("⚠️  Could not load existing index, starting fresh.");
     }
   }
@@ -89,9 +89,9 @@ async function generateEmbeddings() {
   });
 
   const vectorStore: IndexEntry[] = [];
-  // Try text-embedding-004 first (fallback if 005 not available)
+  // Official Gemini embeddings model for embedContent
   const embeddingModel = genAI.getGenerativeModel({ 
-    model: "text-embedding-004"
+    model: "gemini-embedding-001"
   });
 
   let processed = 0;

@@ -16,14 +16,14 @@ export default function ProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch projects from Gist on mount
+  // Fetch projects from Neon-backed API on mount
   useEffect(() => {
     const fetchProjects = async () => {
       try {
         const res = await fetch("/api/projects");
         const json = await res.json();
 
-        // Use data if available (either from Gist or fallback)
+        // Use data if available (either from Neon or fallback)
         if (json.data && Array.isArray(json.data) && json.data.length > 0) {
           setProjects(json.data);
         } else {

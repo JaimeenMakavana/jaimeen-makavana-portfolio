@@ -1,39 +1,36 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Search,
   RefreshCcw,
-  ExternalLink,
   Mail,
   Terminal,
   Filter,
-  Github,
   Calendar,
+  Database,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-// --- TYPES ---
-// Matches the "ContactGist" interface from your API
 interface ContactSubmission {
+  submissionId: string;
   name: string;
   email: string;
   message: string;
   intent: string;
   timestamp: string;
-  gistId: string;
-  gistUrl: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface ApiResponse {
   success: boolean;
   count: number;
   total: number;
-  gists: ContactSubmission[];
+  submissions: ContactSubmission[];
   error?: string;
 }
 
-// --- UTILS ---
 const formatDate = (isoString: string) => {
   try {
     return new Date(isoString).toLocaleString("en-US", {
@@ -42,7 +39,7 @@ const formatDate = (isoString: string) => {
       hour: "numeric",
       minute: "2-digit",
     });
-  } catch (e) {
+  } catch {
     return "Unknown Date";
   }
 };
@@ -82,17 +79,13 @@ export default function AdminContactList() {
   const [filteredData, setFilteredData] = useState<ContactSubmission[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  // Filters
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedIntent, setSelectedIntent] = useState<string>("ALL");
 
-  // --- DATA FETCHING ---
   const fetchSubmissions = async () => {
     setLoading(true);
     setError(null);
     try {
-      // Calls your new Next.js API route
       const response = await fetch("/api/contact?limit=100");
       const json: ApiResponse = await response.json();
 
@@ -101,8 +94,8 @@ export default function AdminContactList() {
       }
 
       if (json.success) {
-        setData(json.gists);
-        setFilteredData(json.gists);
+        setData(json.submissions);
+        setFilteredData(json.submissions);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error occurred");
@@ -112,21 +105,18 @@ export default function AdminContactList() {
   };
 
   useEffect(() => {
-    fetchSubmissions();
+    void fetchSubmissions();
   }, []);
 
-  // --- FILTERING LOGIC ---
   useEffect(() => {
     let result = data;
 
-    // 1. Filter by Intent Tab
     if (selectedIntent !== "ALL") {
       result = result.filter(
         (item) => item.intent.toLowerCase() === selectedIntent.toLowerCase()
       );
     }
 
-    // 2. Filter by Search Query
     if (searchQuery) {
       const lowerQuery = searchQuery.toLowerCase();
       result = result.filter(
@@ -148,7 +138,6 @@ export default function AdminContactList() {
         color: "var(--text-body)",
       }}
     >
-      {/* 1. HEADER */}
       <div className="max-w-7xl mx-auto mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
           <div className="flex items-center gap-2 mb-2">
@@ -160,7 +149,7 @@ export default function AdminContactList() {
               className="font-mono text-xs uppercase tracking-widest"
               style={{ color: "var(--text-muted)" }}
             >
-              Gist Database / Live Feed
+              Neon Database / Live Feed
             </h5>
           </div>
           <h1
@@ -208,10 +197,8 @@ export default function AdminContactList() {
         </div>
       </div>
 
-      {/* 2. CONTROL PANEL */}
       <div className="max-w-7xl mx-auto mb-6 space-y-4">
         <div className="flex flex-col md:flex-row gap-4">
-          {/* Search */}
           <div className="flex-1 relative group">
             <Search
               className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors"
@@ -239,7 +226,6 @@ export default function AdminContactList() {
             />
           </div>
 
-          {/* Intent Tabs */}
           <div
             className="flex p-1 rounded-xl overflow-x-auto border"
             style={{
@@ -280,7 +266,6 @@ export default function AdminContactList() {
         </div>
       </div>
 
-      {/* 3. DATA TABLE */}
       <div
         className="max-w-7xl mx-auto rounded-2xl overflow-hidden shadow-sm min-h-[400px] border"
         style={{
@@ -288,7 +273,6 @@ export default function AdminContactList() {
           borderColor: "var(--border)",
         }}
       >
-        {/* Loading */}
         {loading && (
           <div
             className="h-96 flex flex-col items-center justify-center space-y-4"
@@ -304,12 +288,11 @@ export default function AdminContactList() {
               ></div>
             </div>
             <p className="font-mono text-xs uppercase tracking-widest">
-              Fetching Gist Packets...
+              Fetching Neon Records...
             </p>
           </div>
         )}
 
-        {/* Error */}
         {!loading && error && (
           <div
             className="h-96 flex flex-col items-center justify-center space-y-4 p-8 text-center"
@@ -328,12 +311,11 @@ export default function AdminContactList() {
               {error}
             </p>
             <p className="text-xs" style={{ color: "var(--text-muted)" }}>
-              Check your GITHUB_GIST_TOKEN and environment variables.
+              Check your Neon env variables and database connection.
             </p>
           </div>
         )}
 
-        {/* Empty State */}
         {!loading && !error && filteredData.length === 0 && (
           <div
             className="h-96 flex flex-col items-center justify-center"
@@ -349,7 +331,6 @@ export default function AdminContactList() {
           </div>
         )}
 
-        {/* Table Content */}
         {!loading && !error && filteredData.length > 0 && (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
@@ -366,7 +347,7 @@ export default function AdminContactList() {
                   <th className="p-4 font-medium">Signal Type</th>
                   <th className="p-4 font-medium">Payload Content</th>
                   <th className="p-4 font-medium">Timestamp</th>
-                  <th className="p-4 pr-6 font-medium text-right">Raw Data</th>
+                  <th className="p-4 pr-6 font-medium text-right">Record</th>
                 </tr>
               </thead>
               <tbody
@@ -378,13 +359,11 @@ export default function AdminContactList() {
                     const badgeStyle = getIntentBadgeStyle(item.intent);
                     return (
                       <motion.tr
-                        key={item.gistId}
+                        key={item.submissionId}
                         initial={{ opacity: 0, y: 5 }}
                         animate={{ opacity: 1, y: 0 }}
                         className="group transition-colors"
-                        style={{
-                          borderColor: "var(--border)",
-                        }}
+                        style={{ borderColor: "var(--border)" }}
                         onMouseEnter={(e) => {
                           e.currentTarget.style.backgroundColor =
                             "var(--muted)";
@@ -442,31 +421,17 @@ export default function AdminContactList() {
                           </div>
                         </td>
                         <td className="p-4 pr-6 align-top text-right">
-                          <a
-                            href={item.gistUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center justify-center p-2 rounded-lg border transition-all"
+                          <div
+                            className="inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg border text-[10px] font-mono uppercase"
                             style={{
                               backgroundColor: "var(--card)",
                               borderColor: "var(--border)",
                               color: "var(--text-muted)",
                             }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.borderColor =
-                                "var(--text-display)";
-                              e.currentTarget.style.color =
-                                "var(--text-display)";
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.borderColor =
-                                "var(--border)";
-                              e.currentTarget.style.color = "var(--text-muted)";
-                            }}
-                            title="View Raw Gist"
                           >
-                            <Github className="w-4 h-4" />
-                          </a>
+                            <Database className="w-4 h-4" />
+                            {item.submissionId.slice(0, 8)}
+                          </div>
                         </td>
                       </motion.tr>
                     );
@@ -478,7 +443,6 @@ export default function AdminContactList() {
         )}
       </div>
 
-      {/* Footer Stats */}
       <div
         className="max-w-7xl mx-auto mt-4 flex justify-between items-center text-[10px] font-mono uppercase"
         style={{ color: "var(--text-muted)" }}
@@ -486,7 +450,7 @@ export default function AdminContactList() {
         <span>
           Displaying {filteredData.length} of {data.length} records
         </span>
-        <span>Secure Connection • Gist Storage</span>
+        <span>Secure Connection | Neon Storage</span>
       </div>
     </div>
   );

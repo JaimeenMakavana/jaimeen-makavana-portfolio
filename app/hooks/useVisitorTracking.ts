@@ -102,9 +102,7 @@ export function useVisitorTracking(options: VisitorTrackingOptions = {}) {
             const retryAfter = response.headers.get("Retry-After");
             console.warn(`Analytics rate limited. Retry after ${retryAfter}s`);
           } else if (response.status === 503) {
-            console.warn(
-              "Analytics service temporarily unavailable (GitHub API limit)"
-            );
+            console.warn("Analytics service temporarily unavailable");
           } else {
             console.warn("Failed to track visitor:", await response.text());
           }

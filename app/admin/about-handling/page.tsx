@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Save,
   Plus,
@@ -23,6 +23,22 @@ interface CareerMilestone {
   title: string;
   description: string;
   image: string;
+}
+
+function isCareerMilestone(value: unknown): value is CareerMilestone {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const milestone = value as Record<string, unknown>;
+
+  return (
+    typeof milestone.id === "string" &&
+    typeof milestone.era === "string" &&
+    typeof milestone.title === "string" &&
+    typeof milestone.description === "string" &&
+    typeof milestone.image === "string"
+  );
 }
 
 // --- SEED DATA (From your Portfolio PDF) ---
@@ -79,7 +95,6 @@ export default function AboutCMS() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [gistId, setGistId] = useState<string | null>(null);
   const [statusMsg, setStatusMsg] = useState<{
     type: "success" | "error";
     text: string;
@@ -91,11 +106,7 @@ export default function AboutCMS() {
 
   // --- ACTIONS ---
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const res = await fetch("/api/about");
@@ -103,15 +114,16 @@ export default function AboutCMS() {
 
       if (json.found && Array.isArray(json.data) && json.data.length > 0) {
         // Ensure incoming data has IDs (for legacy data compatibility)
-        const validatedData = json.data.map((item: any, idx: number) => ({
+        const validatedData = json.data
+          .filter(isCareerMilestone)
+          .map((item: CareerMilestone, idx: number) => ({
           ...item,
           id: item.id || `legacy-${idx}-${Date.now()}`,
         }));
         setMilestones(validatedData);
-        setGistId(json.gistId);
         setIsDirty(false);
       } else {
-        console.log("No remote data found, using seed data.");
+        console.log("No Neon data found, using seed data.");
         setIsDirty(true);
       }
     } catch (e) {
@@ -120,7 +132,11 @@ export default function AboutCMS() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    void fetchData();
+  }, [fetchData]);
 
   const handleSync = async () => {
     setSaving(true);
@@ -128,19 +144,18 @@ export default function AboutCMS() {
       const res = await fetch("/api/about", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ data: milestones, gistId }),
+        body: JSON.stringify({ data: milestones }),
       });
       const json = await res.json();
 
       if (json.success) {
-        setGistId(json.gistId);
         setIsDirty(false);
         showStatus("success", "Timeline Synced Successfully");
       } else {
         throw new Error(json.error || "Save failed");
       }
-    } catch (e) {
-      showStatus("error", "Failed to sync with GitHub");
+    } catch {
+      showStatus("error", "Failed to sync with Neon");
     } finally {
       setSaving(false);
     }
@@ -246,7 +261,7 @@ export default function AboutCMS() {
             onClick={fetchData}
             disabled={loading || isDirty}
             className="p-2 rounded-lg transition-colors disabled:opacity-30"
-            title="Reload from Gist"
+            title="Reload from Neon"
             style={{ color: "var(--text-body)" }}
             onMouseEnter={(e) => {
               if (!loading && !isDirty) {
@@ -289,7 +304,7 @@ export default function AboutCMS() {
             ) : (
               <>
                 <Save className="w-4 h-4" />
-                Sync to Gist
+                Sync to Neon
               </>
             )}
           </button>

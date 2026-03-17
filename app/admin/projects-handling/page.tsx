@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Save,
   Plus,
@@ -14,27 +14,44 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import type {
+  Project,
+  ProjectCategory as Category,
+  ProjectSize,
+} from "@/app/components/ProjectComponents/types";
 
 // --- TYPES ---
-type ProjectSize = "small" | "medium" | "large" | "tall";
-type Category =
-  | "AI Engineering"
-  | "System Design"
-  | "Frontend Arch"
-  | "Migration";
+type ProjectFormValue =
+  | string
+  | number
+  | string[]
+  | Category
+  | ProjectSize
+  | undefined;
 
-interface Project {
-  id: string;
-  title: string;
-  category: Category;
-  tagline: string;
-  description: string;
-  stack: string[];
-  complexity: number;
-  size: ProjectSize;
-  image: string;
-  link?: string;
-  stat?: string;
+function isProject(value: unknown): value is Project {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const project = value as Record<string, unknown>;
+
+  return (
+    typeof project.id === "string" &&
+    typeof project.title === "string" &&
+    typeof project.category === "string" &&
+    typeof project.tagline === "string" &&
+    typeof project.description === "string" &&
+    Array.isArray(project.stack) &&
+    project.stack.every((item) => typeof item === "string") &&
+    typeof project.complexity === "number" &&
+    typeof project.size === "string" &&
+    typeof project.image === "string" &&
+    (typeof project.imageMobile === "string" ||
+      typeof project.imageMobile === "undefined") &&
+    (typeof project.link === "string" || typeof project.link === "undefined") &&
+    (typeof project.stat === "string" || typeof project.stat === "undefined")
+  );
 }
 
 // --- EMPTY PROJECT TEMPLATE ---
@@ -57,7 +74,6 @@ export default function ProjectCMS() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [gistId, setGistId] = useState<string | null>(null);
   const [statusMsg, setStatusMsg] = useState<{
     type: "success" | "error";
     text: string;
@@ -70,12 +86,7 @@ export default function ProjectCMS() {
 
   // --- ACTIONS ---
 
-  // 1. Fetch from Gist on Load
-  useEffect(() => {
-    fetchProjects();
-  }, []);
-
-  const fetchProjects = async () => {
+  const fetchProjects = useCallback(async () => {
     setLoading(true);
     try {
       const res = await fetch("/api/projects");
@@ -88,20 +99,18 @@ export default function ProjectCMS() {
       }
 
       if (json.found && json.data.length > 0) {
-        setProjects(json.data);
-        setGistId(json.gistId);
+        setProjects(json.data.filter(isProject));
         setIsDirty(false);
         setHasInitialized(true);
-        showStatus("success", `Loaded ${json.data.length} projects from Gist`);
+        showStatus("success", `Loaded ${json.data.length} projects from Neon`);
       } else {
-        // No Gist found - start with empty array
+        // No Neon data found - start with empty array
         setProjects([]);
-        setGistId(null);
         setIsDirty(false);
         setHasInitialized(true);
         showStatus(
           "success",
-          "No Gist found. Create your first project to initialize the database."
+          "No Neon data found. Create your first project to initialize the database."
         );
       }
     } catch (e) {
@@ -113,16 +122,21 @@ export default function ProjectCMS() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  // 2. Sync to Gist (Save)
+  // 1. Fetch from Neon on Load
+  useEffect(() => {
+    void fetchProjects();
+  }, [fetchProjects]);
+
+  // 2. Sync to Neon (Save)
   const handleSync = async () => {
     setSaving(true);
     try {
       const res = await fetch("/api/projects", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ projects, gistId }),
+        body: JSON.stringify({ projects }),
       });
       const json = await res.json();
 
@@ -131,7 +145,6 @@ export default function ProjectCMS() {
       }
 
       if (json.success) {
-        setGistId(json.gistId);
         setIsDirty(false);
         showStatus(
           "success",
@@ -142,7 +155,7 @@ export default function ProjectCMS() {
       }
     } catch (e) {
       const errorMessage =
-        e instanceof Error ? e.message : "Failed to sync with GitHub";
+        e instanceof Error ? e.message : "Failed to sync with Neon";
       showStatus("error", errorMessage);
     } finally {
       setSaving(false);
@@ -164,7 +177,7 @@ export default function ProjectCMS() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleFormChange = (field: keyof Project, value: any) => {
+  const handleFormChange = (field: keyof Project, value: ProjectFormValue) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -252,7 +265,7 @@ export default function ProjectCMS() {
             onClick={fetchProjects}
             disabled={loading || isDirty}
             className="p-2 rounded-lg transition-colors disabled:opacity-30"
-            title="Reload from Gist"
+            title="Reload from Neon"
             style={{ color: "var(--text-body)" }}
             onMouseEnter={(e) => {
               if (!loading && !isDirty) {
@@ -295,7 +308,7 @@ export default function ProjectCMS() {
             ) : (
               <>
                 <Save className="w-4 h-4" />
-                Sync to Gist
+                Sync to Neon
               </>
             )}
           </button>
@@ -339,7 +352,7 @@ export default function ProjectCMS() {
                 style={{ color: "var(--text-muted)" }}
               >
                 <RefreshCcw className="w-6 h-6 animate-spin mx-auto mb-2" />
-                <p className="text-sm">Loading projects from Gist...</p>
+                <p className="text-sm">Loading projects from Neon...</p>
               </div>
             ) : projects.length === 0 ? (
               <div
@@ -354,7 +367,7 @@ export default function ProjectCMS() {
                   className="text-sm mb-2"
                   style={{ color: "var(--text-muted)" }}
                 >
-                  No projects found in Gist
+                  No projects found in Neon
                 </p>
                 <p
                   className="text-xs mb-4"

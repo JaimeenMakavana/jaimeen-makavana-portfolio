@@ -12,7 +12,6 @@ import {
   Database,
   ShieldCheck,
   Cpu,
-  GitBranch,
   User, // Imported User icon for the About module
 } from "lucide-react";
 
@@ -27,7 +26,7 @@ const StatCard = ({
 }: {
   label: string;
   value: string;
-  icon: any;
+  icon: React.ComponentType<{ className?: string }>;
   trend?: string;
   delay?: number;
 }) => (
@@ -67,7 +66,7 @@ const NavCard = ({
   title: string;
   desc: string;
   href: string;
-  icon: any;
+  icon: React.ComponentType<{ className?: string }>;
   colorClass: string;
   delay?: number;
 }) => (
@@ -131,7 +130,7 @@ const SystemLog = () => (
         <span className="text-neutral-600">[10:42:01]</span>
         <span>
           <span className="text-blue-400">INFO</span> Connection established
-          with Gist API
+          with Neon database
         </span>
       </div>
       <div className="flex gap-3">
@@ -238,9 +237,9 @@ export default function AdminDashboard() {
           delay={0.2}
         />
         <StatCard
-          label="Gist Requests"
+          label="DB Requests"
           value="1.2k"
-          icon={GitBranch}
+          icon={Database}
           delay={0.3}
         />
         <StatCard
@@ -257,7 +256,7 @@ export default function AdminDashboard() {
         <div className="md:col-span-2 md:row-span-1">
           <NavCard
             title="Incoming Signals"
-            desc="Review contact form submissions, filter by intent, and access raw Gist data."
+            desc="Review contact form submissions, filter by intent, and inspect live Neon records."
             href="/admin/contact-list"
             icon={MessageSquare}
             colorClass="text-blue-500"
