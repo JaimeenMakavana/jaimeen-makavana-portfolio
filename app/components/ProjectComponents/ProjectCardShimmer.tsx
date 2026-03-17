@@ -56,21 +56,14 @@ export const ProjectCardShimmer = ({
   );
 };
 
-// Usage Example for your Grid:
 export const ProjectGridSkeleton = () => {
   return (
-    <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 auto-rows-[minmax(300px,auto)] gap-4 md:gap-6">
-      {/* Simulating the Bento Grid Layout */}
-      <ProjectCardShimmer className="md:col-span-2 md:row-span-2" />{" "}
-      {/* Large */}
-      <ProjectCardShimmer className="md:col-span-1 md:row-span-1" />{" "}
-      {/* Small */}
-      <ProjectCardShimmer className="md:col-span-1 md:row-span-2" />{" "}
-      {/* Tall */}
-      <ProjectCardShimmer className="md:col-span-1 md:row-span-1" />{" "}
-      {/* Small */}
-      <ProjectCardShimmer className="md:col-span-2 md:row-span-1" />{" "}
-      {/* Medium */}
+    <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 auto-rows-[minmax(200px,auto)] gap-4 md:gap-6">
+      <ProjectCardShimmer className="md:col-[1/span_6] md:row-[1/span_2]" />
+      <ProjectCardShimmer className="md:col-[7/span_3] md:row-[1/span_1]" />
+      <ProjectCardShimmer className="md:col-[10/span_3] md:row-[1/span_2]" />
+      <ProjectCardShimmer className="md:col-[7/span_3] md:row-[2/span_1]" />
+      <ProjectCardShimmer className="md:col-[1/span_6] md:row-[3/span_1]" />
     </div>
   );
 };

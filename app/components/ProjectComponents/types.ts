@@ -1,4 +1,12 @@
-export type ProjectSize = "small" | "medium" | "large" | "tall";
+export type ProjectSize =
+  | "small"   // 1×1
+  | "medium"  // 2×1
+  | "tall"    // 1×2
+  | "large"   // 2×2
+  | "wide3"   // 3×1
+  | "block3x2" // 3×2
+  | "full"    // 4×1
+  | "tall3";  // 1×3
 
 export type ProjectCategory =
   | "AI Engineering"

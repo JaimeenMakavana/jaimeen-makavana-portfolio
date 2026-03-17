@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   BentoCard,
@@ -8,6 +8,40 @@ import {
   ProjectGridSkeleton,
   type Project,
 } from "../components/ProjectComponents";
+import { packBentoGrid } from "@/app/lib/projects/bentoGrid";
+
+// --- 12-COL BENTO GRID (packed, order-independent) ---
+function ProjectsBentoGrid({
+  projects,
+  onSelect,
+}: {
+  projects: Project[];
+  onSelect: (id: string) => void;
+}) {
+  const placements = useMemo(() => packBentoGrid(projects), [projects]);
+
+  return (
+    <motion.div
+      className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 auto-rows-[minmax(200px,auto)] gap-4 md:gap-6"
+      initial="hidden"
+      animate="visible"
+      variants={{
+        visible: {
+          transition: { staggerChildren: 0.06 },
+        },
+      }}
+    >
+      {projects.map((project) => (
+        <BentoCard
+          key={project.id}
+          project={project}
+          onClick={onSelect}
+          placement={placements.get(project.id) ?? null}
+        />
+      ))}
+    </motion.div>
+  );
+}
 
 // --- MAIN PAGE LAYOUT ---
 
@@ -94,31 +128,12 @@ export default function ProjectsPage() {
         </div>
       )}
 
-      {/* Projects Grid */}
+      {/* Projects Grid: 12-column packed bento (order-independent, no gaps) */}
       {!loading && projects.length > 0 && (
         <>
-          <motion.div
-            className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-[150px_150px_1fr_1fr] auto-rows-[minmax(250px,auto)] gap-4 md:gap-6"
-            initial="hidden"
-            animate="visible"
-            variants={{
-              visible: {
-                transition: {
-                  staggerChildren: 0.1,
-                },
-              },
-            }}
-          >
-            {projects.map((project) => (
-              <BentoCard
-                key={project.id}
-                project={project}
-                onClick={setSelectedId}
-              />
-            ))}
-          </motion.div>
+          <ProjectsBentoGrid projects={projects} onSelect={setSelectedId} />
 
-          {/* Shared Layout Expansion Overlay */}
+          {/* Expansion overlay */}
           <AnimatePresence>
             {selectedId && (
               <ExpandedCard

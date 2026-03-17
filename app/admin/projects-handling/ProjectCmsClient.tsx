@@ -610,11 +610,16 @@ export default function ProjectCmsClient({
                         onBlur={(e) => {
                           e.currentTarget.style.borderColor = "var(--border)";
                         }}
+                        title="How many grid cells this card occupies on the projects page"
                       >
-                        <option value="small">Small (1x1)</option>
-                        <option value="medium">Medium (2x1)</option>
-                        <option value="tall">Tall (1x2)</option>
-                        <option value="large">Large (2x2)</option>
+                        <option value="small">1×1 — Compact</option>
+                        <option value="medium">2×1 — Wide</option>
+                        <option value="tall">1×2 — Tall</option>
+                        <option value="large">2×2 — Feature</option>
+                        <option value="wide3">3×1 — Wide bar</option>
+                        <option value="block3x2">3×2 — Block</option>
+                        <option value="full">4×1 — Full width</option>
+                        <option value="tall3">1×3 — Tall column</option>
                       </select>
                     </div>
 
