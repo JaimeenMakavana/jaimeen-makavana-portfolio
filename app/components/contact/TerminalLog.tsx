@@ -54,7 +54,7 @@ export const TerminalLog = memo(
   (prevProps, nextProps) => {
     // Only re-render if activeField changes
     return prevProps.activeField === nextProps.activeField;
-  }
+  },
 );
 
 TerminalLog.displayName = "TerminalLog";

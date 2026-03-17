@@ -127,7 +127,7 @@ export const ContactInfoSection = memo(
   (prevProps, nextProps) => {
     // Only re-render if activeField changes
     return prevProps.activeField === nextProps.activeField;
-  }
+  },
 );
 
 ContactInfoSection.displayName = "ContactInfoSection";
