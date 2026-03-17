@@ -9,7 +9,8 @@ import {
 } from "framer-motion";
 
 // --- Types ---
-type CareerMilestone = {
+export type CareerMilestone = {
+  id?: string;
   era: string;
   title: string;
   description: string;
@@ -161,9 +162,19 @@ const ParallaxSection = ({
   );
 };
 
-export default function CareerTimeline() {
+type CareerTimelineProps = {
+  milestones?: CareerMilestone[] | null;
+};
+
+export default function CareerTimeline({ milestones }: CareerTimelineProps) {
+  const displayMilestones = milestones != null && milestones.length > 0
+    ? milestones
+    : CAREER_MILESTONES;
   const [activeCard, setActiveCard] = useState(0);
   const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  const safeActiveCard = Math.min(activeCard, displayMilestones.length - 1);
+  const activeImage = displayMilestones[safeActiveCard]?.image ?? "";
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -171,7 +182,7 @@ export default function CareerTimeline() {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             const index = Number(entry.target.getAttribute("data-index"));
-            setActiveCard(index);
+            if (!Number.isNaN(index)) setActiveCard(index);
           }
         });
       },
@@ -182,12 +193,13 @@ export default function CareerTimeline() {
       }
     );
 
-    sectionRefs.current.forEach((el) => {
+    const refs = sectionRefs.current;
+    refs.forEach((el) => {
       if (el) observer.observe(el);
     });
 
     return () => observer.disconnect();
-  }, []);
+  }, [displayMilestones.length]);
 
   return (
     <div
@@ -199,16 +211,15 @@ export default function CareerTimeline() {
       }}
     >
       {/* --- BACKGROUND LAYER --- */}
-      {/* 'transform-gpu' creates a new composite layer */}
       <div className="fixed inset-0 z-0 w-full h-full pointer-events-none transform-gpu">
         <AnimatePresence mode="popLayout">
           <motion.div
-            key={activeCard}
+            key={safeActiveCard}
             initial={{ opacity: 0, scale: 1.1 }}
             animate={{
               opacity: 1,
               scale: 1,
-              y: [0, -20], // Gentle pan
+              y: [0, -20],
             }}
             exit={{ opacity: 0, scale: 1.05 }}
             transition={{
@@ -216,18 +227,18 @@ export default function CareerTimeline() {
               scale: { duration: 1.5, ease: "easeOut" },
               y: { duration: 5, ease: "linear" },
             }}
-            // 'will-change-transform' tells browser to optimize for movement
             className="absolute inset-0 w-full h-full will-change-transform"
           >
-            <Image
-              src={CAREER_MILESTONES[activeCard].image}
-              alt="Background"
-              fill
-              className="object-cover opacity-[0.08] grayscale"
-              sizes="100vw"
-            />
+            {activeImage && (
+              <Image
+                src={activeImage}
+                alt="Background"
+                fill
+                className="object-cover opacity-[0.08] grayscale"
+                sizes="100vw"
+              />
+            )}
 
-            {/* Gradient Overlays */}
             <div
               className="absolute top-0 left-0 w-full h-[60vh] opacity-60"
               style={{
@@ -246,12 +257,12 @@ export default function CareerTimeline() {
 
       {/* --- CONTENT LAYER --- */}
       <div className="relative z-10 w-full pb-[20vh]">
-        {CAREER_MILESTONES.map((milestone, index) => (
+        {displayMilestones.map((milestone, index) => (
           <ParallaxSection
-            key={index}
+            key={milestone.id ?? index}
             index={index}
             milestone={milestone}
-            activeCard={activeCard}
+            activeCard={safeActiveCard}
             setRef={(el) => (sectionRefs.current[index] = el)}
           />
         ))}

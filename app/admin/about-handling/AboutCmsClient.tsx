@@ -87,29 +87,22 @@ export default function AboutCmsClient({
     type: "success" | "error";
     text: string;
   } | null>(null);
-  const [isDirty, setIsDirty] = useState(initialMilestones.length === 0);
 
   // Form State
   const [formData, setFormData] = useState<CareerMilestone>(EMPTY_MILESTONE);
 
-  // --- ACTIONS ---
-
-  const handleSync = async () => {
+  const persistMilestones = (next: CareerMilestone[]) => {
     startSyncTransition(async () => {
       try {
-        await syncAboutMilestones(milestones);
-        setIsDirty(false);
-        showStatus("success", "Timeline synced successfully");
+        await syncAboutMilestones(next);
+        showStatus("success", "Saved.");
         router.refresh();
       } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : "Failed to sync with Neon";
-        showStatus("error", errorMessage);
+        const msg = error instanceof Error ? error.message : "Save failed";
+        showStatus("error", msg);
       }
     });
   };
-
-  // --- CRUD OPERATIONS ---
 
   const handleSelect = (item: CareerMilestone) => {
     setSelectedId(item.id);
@@ -119,10 +112,11 @@ export default function AboutCmsClient({
   const handleCreateNew = () => {
     const newId = `milestone-${Date.now()}`;
     const newItem = { ...EMPTY_MILESTONE, id: newId };
-    setMilestones([...milestones, newItem]);
+    const next = [...milestones, newItem];
+    setMilestones(next);
     setSelectedId(newId);
     setFormData(newItem);
-    setIsDirty(true);
+    persistMilestones(next);
   };
 
   const handleFormChange = (field: keyof CareerMilestone, value: string) => {
@@ -131,22 +125,20 @@ export default function AboutCmsClient({
 
   const saveLocal = (e: React.FormEvent) => {
     e.preventDefault();
-    setMilestones((prev) =>
-      prev.map((m) => (m.id === formData.id ? formData : m)),
-    );
-    setIsDirty(true);
-    showStatus("success", "Milestone updated locally");
+    const next = milestones.map((m) => (m.id === formData.id ? formData : m));
+    setMilestones(next);
+    persistMilestones(next);
   };
 
   const handleDelete = (id: string) => {
-    if (confirm("Delete this milestone?")) {
-      setMilestones((prev) => prev.filter((m) => m.id !== id));
-      if (selectedId === id) {
-        setSelectedId(null);
-        setFormData(EMPTY_MILESTONE);
-      }
-      setIsDirty(true);
+    if (!confirm("Delete this milestone?")) return;
+    const next = milestones.filter((m) => m.id !== id);
+    setMilestones(next);
+    if (selectedId === id) {
+      setSelectedId(null);
+      setFormData(EMPTY_MILESTONE);
     }
+    persistMilestones(next);
   };
 
   const moveItem = (index: number, direction: -1 | 1) => {
@@ -158,7 +150,7 @@ export default function AboutCmsClient({
     newMilestones.splice(newIndex, 0, movedItem);
 
     setMilestones(newMilestones);
-    setIsDirty(true);
+    persistMilestones(newMilestones);
   };
 
   const showStatus = (type: "success" | "error", text: string) => {
@@ -171,7 +163,6 @@ export default function AboutCmsClient({
       <AdminEditorHeader
         icon={History}
         title="Career Journey CMS"
-        isDirty={isDirty}
         isRefreshing={isRefreshing}
         isSyncing={isSyncing}
         onRefresh={() =>
@@ -179,7 +170,7 @@ export default function AboutCmsClient({
             router.refresh();
           })
         }
-        onSync={handleSync}
+        showSync={false}
       />
 
       <main className="p-4 grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1 min-h-0 overflow-hidden">

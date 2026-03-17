@@ -61,30 +61,23 @@ export default function ProjectCmsClient({
     type: "success" | "error";
     text: string;
   } | null>(null);
-  const [isDirty, setIsDirty] = useState(false);
 
   // Form State
   const [formData, setFormData] = useState<Project>(EMPTY_PROJECT);
 
-  // --- ACTIONS ---
-
-  // 2. Sync to Neon (Save)
-  const handleSync = async () => {
+  const persistProjects = (next: Project[]) => {
     startSyncTransition(async () => {
       try {
-        await syncProjects(projects);
-        setIsDirty(false);
-        showStatus("success", "Projects synchronized successfully");
+        await syncProjects(next);
+        showStatus("success", "Saved.");
         router.refresh();
       } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : "Failed to sync with Neon";
-        showStatus("error", errorMessage);
+        const msg = error instanceof Error ? error.message : "Save failed";
+        showStatus("error", msg);
       }
     });
   };
 
-  // 3. Local CRUD Operations
   const handleSelect = (project: Project) => {
     setSelectedId(project.id);
     setFormData({ ...project });
@@ -105,26 +98,23 @@ export default function ProjectCmsClient({
 
   const saveLocal = (e: React.FormEvent) => {
     e.preventDefault();
-    setProjects((prev) => {
-      const exists = prev.find((p) => p.id === formData.id);
-      if (exists) {
-        return prev.map((p) => (p.id === formData.id ? formData : p));
-      }
-      return [formData, ...prev];
-    });
-    setIsDirty(true);
-    showStatus("success", "Changes staged locally. Don't forget to Sync.");
+    const exists = projects.find((p) => p.id === formData.id);
+    const next = exists
+      ? projects.map((p) => (p.id === formData.id ? formData : p))
+      : [formData, ...projects];
+    setProjects(next);
+    persistProjects(next);
   };
 
   const handleDelete = (id: string) => {
-    if (confirm("Are you sure you want to delete this project?")) {
-      setProjects((prev) => prev.filter((p) => p.id !== id));
-      if (selectedId === id) {
-        setSelectedId(null);
-        setFormData(EMPTY_PROJECT);
-      }
-      setIsDirty(true);
+    if (!confirm("Are you sure you want to delete this project?")) return;
+    const next = projects.filter((p) => p.id !== id);
+    setProjects(next);
+    if (selectedId === id) {
+      setSelectedId(null);
+      setFormData(EMPTY_PROJECT);
     }
+    persistProjects(next);
   };
 
   // Helper
@@ -138,7 +128,6 @@ export default function ProjectCmsClient({
       <AdminEditorHeader
         icon={LayoutTemplate}
         title="Project CMS"
-        isDirty={isDirty}
         isRefreshing={isRefreshing}
         isSyncing={isSyncing}
         onRefresh={() =>
@@ -146,8 +135,7 @@ export default function ProjectCmsClient({
             router.refresh();
           })
         }
-        onSync={handleSync}
-        syncingLabel="Uploading..."
+        showSync={false}
       />
 
       <main className="p-4 grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1 min-h-0 overflow-hidden">

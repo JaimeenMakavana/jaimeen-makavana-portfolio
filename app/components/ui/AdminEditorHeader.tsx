@@ -7,26 +7,30 @@ import { AnimatePresence, motion } from "framer-motion";
 type AdminEditorHeaderProps = {
   icon: ComponentType<{ className?: string; style?: CSSProperties }>;
   title: string;
-  isDirty: boolean;
+  isDirty?: boolean;
   isRefreshing: boolean;
-  isSyncing: boolean;
+  isSyncing?: boolean;
   onRefresh: () => void;
-  onSync: () => void;
+  onSync?: () => void;
+  showSync?: boolean;
   syncLabel?: string;
   syncingLabel?: string;
+  syncTitle?: string;
   extraActions?: ReactNode;
 };
 
 export function AdminEditorHeader({
   icon: Icon,
   title,
-  isDirty,
+  isDirty = false,
   isRefreshing,
-  isSyncing,
+  isSyncing = false,
   onRefresh,
   onSync,
+  showSync = true,
   syncLabel = "Sync to Neon",
   syncingLabel = "Syncing...",
+  syncTitle,
   extraActions,
 }: AdminEditorHeaderProps) {
   return (
@@ -44,40 +48,42 @@ export function AdminEditorHeader({
       </div>
 
       <div className="flex items-center gap-3">
-        <AnimatePresence>
-          {isDirty ? (
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0 }}
-              className="flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium"
-              style={{
-                backgroundColor: "var(--bg-accent-glow)",
-                color: "var(--text-display)",
-                opacity: 0.8,
-              }}
-            >
-              <AlertCircle className="h-3 w-3" />
-              Unsaved Changes
-            </motion.div>
-          ) : null}
-        </AnimatePresence>
+        {showSync && (
+          <AnimatePresence>
+            {isDirty ? (
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0 }}
+                className="flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium"
+                style={{
+                  backgroundColor: "var(--bg-accent-glow)",
+                  color: "var(--text-display)",
+                  opacity: 0.8,
+                }}
+              >
+                <AlertCircle className="h-3 w-3" />
+                Unsaved Changes
+              </motion.div>
+            ) : null}
+          </AnimatePresence>
+        )}
 
         {extraActions}
 
         <button
           onClick={onRefresh}
-          disabled={isRefreshing || isDirty}
+          disabled={isRefreshing || (showSync && isSyncing)}
           className="rounded-lg p-2 transition-colors disabled:opacity-30"
-          title="Reload from Neon"
+          title="Reload from database"
           style={{ color: "var(--text-body)" }}
           onMouseEnter={(event) => {
-            if (!isRefreshing && !isDirty) {
+            if (!isRefreshing && !(showSync && isSyncing)) {
               event.currentTarget.style.backgroundColor = "var(--muted)";
             }
           }}
           onMouseLeave={(event) => {
-            if (!isRefreshing && !isDirty) {
+            if (!isRefreshing && !(showSync && isSyncing)) {
               event.currentTarget.style.backgroundColor = "transparent";
             }
           }}
@@ -87,35 +93,38 @@ export function AdminEditorHeader({
           />
         </button>
 
-        <button
-          onClick={onSync}
-          disabled={!isDirty || isSyncing}
-          className="flex items-center gap-2 rounded-full px-6 py-2 font-mono text-sm uppercase tracking-wide transition-all"
-          style={{
-            backgroundColor: isDirty ? "var(--nav-surface)" : "var(--muted)",
-            color: isDirty ? "var(--bg-accent-glow)" : "var(--text-muted)",
-            cursor: isDirty ? "pointer" : "not-allowed",
-          }}
-          onMouseEnter={(event) => {
-            if (isDirty && !isSyncing) {
-              event.currentTarget.style.transform = "scale(1.05)";
-            }
-          }}
-          onMouseLeave={(event) => {
-            if (isDirty && !isSyncing) {
-              event.currentTarget.style.transform = "scale(1)";
-            }
-          }}
-        >
-          {isSyncing ? (
-            syncingLabel
-          ) : (
-            <>
-              <Save className="h-4 w-4" />
-              {syncLabel}
-            </>
-          )}
-        </button>
+        {showSync && onSync && (
+          <button
+            onClick={onSync}
+            disabled={!isDirty || isSyncing}
+            title={syncTitle ?? (isDirty ? "Save to database so the website shows your changes" : undefined)}
+            className="flex items-center gap-2 rounded-full px-6 py-2 font-mono text-sm uppercase tracking-wide transition-all"
+            style={{
+              backgroundColor: isDirty ? "var(--nav-surface)" : "var(--muted)",
+              color: isDirty ? "var(--bg-accent-glow)" : "var(--text-muted)",
+              cursor: isDirty ? "pointer" : "not-allowed",
+            }}
+            onMouseEnter={(event) => {
+              if (isDirty && !isSyncing) {
+                event.currentTarget.style.transform = "scale(1.05)";
+              }
+            }}
+            onMouseLeave={(event) => {
+              if (isDirty && !isSyncing) {
+                event.currentTarget.style.transform = "scale(1)";
+              }
+            }}
+          >
+            {isSyncing ? (
+              syncingLabel
+            ) : (
+              <>
+                <Save className="h-4 w-4" />
+                {syncLabel}
+              </>
+            )}
+          </button>
+        )}
       </div>
     </header>
   );
