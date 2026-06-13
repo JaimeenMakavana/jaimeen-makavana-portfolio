@@ -82,139 +82,137 @@ export const MobileBottomNavigation = ({
         />
       )}
 
-      <div className="md:hidden fixed bottom-6 left-6 right-6 z-50 flex items-end justify-between pointer-events-none">
-        {/* --- LEFT: JIVA AGENT & CONTACT FABS --- */}
-        <div className="flex flex-row gap-3 pointer-events-auto">
-          {/* Contact FAB */}
-          <Link
-            href="/contact"
-            onClick={() => onLinkClick(null)}
-            className="h-14 px-4 rounded-full flex items-center justify-center shadow-2xl transition-transform active:scale-90 hover:scale-105 gap-2"
-            style={{
-              backgroundColor: "var(--bg-accent-glow)",
-              color: "black",
-            }}
-            aria-label="Contact"
-          >
-            <Mail className="w-6 h-6" strokeWidth={1.5} />
-            <span className="text-xs font-medium whitespace-nowrap">
-              Contact
-            </span>
-          </Link>
-          {/* Jiva Agent FAB */}
-          <Link
-            href="/jiva"
-            onClick={() => onLinkClick(null)}
-            className="h-14 px-4 rounded-full flex items-center justify-center shadow-2xl transition-transform active:scale-90 hover:scale-105 gap-2"
-            style={{
-              backgroundColor: "var(--nav-surface)",
-              color:
-                activeLink === "jiva"
-                  ? "var(--bg-accent-glow)"
-                  : "var(--nav-text-idle)",
-            }}
-            aria-label="जीवा: AI Agent"
-          >
-            <Sparkles className="w-6 h-6" strokeWidth={1.5} />
-            <span className="text-xs font-medium whitespace-nowrap">
-              जीवा: AI agent
-            </span>
-          </Link>
-        </div>
+      {/* --- LEFT: JIVA AGENT & CONTACT FABS --- */}
+      <div className="md:hidden fixed bottom-6 left-6 z-50 flex flex-row gap-3 pointer-events-auto">
+        {/* Contact FAB */}
+        <Link
+          href="/contact"
+          onClick={() => onLinkClick(null)}
+          className="h-14 px-4 rounded-full flex items-center justify-center shadow-2xl transition-transform active:scale-90 hover:scale-105 gap-2"
+          style={{
+            backgroundColor: "var(--bg-accent-glow)",
+            color: "black",
+          }}
+          aria-label="Contact"
+        >
+          <Mail className="w-6 h-6" strokeWidth={1.5} />
+          <span className="text-xs font-medium whitespace-nowrap">
+            Contact
+          </span>
+        </Link>
+        {/* Jiva Agent FAB */}
+        <Link
+          href="/jiva"
+          onClick={() => onLinkClick(null)}
+          className="h-14 px-4 rounded-full flex items-center justify-center shadow-2xl transition-transform active:scale-90 hover:scale-105 gap-2"
+          style={{
+            backgroundColor: "var(--nav-surface)",
+            color:
+              activeLink === "jiva"
+                ? "var(--bg-accent-glow)"
+                : "var(--nav-text-idle)",
+          }}
+          aria-label="जीवा: AI Agent"
+        >
+          <Sparkles className="w-6 h-6" strokeWidth={1.5} />
+          <span className="text-xs font-medium whitespace-nowrap">
+            जीवा: AI agent
+          </span>
+        </Link>
+      </div>
 
-        {/* --- RIGHT: MENU SYSTEM --- */}
-        <div className="flex flex-col items-end gap-4 pointer-events-auto">
-          {/* THE STAGGERED MENU LIST */}
-          <AnimatePresence>
-            {isOpen && (
-              <motion.nav
-                initial="hidden"
-                animate="visible"
-                exit="hidden"
-                variants={containerVariants}
-                className="flex flex-col items-end gap-3 mb-2"
-              >
-                {/* 2. Navigation Items */}
-                {NAVIGATION_ITEMS.map((item) => {
-                  const isActive = activeLink === item.id;
-                  const Icon = item.icon;
+      {/* --- RIGHT: MENU SYSTEM --- */}
+      <div className="md:hidden fixed bottom-6 right-6 z-50 flex flex-col items-end gap-4 pointer-events-auto">
+        {/* THE STAGGERED MENU LIST */}
+        <AnimatePresence>
+          {isOpen && (
+            <motion.nav
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+              variants={containerVariants}
+              className="flex flex-col items-end gap-3 mb-2"
+            >
+              {/* 2. Navigation Items */}
+              {NAVIGATION_ITEMS.map((item) => {
+                const isActive = activeLink === item.id;
+                const Icon = item.icon;
 
-                  return (
-                    <motion.div key={item.id} variants={itemVariants}>
-                      <Link
-                        href={item.href}
-                        onClick={() => {
-                          onLinkClick(item.id);
-                          setIsOpen(false);
-                        }}
-                        className="flex items-center gap-3 pr-1 pl-4 py-1 rounded-full shadow-xl border border-white/10 backdrop-blur-md"
+                return (
+                  <motion.div key={item.id} variants={itemVariants}>
+                    <Link
+                      href={item.href}
+                      onClick={() => {
+                        onLinkClick(item.id);
+                        setIsOpen(false);
+                      }}
+                      className="flex items-center gap-3 pr-1 pl-4 py-1 rounded-full shadow-xl border border-white/10 backdrop-blur-md"
+                      style={{
+                        backgroundColor: "var(--nav-surface)",
+                      }}
+                    >
+                      {/* Label */}
+                      <span
+                        className="text-sm font-medium"
+                        style={{ color: "var(--nav-text-idle)" }}
+                      >
+                        {item.label}
+                      </span>
+
+                      {/* Icon Bubble */}
+                      <div
+                        className="w-10 h-10 rounded-full flex items-center justify-center"
                         style={{
-                          backgroundColor: "var(--nav-surface)",
+                          backgroundColor: isActive
+                            ? "var(--bg-accent-glow)"
+                            : "rgba(255,255,255,0.1)",
+                          color: isActive ? "black" : "var(--nav-text-idle)",
                         }}
                       >
-                        {/* Label */}
-                        <span
-                          className="text-sm font-medium"
-                          style={{ color: "var(--nav-text-idle)" }}
-                        >
-                          {item.label}
-                        </span>
+                        <Icon className="w-5 h-5" strokeWidth={1.5} />
+                      </div>
+                    </Link>
+                  </motion.div>
+                );
+              })}
+              {/* Theme switch disabled for now. */}
+              {/*
+              <motion.div variants={itemVariants}>
+                <div
+                  className="p-3 rounded-full shadow-lg border border-white/10"
+                  style={{ backgroundColor: "var(--nav-surface)" }}
+                >
+                  <ThemeToggle />
+                </div>
+              </motion.div>
+              */}
+            </motion.nav>
+          )}
+        </AnimatePresence>
 
-                        {/* Icon Bubble */}
-                        <div
-                          className="w-10 h-10 rounded-full flex items-center justify-center"
-                          style={{
-                            backgroundColor: isActive
-                              ? "var(--bg-accent-glow)"
-                              : "rgba(255,255,255,0.1)",
-                            color: isActive ? "black" : "var(--nav-text-idle)",
-                          }}
-                        >
-                          <Icon className="w-5 h-5" strokeWidth={1.5} />
-                        </div>
-                      </Link>
-                    </motion.div>
-                  );
-                })}
-                {/* Theme switch disabled for now. */}
-                {/*
-                <motion.div variants={itemVariants}>
-                  <div
-                    className="p-3 rounded-full shadow-lg border border-white/10"
-                    style={{ backgroundColor: "var(--nav-surface)" }}
-                  >
-                    <ThemeToggle />
-                  </div>
-                </motion.div>
-                */}
-              </motion.nav>
-            )}
-          </AnimatePresence>
-
-          {/* THE HAMBURGER TRIGGER BUTTON */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="w-14 h-14 rounded-full flex items-center justify-center shadow-2xl transition-transform active:scale-90"
-            style={{
-              backgroundColor: "var(--nav-surface)",
-              color: "var(--nav-text-idle)",
-              border: "1px solid rgba(255,255,255,0.1)",
-            }}
-            aria-label="Toggle Menu"
+        {/* THE HAMBURGER TRIGGER BUTTON */}
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="w-14 h-14 rounded-full flex items-center justify-center shadow-2xl transition-transform active:scale-90"
+          style={{
+            backgroundColor: "var(--nav-surface)",
+            color: "var(--nav-text-idle)",
+            border: "1px solid rgba(255,255,255,0.1)",
+          }}
+          aria-label="Toggle Menu"
+        >
+          <motion.div
+            initial={false}
+            animate={{ rotate: isOpen ? 180 : 0 }}
+            transition={{ duration: 0.3 }}
           >
-            <motion.div
-              initial={false}
-              animate={{ rotate: isOpen ? 180 : 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              {isOpen ? (
-                <X className="w-6 h-6" />
-              ) : (
-                <Menu className="w-6 h-6" />
-              )}
-            </motion.div>
-          </button>
-        </div>
+            {isOpen ? (
+              <X className="w-6 h-6" />
+            ) : (
+              <Menu className="w-6 h-6" />
+            )}
+          </motion.div>
+        </button>
       </div>
     </>
   );

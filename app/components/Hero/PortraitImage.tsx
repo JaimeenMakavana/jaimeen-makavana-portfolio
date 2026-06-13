@@ -32,6 +32,7 @@ export const PortraitImage = ({
       width={IMAGE_CONFIG.width}
       height={height}
       className={className}
+      style={style}
       priority={priority}
     />
   );

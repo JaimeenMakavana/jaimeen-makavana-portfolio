@@ -8,8 +8,12 @@ export const HeroText = () => {
       className="lg:max-w-1/2 lg:ml-20 lg:h-full lg:flex items-center justify-center z-20 relative"
     >
       <p
-        className="text-4xl font-bold leading-tight text-center md:text-7xl lg:hidden"
-        style={{ fontFamily: "var(--font-poiret), sans-serif" }}
+        className="text-3xl font-bold leading-tight text-center md:text-6xl lg:hidden px-4"
+        style={{
+          fontFamily: "var(--font-poiret), sans-serif",
+          textShadow:
+            "0 0 10px var(--bg-canvas), 0 0 20px var(--bg-canvas), 0 0 30px var(--bg-canvas)",
+        }}
       >
         {MOBILE_TEXT}
       </p>
