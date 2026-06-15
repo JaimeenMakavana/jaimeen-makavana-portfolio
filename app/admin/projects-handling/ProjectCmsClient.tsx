@@ -124,7 +124,7 @@ export default function ProjectCmsClient({
   };
 
   return (
-    <AdminPageShell className="relative flex flex-col h-full overflow-hidden">
+    <AdminPageShell className="relative flex flex-col md:h-full md:overflow-hidden">
       <AdminEditorHeader
         icon={LayoutTemplate}
         title="Project CMS"
@@ -138,9 +138,9 @@ export default function ProjectCmsClient({
         showSync={false}
       />
 
-      <main className="p-4 grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1 min-h-0 overflow-hidden">
+      <main className="p-4 grid grid-cols-1 lg:grid-cols-12 gap-4 md:flex-1 md:min-h-0 md:overflow-hidden">
         {/* LEFT COLUMN: LIST */}
-        <div className="lg:col-span-4 flex flex-col min-h-0">
+        <div className="lg:col-span-4 flex flex-col md:min-h-0">
           <div className="flex items-center justify-between mb-4 flex-shrink-0">
             <h2
               className="font-mono text-xs uppercase tracking-widest"
@@ -168,7 +168,7 @@ export default function ProjectCmsClient({
             </button>
           </div>
 
-          <div className="space-y-3 pb-20 flex-1 min-h-0 overflow-y-auto">
+          <div className="space-y-3 pb-8 md:pb-20 md:flex-1 md:min-h-0 md:overflow-y-auto">
             {projects.length === 0 ? (
               <div
                 className="p-8 text-center border-2 border-dashed rounded-xl"
@@ -287,7 +287,7 @@ export default function ProjectCmsClient({
         </div>
 
         {/* RIGHT COLUMN: EDITOR */}
-        <div className="lg:col-span-8 min-h-0 overflow-y-auto">
+        <div className="lg:col-span-8 md:min-h-0 md:overflow-y-auto">
           <div>
             <div
               className="rounded-2xl shadow-sm border overflow-hidden"
@@ -298,7 +298,7 @@ export default function ProjectCmsClient({
             >
               {/* Editor Header */}
               <div
-                className="px-8 py-6 border-b flex justify-between items-center"
+                className="px-6 md:px-8 py-4 md:py-6 border-b flex justify-between items-center"
                 style={{
                   backgroundColor: "var(--muted)",
                   opacity: 0.5,
@@ -307,7 +307,7 @@ export default function ProjectCmsClient({
               >
                 <div>
                   <h2
-                    className="font-bold text-2xl"
+                    className="font-bold text-xl md:text-2xl"
                     style={{ color: "var(--text-display)" }}
                   >
                     {selectedId
@@ -317,7 +317,7 @@ export default function ProjectCmsClient({
                       : "Select a Project"}
                   </h2>
                   <p
-                    className="text-sm font-mono mt-1"
+                    className="text-xs md:text-sm font-mono mt-1"
                     style={{ color: "var(--text-muted)" }}
                   >
                     ID: {formData.id || "..."}
@@ -344,7 +344,7 @@ export default function ProjectCmsClient({
               </div>
 
               {selectedId ? (
-                <form onSubmit={saveLocal} className="p-8 space-y-8">
+                <form onSubmit={saveLocal} className="p-4 md:p-8 space-y-4 md:space-y-8">
                   {/* Row 1: Basic Info */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
