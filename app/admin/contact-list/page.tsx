@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import {
   Calendar,
@@ -191,7 +193,7 @@ export default async function AdminContactList({
   const hasNextPage = data.page < data.totalPages;
 
   return (
-    <AdminPageShell className="flex h-full min-h-0 flex-col space-y-4 overflow-hidden p-6">
+    <AdminPageShell className="flex flex-col space-y-4 p-4 md:p-6 md:h-full md:min-h-0 md:overflow-hidden">
       <AdminPageHeader
         eyebrow="Neon Database / Server Rendered"
         title={
@@ -219,7 +221,7 @@ export default async function AdminContactList({
 
       <form
         action={applyContactFilters}
-        className="flex max-w-7xl flex-col gap-4 md:flex-row"
+        className="flex max-w-7xl flex-col gap-3 md:flex-row"
       >
         <div className="relative flex-1">
           <Search
@@ -230,7 +232,7 @@ export default async function AdminContactList({
             type="text"
             name="search"
             defaultValue={parsedSearchParams.search ?? ""}
-            placeholder="Search by name, email, or message..."
+            placeholder="Search..."
             className="w-full rounded-xl border py-3 pl-12 pr-4 text-sm outline-none"
             style={{
               backgroundColor: "var(--card)",
@@ -251,7 +253,7 @@ export default async function AdminContactList({
           <select
             name="intent"
             defaultValue={parsedSearchParams.intent ?? "ALL"}
-            className="bg-transparent text-sm font-mono outline-none"
+            className="bg-transparent text-sm font-mono outline-none w-full"
           >
             <option value="ALL">ALL INTENTS</option>
             {data.intents.map((intent) => (
@@ -262,27 +264,29 @@ export default async function AdminContactList({
           </select>
         </div>
 
-        <button
-          type="submit"
-          className="rounded-xl px-4 py-3 text-sm font-mono uppercase tracking-wide"
-          style={{
-            backgroundColor: "var(--nav-surface)",
-            color: "var(--nav-text-idle)",
-          }}
-        >
-          Apply Filters
-        </button>
+        <div className="grid grid-cols-2 gap-2 w-full md:flex md:w-auto">
+          <button
+            type="submit"
+            className="rounded-xl px-4 py-3 text-sm font-mono uppercase tracking-wide text-center"
+            style={{
+              backgroundColor: "var(--nav-surface)",
+              color: "var(--nav-text-idle)",
+            }}
+          >
+            Apply
+          </button>
 
-        <Link
-          href="/admin/contact-list"
-          className="rounded-xl border px-4 py-3 text-center text-sm font-mono uppercase tracking-wide"
-          style={{
-            borderColor: "var(--border)",
-            color: "var(--text-muted)",
-          }}
-        >
-          Reset
-        </Link>
+          <Link
+            href="/admin/contact-list"
+            className="rounded-xl border px-4 py-3 text-center text-sm font-mono uppercase tracking-wide"
+            style={{
+              borderColor: "var(--border)",
+              color: "var(--text-muted)",
+            }}
+          >
+            Reset
+          </Link>
+        </div>
       </form>
 
       <AdminScrollPanel className="shadow-sm">
@@ -301,7 +305,8 @@ export default async function AdminContactList({
           </div>
         ) : (
           <div className="h-full overflow-auto">
-            <table className="w-full border-collapse text-left">
+            {/* Desktop Table View */}
+            <table className="hidden md:table w-full border-collapse text-left">
               <thead className="sticky top-0 z-10">
                 <tr
                   className="border-b text-[10px] font-mono uppercase tracking-wider md:text-xs"
@@ -327,11 +332,82 @@ export default async function AdminContactList({
                 ))}
               </tbody>
             </table>
+
+            {/* Mobile Card List View */}
+            <div className="md:hidden flex flex-col gap-4 p-4">
+              {data.submissions.map((submission) => {
+                const badgeStyle = getIntentBadgeStyle(submission.intent);
+                return (
+                  <div
+                    key={submission.submissionId}
+                    className="rounded-xl border p-4 flex flex-col gap-3"
+                    style={{
+                      backgroundColor: "var(--card)",
+                      borderColor: "var(--border)",
+                    }}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <div
+                          className="text-sm font-bold"
+                          style={{ color: "var(--text-display)" }}
+                        >
+                          {submission.name}
+                        </div>
+                        <a
+                          href={`mailto:${submission.email}`}
+                          className="mt-1 flex items-center gap-1 text-xs font-mono"
+                          style={{ color: "var(--text-muted)" }}
+                        >
+                          <Mail className="h-3 w-3" />
+                          {submission.email}
+                        </a>
+                      </div>
+                      <span
+                        className="rounded border px-2 py-0.5 text-[9px] uppercase tracking-wide font-mono"
+                        style={badgeStyle}
+                      >
+                        {submission.intent}
+                      </span>
+                    </div>
+
+                    <p
+                      className="whitespace-pre-wrap text-sm leading-relaxed"
+                      style={{ color: "var(--text-body)" }}
+                    >
+                      {submission.message}
+                    </p>
+
+                    <div
+                      className="flex items-center justify-between border-t pt-3 mt-1"
+                      style={{ borderColor: "var(--border)" }}
+                    >
+                      <div
+                        className="flex items-center gap-1 text-[10px] font-mono"
+                        style={{ color: "var(--text-muted)" }}
+                      >
+                        <Calendar className="h-3 w-3" />
+                        {formatDate(submission.timestamp)}
+                      </div>
+                      <div
+                        className="inline-flex items-center gap-1 rounded bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5 text-[9px] font-mono uppercase"
+                        style={{
+                          color: "var(--text-muted)",
+                        }}
+                      >
+                        <Database className="h-3 w-3" />
+                        {submission.submissionId.slice(0, 8)}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
       </AdminScrollPanel>
 
-      <div className="mt-6 flex items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row items-center justify-between gap-4 mt-6">
         <div
           className="text-xs font-mono uppercase"
           style={{ color: "var(--text-muted)" }}
