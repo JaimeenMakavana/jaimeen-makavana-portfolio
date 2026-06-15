@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { getProjects } from "@/app/lib/projects/repository";
 
 import ProjectCmsClient from "./ProjectCmsClient";

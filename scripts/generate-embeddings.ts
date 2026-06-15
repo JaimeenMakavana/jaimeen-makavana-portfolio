@@ -31,6 +31,35 @@ interface IndexEntry {
   hash: string; // For incremental updates
 }
 
+async function embedWithRetry(
+  model: any,
+  content: string,
+  retries = 5,
+  delay = 2000
+): Promise<any> {
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await model.embedContent(content);
+    } catch (error: any) {
+      const isRateLimit =
+        error?.status === 429 ||
+        error?.message?.includes("429") ||
+        error?.message?.includes("quota") ||
+        error?.message?.includes("Too Many Requests");
+
+      if (isRateLimit && i < retries - 1) {
+        const waitTime = delay * Math.pow(2, i);
+        console.warn(
+          `⚠️ Rate limited. Retrying in ${waitTime}ms... (Attempt ${i + 1}/${retries})`
+        );
+        await new Promise((resolve) => setTimeout(resolve, waitTime));
+        continue;
+      }
+      throw error;
+    }
+  }
+}
+
 async function generateEmbeddings() {
   console.log("🚀 Starting Codebase Indexing...");
 
@@ -131,7 +160,7 @@ async function generateEmbeddings() {
 
     try {
       // Generate Embedding - SDK supports string directly
-      const result = await embeddingModel.embedContent(content);
+      const result = await embedWithRetry(embeddingModel, content);
       
       const embedding = result.embedding.values;
 

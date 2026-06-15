@@ -11,10 +11,10 @@ export function AdminScrollPanel({
 }: AdminScrollPanelProps) {
   return (
     <div
-      className={`flex min-h-0 flex-1 flex-col overflow-hidden ${className}`.trim()}
+      className={`flex min-h-0 flex-col md:flex-1 md:overflow-hidden ${className}`.trim()}
     >
       <div
-        className="min-h-0 flex-1 overflow-hidden rounded-2xl border"
+        className="min-h-0 md:flex-1 md:overflow-hidden rounded-2xl border"
         style={{
           backgroundColor: "var(--card)",
           borderColor: "var(--border)",
