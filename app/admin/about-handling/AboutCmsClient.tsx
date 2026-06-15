@@ -159,7 +159,7 @@ export default function AboutCmsClient({
   };
 
   return (
-    <AdminPageShell className="relative flex flex-col h-full overflow-hidden">
+    <AdminPageShell className="relative flex flex-col md:h-full md:overflow-hidden">
       <AdminEditorHeader
         icon={History}
         title="Career Journey CMS"
@@ -173,9 +173,9 @@ export default function AboutCmsClient({
         showSync={false}
       />
 
-      <main className="p-4 grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1 min-h-0 overflow-hidden">
+      <main className="p-4 grid grid-cols-1 lg:grid-cols-12 gap-4 md:flex-1 md:min-h-0 md:overflow-hidden">
         {/* LEFT COLUMN: TIMELINE LIST */}
-        <div className="lg:col-span-4 flex flex-col min-h-0">
+        <div className="lg:col-span-4 flex flex-col md:min-h-0">
           <div className="flex items-center justify-between mb-4 flex-shrink-0">
             <h2
               className="font-mono text-xs uppercase tracking-widest"
@@ -204,7 +204,7 @@ export default function AboutCmsClient({
           </div>
 
           <div
-            className="relative border-l ml-4 space-y-6 pb-12 flex-1 min-h-0 overflow-y-auto"
+            className="relative border-l ml-4 space-y-6 pb-8 md:pb-12 md:flex-1 md:min-h-0 md:overflow-y-auto"
             style={{ borderColor: "var(--border)" }}
           >
             {milestones.map((item, index) => (
@@ -346,7 +346,7 @@ export default function AboutCmsClient({
         </div>
 
         {/* RIGHT COLUMN: EDITOR */}
-        <div className="lg:col-span-8 min-h-0 overflow-y-auto">
+        <div className="lg:col-span-8 md:min-h-0 md:overflow-y-auto">
           <div>
             <div
               className="rounded-2xl shadow-sm border overflow-hidden"
@@ -356,14 +356,14 @@ export default function AboutCmsClient({
               }}
             >
               <div
-                className="px-8 py-6 border-b flex justify-between items-center"
+                className="px-6 md:px-8 py-4 md:py-6 border-b flex justify-between items-center"
                 style={{
                   backgroundColor: "var(--muted)",
                   opacity: 0.5,
                   borderColor: "var(--border)",
                 }}
               >
-                <h2 className="font-bold text-2xl">
+                <h2 className="font-bold text-xl md:text-2xl">
                   {selectedId ? "Edit Milestone" : "Select a Milestone"}
                 </h2>
                 {selectedId && (
@@ -377,7 +377,7 @@ export default function AboutCmsClient({
               </div>
 
               {selectedId ? (
-                <form onSubmit={saveLocal} className="p-8 space-y-8">
+                <form onSubmit={saveLocal} className="p-4 md:p-8 space-y-4 md:space-y-8">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {/* Time Period */}
                     <div className="space-y-2">
