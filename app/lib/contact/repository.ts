@@ -147,39 +147,46 @@ export async function getContactAdminPageData(filters: {
     search: filters.search,
   });
 
-  const [countRows, intentRows] = await Promise.all([
-    sql<{ count: string }[]>`
-      select count(*)::text as count
+  try {
+    const [countRows, intentRows] = await Promise.all([
+      sql<{ count: string }[]>`
+        select count(*)::text as count
+        from contact_submissions
+        where ${whereClause}
+      `,
+      sql<{ intent: string }[]>`
+        select distinct intent
+        from contact_submissions
+        order by intent asc
+      `,
+    ]);
+
+    const total = Number(countRows[0]?.count ?? 0);
+    const totalPages = total === 0 ? 1 : Math.ceil(total / normalizedPageSize);
+    const effectivePage = Math.min(normalizedPage, totalPages);
+    const offset = (effectivePage - 1) * normalizedPageSize;
+
+    const rows = await sql<ContactSubmissionRow[]>`
+      select id, name, email, message, intent, timestamp, created_at, updated_at
       from contact_submissions
       where ${whereClause}
-    `,
-    sql<{ intent: string }[]>`
-      select distinct intent
-      from contact_submissions
-      order by intent asc
-    `,
-  ]);
+      order by timestamp desc, created_at desc
+      limit ${normalizedPageSize}
+      offset ${offset}
+    `;
 
-  const total = Number(countRows[0]?.count ?? 0);
-  const totalPages = total === 0 ? 1 : Math.ceil(total / normalizedPageSize);
-  const effectivePage = Math.min(normalizedPage, totalPages);
-  const offset = (effectivePage - 1) * normalizedPageSize;
-
-  const rows = await sql<ContactSubmissionRow[]>`
-    select id, name, email, message, intent, timestamp, created_at, updated_at
-    from contact_submissions
-    where ${whereClause}
-    order by timestamp desc, created_at desc
-    limit ${normalizedPageSize}
-    offset ${offset}
-  `;
-
-  return {
-    submissions: rows.map(mapRow),
-    total,
-    totalPages,
-    page: effectivePage,
-    pageSize: normalizedPageSize,
-    intents: intentRows.map((row) => row.intent),
-  };
+    return {
+      submissions: rows.map(mapRow),
+      total,
+      totalPages,
+      page: effectivePage,
+      pageSize: normalizedPageSize,
+      intents: intentRows.map((row) => row.intent),
+    };
+  } catch (error) {
+    console.error("❌ DATABASE ERROR in getContactAdminPageData:", error);
+    throw new Error(
+      `Database error: ${error instanceof Error ? error.message : String(error)}. Please ensure your PostgreSQL database is running, connection environment variables are correct, and migrations have been applied (run "npm run db:migrate").`
+    );
+  }
 }

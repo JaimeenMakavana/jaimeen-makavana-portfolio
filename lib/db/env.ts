@@ -60,19 +60,11 @@ function resolveDatabaseUrl(preferDirect: boolean): string {
     return fromParts;
   }
 
-  throw new Error(
-    `Missing database connection env. Expected one of: ${[
-      ...RUNTIME_DATABASE_URL_KEYS,
-      "PGHOST",
-      "PGHOST_UNPOOLED",
-      "PGUSER",
-      "PGPASSWORD",
-      "PGDATABASE",
-      "POSTGRES_HOST",
-      "POSTGRES_PASSWORD",
-      "POSTGRES_DATABASE",
-    ].join(", ")}`
+  // Fallback to a dummy connection string instead of throwing during build/dev
+  console.warn(
+    `⚠️ DATABASE WARNING: Missing database connection env. Using fallback dummy URL.`
   );
+  return "postgresql://postgres:postgres@localhost:5432/portfolio_dummy";
 }
 
 export function getRuntimeDatabaseUrl(): string {

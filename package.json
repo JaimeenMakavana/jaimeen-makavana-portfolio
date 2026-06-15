@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "dev": "node init && next dev",
+    "build": "node init && next build",
+    "start": "node init && next start",
     "lint": "eslint",
     "db:migrate": "tsx scripts/migrate-neon.ts",
     "db:import-gists": "tsx scripts/import-gists-to-neon.ts",

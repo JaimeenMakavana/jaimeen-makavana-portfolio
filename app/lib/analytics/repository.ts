@@ -300,88 +300,95 @@ export async function getAnalyticsAdminPageData(filters: {
     dateTo: filters.dateTo,
   });
 
-  const [totals, deviceBreakdownRows, browserBreakdownRows, osBreakdownRows, deviceRows] =
-    await Promise.all([
-      sql<{ total_records: string; total_unique_users: string }[]>`
-        select
-          count(*)::text as total_records,
-          count(distinct user_id)::text as total_unique_users
-        from analytics_events
-        where ${statsWhere}
-      `,
-      sql<BreakdownRow[]>`
-        select coalesce(device_type, 'unknown') as label, count(*)::text as count
-        from analytics_events
-        where ${statsWhere}
-        group by coalesce(device_type, 'unknown')
-      `,
-      sql<BreakdownRow[]>`
-        select coalesce(browser, 'unknown') as label, count(*)::text as count
-        from analytics_events
-        where ${statsWhere}
-        group by coalesce(browser, 'unknown')
-      `,
-      sql<BreakdownRow[]>`
-        select coalesce(os, 'unknown') as label, count(*)::text as count
-        from analytics_events
-        where ${statsWhere}
-        group by coalesce(os, 'unknown')
-      `,
-      sql<DeviceTypeRow[]>`
-        select distinct device_type as label
-        from analytics_events
-        where device_type is not null
-        order by device_type asc
-      `,
-    ]);
+  try {
+    const [totals, deviceBreakdownRows, browserBreakdownRows, osBreakdownRows, deviceRows] =
+      await Promise.all([
+        sql<{ total_records: string; total_unique_users: string }[]>`
+          select
+            count(*)::text as total_records,
+            count(distinct user_id)::text as total_unique_users
+          from analytics_events
+          where ${statsWhere}
+        `,
+        sql<BreakdownRow[]>`
+          select coalesce(device_type, 'unknown') as label, count(*)::text as count
+          from analytics_events
+          where ${statsWhere}
+          group by coalesce(device_type, 'unknown')
+        `,
+        sql<BreakdownRow[]>`
+          select coalesce(browser, 'unknown') as label, count(*)::text as count
+          from analytics_events
+          where ${statsWhere}
+          group by coalesce(browser, 'unknown')
+        `,
+        sql<BreakdownRow[]>`
+          select coalesce(os, 'unknown') as label, count(*)::text as count
+          from analytics_events
+          where ${statsWhere}
+          group by coalesce(os, 'unknown')
+        `,
+        sql<DeviceTypeRow[]>`
+          select distinct device_type as label
+          from analytics_events
+          where device_type is not null
+          order by device_type asc
+        `,
+      ]);
 
-  const total = Number(totals[0]?.total_records ?? 0);
-  const totalPages = total === 0 ? 1 : Math.ceil(total / normalizedPageSize);
-  const effectivePage = Math.min(normalizedPage, totalPages);
-  const offset = (effectivePage - 1) * normalizedPageSize;
+    const total = Number(totals[0]?.total_records ?? 0);
+    const totalPages = total === 0 ? 1 : Math.ceil(total / normalizedPageSize);
+    const effectivePage = Math.min(normalizedPage, totalPages);
+    const offset = (effectivePage - 1) * normalizedPageSize;
 
-  const rows = await sql<AnalyticsEventRow[]>`
-    select
-      id,
-      user_id,
-      timestamp,
-      ip,
-      user_agent,
-      referrer,
-      screen_width,
-      screen_height,
-      timezone,
-      language,
-      device_type,
-      browser,
-      os,
-      created_at,
-      updated_at
-    from analytics_events
-    where ${statsWhere}
-    order by timestamp desc, id desc
-    limit ${normalizedPageSize}
-    offset ${offset}
-  `;
+    const rows = await sql<AnalyticsEventRow[]>`
+      select
+        id,
+        user_id,
+        timestamp,
+        ip,
+        user_agent,
+        referrer,
+        screen_width,
+        screen_height,
+        timezone,
+        language,
+        device_type,
+        browser,
+        os,
+        created_at,
+        updated_at
+      from analytics_events
+      where ${statsWhere}
+      order by timestamp desc, id desc
+      limit ${normalizedPageSize}
+      offset ${offset}
+    `;
 
-  return {
-    visitors: rows.map(mapEventRow),
-    total,
-    totalPages,
-    page: effectivePage,
-    pageSize: normalizedPageSize,
-    stats: {
-      totalUniqueUsers: Number(totals[0]?.total_unique_users ?? 0),
-      totalRecords: total,
-      deviceBreakdown: mapBreakdown(deviceBreakdownRows),
-      browserBreakdown: mapBreakdown(browserBreakdownRows),
-      osBreakdown: mapBreakdown(osBreakdownRows),
-    },
-    deviceTypes: deviceRows
-      .map((row) => row.label)
-      .filter(
-        (value): value is "mobile" | "tablet" | "desktop" =>
-          value === "mobile" || value === "tablet" || value === "desktop"
-      ),
-  };
+    return {
+      visitors: rows.map(mapEventRow),
+      total,
+      totalPages,
+      page: effectivePage,
+      pageSize: normalizedPageSize,
+      stats: {
+        totalUniqueUsers: Number(totals[0]?.total_unique_users ?? 0),
+        totalRecords: total,
+        deviceBreakdown: mapBreakdown(deviceBreakdownRows),
+        browserBreakdown: mapBreakdown(browserBreakdownRows),
+        osBreakdown: mapBreakdown(osBreakdownRows),
+      },
+      deviceTypes: deviceRows
+        .map((row) => row.label)
+        .filter(
+          (value): value is "mobile" | "tablet" | "desktop" =>
+            value === "mobile" || value === "tablet" || value === "desktop"
+        ),
+    };
+  } catch (error) {
+    console.error("❌ DATABASE ERROR in getAnalyticsAdminPageData:", error);
+    throw new Error(
+      `Database error: ${error instanceof Error ? error.message : String(error)}. Please ensure your PostgreSQL database is running, connection environment variables are correct, and migrations have been applied (run "npm run db:migrate").`
+    );
+  }
 }
